@@ -8,10 +8,11 @@ namespace SmirnovFastMul {
 
 		class ArrayType {
 		public:
-			ArrayType(){}
+			ArrayType(){// TODO implement
+			}
 
 			// c-tor - does deep copy
-			ArrayType(const ArrayType& that) {}
+			ArrayType(const ArrayType& that);
 
 			void set_array_size(int row_dim, int col_dim);
 
@@ -24,6 +25,7 @@ namespace SmirnovFastMul {
 
 			int get_sub_matrix_start_row();
 			int get_sub_matrix_start_col();
+            MPI_Datatype get_type();
 
 		protected:
 			MPI_Datatype m_new_type; 
@@ -35,7 +37,7 @@ namespace SmirnovFastMul {
 			// Holds the starting position of the sub block
 			int m_sub_matrix_location[2];
 
-			void init_array(int src[2], int dst[2]);
+			void init_array(const int src[2], int dst[2]);
 		};
 	} // Communication namespace
 } // SmirnovFastMul namespace
