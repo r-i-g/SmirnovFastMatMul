@@ -22,7 +22,7 @@ namespace SmirnovFastMul {
 		class Matrix {
 		public:
 		
-			Matrix(double* data, const ArrayType matrix_type, int n, int m, bool is_view);
+			Matrix(double* data, const ArrayType matrix_type, int n, int m, int stride, bool is_view);
 			Matrix(int n, int m);
 			Matrix(int n);
 	
@@ -47,6 +47,7 @@ namespace SmirnovFastMul {
 			double get_multiplier() const;
 			int get_row_dimension() const;
 			int get_col_dimension() const;
+            int get_stride() const;
 
 			friend std::ostream& operator<<(std::ostream& os, const Matrix& mat) {
 				for (int i = 0; i < mat.get_row_dimension(); ++i) {
