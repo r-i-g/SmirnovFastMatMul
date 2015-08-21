@@ -4,6 +4,7 @@
 #include "../common/common.h"
 #include "../communication/MpiCommunication.h"
 #include <mpi.h>
+#include <memory>
 
 /************************************************************************/
 /*	Creating a MPI matrix wrapper in c++ to ease the handling of sending 
@@ -21,7 +22,7 @@ namespace SmirnovFastMul {
 		*/
 		class Matrix {
 		public:
-		
+
 			Matrix(double* data, const ArrayType matrix_type, int n, int m, int stride, bool is_view);
 			Matrix(int n, int m);
 			Matrix(int n);
@@ -84,7 +85,11 @@ namespace SmirnovFastMul {
 			// Indicates that this matrix is a view to some other allocated internal data
 			bool m_is_view;
 		};
-	} // Computation namespace
+
+        // When we want to create submatrices an transfer them thorough functions
+        typedef std::unique_ptr<Matrix> MatrixPtr;
+
+    } // Computation namespace
 } // SmirnovFastMul namespace
 
 
