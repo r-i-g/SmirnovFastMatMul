@@ -5,6 +5,8 @@
 #include "../communication/MpiCommunication.h"
 #include <mpi.h>
 #include <memory>
+#include <algorithm>
+#include  <iostream>
 
 /************************************************************************/
 /*	Creating a MPI matrix wrapper in c++ to ease the handling of sending 
@@ -20,16 +22,24 @@ namespace SmirnovFastMul {
 		/*
 		Currently the Matrix only supports doubles
 		*/
+
 		class Matrix {
 		public:
 
 			Matrix(double* data, const ArrayType matrix_type, int n, int m, int stride, bool is_view);
 			Matrix(int n, int m);
-			Matrix(int n);
+			Matrix(int n=0);
 	
 			// c-tor - does deep copy
 			Matrix(const Matrix& that);
-	
+
+            // move constructor
+            Matrix(Matrix&& that);
+            Matrix& operator=(Matrix&& that) {
+                swap(*this, that);
+                return *this;
+            }
+
 			virtual ~Matrix();
 	
 			Matrix sub_matrix(int num_rows, int num_col, int start_row, int start_col);
@@ -49,6 +59,7 @@ namespace SmirnovFastMul {
 			int get_row_dimension() const;
 			int get_col_dimension() const;
             int get_stride() const;
+            bool get_is_view() { return m_is_view;}
 
 			friend std::ostream& operator<<(std::ostream& os, const Matrix& mat) {
 				for (int i = 0; i < mat.get_row_dimension(); ++i) {
@@ -60,6 +71,18 @@ namespace SmirnovFastMul {
 			return os;
 
 			}
+
+			friend void swap(Matrix& first, Matrix& second) {
+                using std::swap;
+                swap(first.m_data, second.m_data);
+                swap(first.m_multiplier, second.m_multiplier);
+                swap(first.m_array_type, second.m_array_type);
+                swap(first.m_row_dim, second.m_row_dim);
+                swap(first.m_col_dim, second.m_col_dim);
+                swap(first.m_stride, second.m_stride);
+                swap(first.m_is_view, second.m_is_view);
+            }
+
 			// TODO create friend functions
 			// max_ij |a_ij - b_ij|
 			// Frobenius norm difference: \| A - B \|_F

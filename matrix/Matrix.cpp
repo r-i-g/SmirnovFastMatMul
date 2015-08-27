@@ -1,13 +1,15 @@
 #include "Matrix.h"
 #include <stdlib.h>
 #include <sstream>
+#include <iostream>
 
 using SmirnovFastMul::Computation::Matrix;
 using SmirnovFastMul::ArrayType;
 
 
 Matrix::Matrix(double* data, ArrayType array_type, int n, int m, int stride, bool is_view):
-m_data(data), m_multiplier(1) ,m_array_type(array_type), m_row_dim(n), m_col_dim(m), m_stride(stride), m_is_view(is_view) {}
+m_data(data), m_multiplier(1) ,m_array_type(array_type), m_row_dim(n), m_col_dim(m), m_stride(stride), m_is_view(is_view) {
+}
 
 Matrix::Matrix(int n, int m) : m_data(NULL), m_multiplier(1), m_array_type(), m_row_dim(n), m_col_dim(m), m_stride(m), m_is_view(false) {
 
@@ -19,24 +21,16 @@ Matrix::Matrix(int n, int m) : m_data(NULL), m_multiplier(1), m_array_type(), m_
 
 Matrix::Matrix(int n) : Matrix(n,n) {}
 
-Matrix::Matrix(const Matrix& that) : Matrix(NULL, that.get_mpi_interpretation(), that.get_row_dimension(),
-                                            that.get_col_dimension(), that.get_stride(), false) {
 
+Matrix::Matrix(const Matrix& that) : Matrix(that.get_data(), that.get_mpi_interpretation(), that.get_row_dimension(),
+                                            that.get_col_dimension(), that.get_stride(), true) {
+
+    //std::cout << "in copy constructror" << std::endl;
     // TODO create a proper copy constructor
-	//// Checking if the dimensions are equal
-	//int that_row_dim = that.get_row_dimension();
-	//int that_col_dim = that.get_col_dimension();
-	//if ((m_row_dim != that_row_dim) ||
-	//	(m_col_dim == that_col_dim)) {
-	//	throw_range_error("Copied matrix differs in dimensions. Expected row_dim " << m_row_dim << " got " << that_row_dim
-	//		 << ". Expected col_dim " << m_col_dim << " got " << that_col_dim);
-	//}
-
-	// Destructing the previous array
-
+    //std::cout << "in copy constructror" << std::endl;
 
 	// Creating the internal array
-	m_data = new double[m_col_dim*m_row_dim];
+	/*m_data = new double[m_col_dim*m_row_dim];
 
 	// Copying data
 	double* that_data = that.get_data();
@@ -49,7 +43,17 @@ Matrix::Matrix(const Matrix& that) : Matrix(NULL, that.get_mpi_interpretation(),
 	}
 
 	// Setting the multiplier
-	m_multiplier = that.get_multiplier();
+	m_multiplier = that.get_multiplier();*/
+}
+
+Matrix::Matrix(Matrix&& that) : Matrix(that.get_data(), that.get_mpi_interpretation(), that.get_row_dimension(),
+                                       that.get_col_dimension(), that.get_stride(), true) {
+    //std::cout << "view " << that.m_is_view << std::endl;
+    //std::cout << that.m_data << std::endl;
+    //std::cout << m_data << std::endl;
+    that.m_data = NULL;
+    that.m_is_view = true;
+
 }
 
 ArrayType Matrix::get_mpi_interpretation() const
@@ -99,7 +103,7 @@ int Matrix::get_col_dimension() const
 Matrix::~Matrix() {
 	if(!m_is_view) {
 		// Only if we own the data we can delete it
-		delete m_data;
+		delete [] m_data;
 	}
 }
 
