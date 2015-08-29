@@ -34,9 +34,11 @@ int main() {
 
     SmirnovAlgorithm_336 alg;
     vector<MatrixPtr> alpha;
+    alpha.reserve(40);
     vector<MatrixPtr> beta;
+    beta.reserve(40);
 
-    std::cout<< a.get_data() << std::endl;
+    //std::cout<< a.get_data() << std::endl;
     alg.calculate_alpha(a, alpha);
     alg.calculate_beta(b, beta);
 
@@ -52,6 +54,7 @@ int main() {
     cout << alpha.size() << endl;
     cout << beta.size() << endl;
     vector<Matrix> sub_matrices;
+    sub_matrices.reserve(40);
     for (int m = 0; m < 40; ++m) {
         Matrix sub(1);
         double* data_a = alpha.at(m)->get_data();
