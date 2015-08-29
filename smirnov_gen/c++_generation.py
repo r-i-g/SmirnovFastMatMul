@@ -36,7 +36,7 @@ class AlgGen():
         self.write_line(function_definition, 0)
 
     def _create_simple_function_defnition(self, type, index):
-        function_definition = "void {type}_add{index}(std::vector<Matrix>& sub_matrices, " \
+        function_definition = "void {type}_add{index}_{alg_tuple}(std::vector<Matrix>& sub_matrices, " \
                              "Matrix& out){{".format(alg_tuple=self._alg_tuple_as_string,
                                                                                     type=type,
                                                                                     index=index)
@@ -156,7 +156,11 @@ class AlgGen():
         alg.close()
 
     def _write_ctor_definition(self):
-        self.write_line("SmirnovFastMul::Computation::SmirnovAlgorithm_336::SmirnovAlgorithm_336() : SmirnovFastMul::Computation::SmirnovAlgorithm(3,3,6){",0)
+        self.write_line("SmirnovFastMul::Computation::SmirnovAlgorithm_{alg_tuple}::SmirnovAlgorithm_{alg_tuple}() : "
+                        "SmirnovFastMul::Computation::SmirnovAlgorithm({a_row_dim},{a_col_dim},{b_col_dim}){{".format(alg_tuple=self._alg_tuple_as_string,
+                                                                                                                      a_row_dim=self._a_row_dim,
+                                                                                                                      a_col_dim=self._a_col_dim,
+                                                                                                                      b_col_dim=self._b_col_dim),0)
 
     def write_constructor(self):
 
@@ -172,10 +176,10 @@ class AlgGen():
 
         self._write_ctor_definition()
         for i in range(40):
-            self.write_line("add_alpha_entrance((AlgorithmEntrance)&alpha_add{index});".format(index=i))
-            self.write_line("add_beta_entrance((AlgorithmEntrance)&beta_add{index});".format(index=i))
+            self.write_line("add_alpha_entrance((AlgorithmEntrance)&alpha_add{index}_{alg_tuple});".format(index=i, alg_tuple=self._alg_tuple_as_string))
+            self.write_line("add_beta_entrance((AlgorithmEntrance)&beta_add{index}_{alg_tuple});".format(index=i, alg_tuple=self._alg_tuple_as_string))
         for i in range(self._a_row_dim * self._b_col_dim):
-            self.write_line("add_gamma_entrance((AlgorithmEntrance)&gamma_add{index});".format(index=i))
+            self.write_line("add_gamma_entrance((AlgorithmEntrance)&gamma_add{index}_{alg_tuple});".format(index=i, alg_tuple=self._alg_tuple_as_string))
         self._end_function_definiton()
 
     def _write_object_constructor(self):
@@ -207,8 +211,8 @@ if __name__ == '__main__':
     ALG_COL_DIM = sys.argv[3]'''
     gen_3_3_6 = AlgGen((3,3,6))
     gen_3_3_6.create_simple_scripts()
-    '''gen_3_3_6 = AlgGenerator((3,6,3))
-    gen_3_3_6.create_scripts()
-    gen_3_3_6 = AlgGenerator((6,3,3))
-    gen_3_3_6.create_scripts()'''
+    gen_3_3_6 = AlgGen((3,6,3))
+    gen_3_3_6.create_simple_scripts()
+    gen_3_3_6 = AlgGen((6,3,3))
+    gen_3_3_6.create_simple_scripts()
 
