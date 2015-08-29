@@ -23,14 +23,12 @@ Matrix::Matrix(int n) : Matrix(n,n) {}
 
 
 Matrix::Matrix(const Matrix& that) : Matrix(that.get_data(), that.get_mpi_interpretation(), that.get_row_dimension(),
-                                            that.get_col_dimension(), that.get_stride(), true) {
+                                            that.get_col_dimension(), that.get_stride(), false) {
 
-    //std::cout << "in copy constructror" << std::endl;
-    // TODO create a proper copy constructor
     //std::cout << "in copy constructror" << std::endl;
 
 	// Creating the internal array
-	/*m_data = new double[m_col_dim*m_row_dim];
+	m_data = new double[m_col_dim*m_row_dim];
 
 	// Copying data
 	double* that_data = that.get_data();
@@ -43,15 +41,16 @@ Matrix::Matrix(const Matrix& that) : Matrix(that.get_data(), that.get_mpi_interp
 	}
 
 	// Setting the multiplier
-	m_multiplier = that.get_multiplier();*/
+	m_multiplier = that.get_multiplier();
 }
 
+
 Matrix::Matrix(Matrix&& that) : Matrix(that.get_data(), that.get_mpi_interpretation(), that.get_row_dimension(),
-                                       that.get_col_dimension(), that.get_stride(), true) {
+                                       that.get_col_dimension(), that.get_stride(), that.get_is_view()) {
     //std::cout << "view " << that.m_is_view << std::endl;
     //std::cout << that.m_data << std::endl;
     //std::cout << m_data << std::endl;
-    that.m_data = NULL;
+    that.m_data = nullptr;
     that.m_is_view = true;
 
 }
