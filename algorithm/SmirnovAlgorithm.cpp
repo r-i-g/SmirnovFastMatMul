@@ -37,7 +37,7 @@ void SmirnovAlgorithm::implement_algorithm(int alg_row_dim, int alg_col_dim,
     {
         algorithm[i](sub_matrices, alg_out.at(i));
         //std::cout << alg_out.at(i) << std::endl;
-        std::cout << alg_out.at(i).get_data() << std::endl;
+        //std::cout << alg_out.at(i).get_data() << std::endl;
     }
 }
 
@@ -52,8 +52,8 @@ void SmirnovAlgorithm::create_sub_matrices(int alg_base_row_dim, int alg_base_co
     for (int i = 0; i < alg_base_row_dim; ++i) {
         for (int j = 0; j < alg_base_col_dim; ++j) {
             //std::cout << "adding the subblock starting at:" << i* sub_block_row_dim << " " << j* sub_block_col_dim << std::endl;
-            sub_matrices.push_back(std::move(src.sub_matrix(sub_block_row_dim,
-                                                  sub_block_col_dim, i* sub_block_row_dim, j* sub_block_col_dim)));
+            sub_matrices.push_back(src.sub_matrix(sub_block_row_dim,
+                                                  sub_block_col_dim, i* sub_block_row_dim, j* sub_block_col_dim));
         }
     }
 }
@@ -88,6 +88,8 @@ void SmirnovAlgorithm::calculate_beta(Matrix& B, vector<MatrixPtr>& alg_results_
 
 void SmirnovAlgorithm::calculate_c(vector<Matrix>& sub_matrices, Matrix& C) {
     vector<Matrix> c_sub_matrices;
+    // So c-tor want be called when resizing the vector in push_back
+    c_sub_matrices.reserve(m_gamma.size());
 
     int alg_row_dim = C.get_row_dimension() / m_A_base_row_dim;
     int alg_col_dim = C.get_col_dimension() / m_B_base_col_dim;
