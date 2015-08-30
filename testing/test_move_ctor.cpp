@@ -2,7 +2,6 @@
 // Created by rong on 8/28/15.
 //
 
-#include "test_move_ctor.h"
 #include "../matrix/Matrix.h"
 #include "../algorithm/SmirnovAlgorithm_336.h"
 #include <iostream>
