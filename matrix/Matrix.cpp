@@ -11,6 +11,8 @@ Matrix::Matrix(double* data, ArrayType array_type, int n, int m, int stride, boo
 m_data(data), m_multiplier(1) ,m_array_type(array_type), m_row_dim(n), m_col_dim(m), m_stride(stride), m_is_view(is_view) {
 }
 
+Matrix::Matrix(double* data, int n, int m) : m_data(data), m_multiplier(1), m_array_type(), m_row_dim(n), m_col_dim(m), m_stride(m), m_is_view(false) {}
+
 Matrix::Matrix(int n, int m) : m_data(NULL), m_multiplier(1), m_array_type(), m_row_dim(n), m_col_dim(m), m_stride(m), m_is_view(false) {
 
 	m_array_type.set_array_size(n, m);

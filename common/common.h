@@ -10,6 +10,8 @@ using std::range_error;
 typedef unsigned int uint32;
 //#define NULL 0
 
+#define SMIRNOV_SUB_PROBLEMS 40
+
 #define throw_range_error(message) \
 do \
 { \

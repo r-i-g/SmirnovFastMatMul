@@ -1,4 +1,4 @@
-#include "MpiCommunication.h"
+#include "MpiArray.h"
 
 #include <iostream>
 using std::cout;

@@ -2,7 +2,7 @@
 #define _MATRIX_
 
 #include "../common/common.h"
-#include "../communication/MpiCommunication.h"
+#include "../communication/MpiArray.h"
 #include <mpi.h>
 #include <memory>
 #include <algorithm>
@@ -27,6 +27,7 @@ namespace SmirnovFastMul {
 		public:
 
 			Matrix(double* data, const ArrayType matrix_type, int n, int m, int stride, bool is_view);
+            Matrix(double* data, int n, int m);
 			Matrix(int n, int m);
 			Matrix(int n=0);
 	
