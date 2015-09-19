@@ -16,9 +16,13 @@ Matrix::Matrix(double* data, int n, int m) : m_data(data), m_multiplier(1), m_ar
 Matrix::Matrix(int n, int m) : m_data(NULL), m_multiplier(1), m_array_type(), m_row_dim(n), m_col_dim(m), m_stride(m), m_is_view(false) {
 
 	m_array_type.set_array_size(n, m);
+    m_array_type.set_sub_matrix_size(n, m);
+    m_array_type.set_sub_matrix_location(0, 0);
 
 	// Allocating n*m double array
 	m_data = new double[n*m];
+
+    init(0);
 }
 
 Matrix::Matrix(int n) : Matrix(n,n) {}
@@ -127,3 +131,11 @@ std::ostream& operator<<(std::ostream& os, const Matrix& mat)
 	return os;
 
 }*/
+
+void Matrix::init(double value) {
+    for (int i = 0; i < get_row_dimension(); ++i) {
+        for (int j = 0; j < get_col_dimension(); ++j) {
+            m_data[i * m_stride + j] = value;
+        }
+    }
+}

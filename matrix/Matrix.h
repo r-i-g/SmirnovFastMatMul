@@ -84,6 +84,8 @@ namespace SmirnovFastMul {
                 swap(first.m_is_view, second.m_is_view);
             }
 
+            // Initalized the content of the matrix to be equal to the value passed
+            void init(double value);
 			// TODO create friend functions
 			// max_ij |a_ij - b_ij|
 			// Frobenius norm difference: \| A - B \|_F

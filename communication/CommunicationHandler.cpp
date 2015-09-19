@@ -6,6 +6,7 @@ using SmirnovFastMul::Communication::CommunicationHandler;
 CommunicationHandler::CommunicationHandler() : m_num_nodes(0), m_rank(-1) {
 
     // Initializing MPI communication
+    // TODO add a check using mpi_initialized
     MPI_Init(NULL, NULL);
     MPI_Comm_size(MPI_COMM_WORLD, &m_num_nodes);
     MPI_Comm_rank(MPI_COMM_WORLD, &m_rank);
@@ -30,6 +31,7 @@ int CommunicationHandler::get_rank() {
 
 CommunicationHandler::~CommunicationHandler() {
     //std::cout << "rank " << m_rank << "called dest";
+    // TODO add a check using mpi_finalized
     MPI_Finalize();
 }
 
@@ -60,14 +62,12 @@ vector<Matrix> CommunicationHandler::receive_sub_matrices(int row_dim, int col_d
 
     //std::cout << "from process " << m_rank << " receiving data" << std::endl;
     for (int i = 0; i < nodes.size(); ++i) {
-        int sub_matrix_index = i;
-        if(nodes.at(i) > m_rank) {
-            sub_matrix_index += 1;
+        // There's no need to receive from ourselves
+        if( nodes.at(i) == m_rank) {
+            continue;
         }
-        sub_matrices.at(sub_matrix_index) = std::move(receive_matrix(row_dim, col_dim, nodes.at(i)));
-        if(m_rank == 0) {
-            std::cout << sub_matrices.at(sub_matrix_index) << std::endl;
-        }
+        //std::cout << "from " << m_rank << " index " << sub_matrix_index << std::endl;
+        sub_matrices.at(i) = std::move(receive_matrix(row_dim, col_dim, nodes.at(i)));
     }
 
     return sub_matrices;
@@ -75,6 +75,10 @@ vector<Matrix> CommunicationHandler::receive_sub_matrices(int row_dim, int col_d
 
 void CommunicationHandler::scatter_matrix(const Matrix& matrix, const vector<int>& nodes) {
     for(auto node : nodes) {
+        // There's no need to send ourselves the data
+        if(node == m_rank) {
+            continue;
+        }
         //std::cout << "from process " << m_rank << " sending matrix to node " << node << std::endl;
         send_matrix(matrix, node);
     }
