@@ -29,6 +29,7 @@ namespace SmirnovFastMul{
 
             void dfs(Matrix& A, Matrix& B, Matrix& C, int l, int alg_index);
             void bfs(Matrix& A, Matrix& B, Matrix& C, int k, int alg_index, int start_processor, int end_processor);
+            void bfs(vector<Matrix>& alphas, vector<Matrix&> betas, vector<Matrix>& gammas, int k, int alg_index, int start_processor, int end_processor);
 
         protected:
 

@@ -107,6 +107,49 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index
     alg.calculate_c(sub_matrices,C);
 }
 
+void MultiplyMatrices::bfs(vector<Matrix>& alphas, vector<Matrix&> betas, vector<Matrix>& gammas, int k, int alg_index, int start_processor, int end_processor) {
+    if(k==0) {
+        // Computing local smirnov algorithm
+        for(int i=0; i<alphas.size(); i++) {
+            local_multiplication(alphas[i], betas[i], gammas[i]);
+        }
+        return;
+    }
+
+    // Locally computing alphas and betas
+    SmirnovAlgorithm alg = m_algorithms[alg_index];
+    vector<Matrix> alpha = alg.calculate_alpha(A);
+    vector<Matrix> beta = alg.calculate_beta(B);
+
+    // The parallel computation will be achieved by deciding on which subproblem we solve
+    int sub_problem_index = get_sub_problem(start_processor, end_processor);
+    int sub_problem_process_start = get_sub_problem_start(start_processor, end_processor);
+    int sub_problem_process_end = get_sub_problem_end(start_processor, end_processor);
+
+    int sub_matrix_row_dim = A.get_row_dimension() / alg.get_a_base_row_dim();
+    int sub_matrix_col_dim = B.get_col_dimension() / alg.get_b_base_col_dim();
+    Matrix our_sub_problem(sub_matrix_row_dim, sub_matrix_col_dim);
+
+    // TODO: change to receive a subarray of matrices for the computation
+    bfs(alpha.at(sub_problem_index), beta.at(sub_problem_index), our_sub_problem,
+        k-1, advance_algorithm(alg_index), sub_problem_process_start, sub_problem_process_end);
+
+    // Sending our computed parts to the other processors
+    // collaberating nodes contains the entire list of collaberating_nodes
+    vector<int> collaberating_nodes = generate_collaberating_nodes(start_processor, end_processor);
+    // TODO: add a support for a vector of matrices to send
+    m_comm_handler.scatter_matrix(our_sub_problem, collaberating_nodes);
+
+    // Receiving sub matrices from other processors to complete our sub matrices list
+    // TODO: add support for receiving a vector of matrices from processes
+    vector<Matrix> sub_matrices = m_comm_handler.receive_sub_matrices(sub_matrix_row_dim, sub_matrix_col_dim, collaberating_nodes);
+    // TODO: add support for
+    sub_matrices.at(sub_problem_index) = std::move(our_sub_problem);
+
+    // Locally computing C from sub_matrices;
+    alg.calculate_c(sub_matrices,C);
+}
+
 void MultiplyMatrices::local_multiplication(Matrix&A, Matrix& B, Matrix& C) {
 
     double* c_data = C.get_data();

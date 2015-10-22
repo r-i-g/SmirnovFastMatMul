@@ -30,7 +30,7 @@ int main() {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     cout << rank << endl;
 
-    alg.bfs(a,b,c,1,0,0,79);
+    alg.bfs(a,b,c,1,0,0,1599);
 
     if(rank == 0 ) {
         cout << c << endl;

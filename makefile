@@ -1,4 +1,4 @@
-
+m
 all:
 	mpic++ -std=c++11 -g ./testing.cpp ./common/*.cpp ./communication/*.cpp ./matrix/*.cpp ./algorithm/*.cpp  2> compile.out.txt
 
