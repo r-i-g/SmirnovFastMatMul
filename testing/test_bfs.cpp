@@ -30,8 +30,11 @@ int main() {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     cout << rank << endl;
 
+    // Testing with regular sub-processes - meaning each process takes 1 sub-problem
     alg.bfs(a,b,c,1,0,0,1599);
 
+
+    // Testing 2 levels of recursion by making each process work on 4 sub-problems
     if(rank == 0 ) {
         cout << c << endl;
     }
