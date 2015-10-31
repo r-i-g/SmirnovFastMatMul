@@ -74,6 +74,8 @@ void MultiplyMatrices::dfs(Matrix &A, Matrix &B, Matrix &C, int l, int alg_index
 void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index, int start_processor, int end_processor, int num_sub_problems) {
 
     if(k==0) {
+        // TODO: remove/turn this debug print
+        //std::cout << "computing the base case " << m_comm_handler.get_rank() <<  std::endl;
         // Computing local smirnov algorithm
         local_multiplication(A,B,C);
         return;
@@ -87,33 +89,54 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index
     // The parallel computation will be achieved by deciding on which sub problem we solve
     int sub_problem_index_start = get_sub_problem_index_start(start_processor, end_processor, num_sub_problems);
     int sub_problem_index_end = get_sub_problem_index_end(start_processor, end_processor, num_sub_problems);
+    // TODO: remove/turn this debug print
+
+        //std::cout << "from rank " << m_comm_handler.get_rank() << " level " << k << " sub_problem_s " <<
+        //sub_problem_index_start << " sub_problem_e " << sub_problem_index_end << std::endl;
 
     // Here we calculate the range of processes that collaborate with us on the calculation of the sub problem
-    int sub_problem_process_start = get_sub_problem_processors_start(start_processor, end_processor);
-    int sub_problem_process_end = get_sub_problem_processors_end(start_processor, end_processor);
+    int sub_problem_process_start = get_sub_problem_processors_start(start_processor, end_processor, num_sub_problems);
+    int sub_problem_process_end = get_sub_problem_processors_end(start_processor, end_processor, num_sub_problems);
+    // TODO: remove/turn this debug print
+        //std::cout << "from rank " << m_comm_handler.get_rank() << " level " << k << " processor_s " <<
+        //sub_problem_process_start << " processor_e " << sub_problem_process_end << std::endl;
 
     int sub_matrix_row_dim = A.get_row_dimension() / alg.get_a_base_row_dim();
     int sub_matrix_col_dim = B.get_col_dimension() / alg.get_b_base_col_dim();
 
     vector<Matrix> gamma(SMIRNOV_SUB_PROBLEMS);
+    gamma.reserve(SMIRNOV_SUB_PROBLEMS);
     for (int sub_problem_index = sub_problem_index_start;
-         sub_problem_index < sub_problem_index_end; ++sub_problem_index) {
+         sub_problem_index <= sub_problem_index_end; ++sub_problem_index) {
 
         Matrix our_sub_problem(sub_matrix_row_dim, sub_matrix_col_dim);
 
         bfs(alpha.at(sub_problem_index), beta.at(sub_problem_index), our_sub_problem,
-            k-1, advance_algorithm(alg_index), sub_problem_process_start, sub_problem_process_end);
+            k - 1, advance_algorithm(alg_index), sub_problem_process_start, sub_problem_process_end,
+            num_sub_problems);
 
         // Sending our computed parts to the other processors
         // collaborating nodes contains the entire list of collaborating_nodes
         vector<int> collaberating_nodes = generate_collaberating_nodes(start_processor, end_processor, num_sub_problems);
+        // TODO: remove/turn this debug print
+            /*std::cout << "rank" << m_comm_handler.get_rank() << " currene level" << k << " collaberating nodes: ";
+            for (int i = 0; i < collaberating_nodes.size(); ++i) {
+                std::cout << collaberating_nodes[i] << " ";
+            }
+            std::cout << std::endl;*/
+
         m_comm_handler.scatter_matrix(our_sub_problem, collaberating_nodes);
+        // TODO: remove/turn this debug print
+        //std::cout << "sending matrices " << m_comm_handler.get_rank() << std::endl;
+
 
         // Receiving sub matrices from other processors to complete our sub matrices list
+        // TODO: add sub matrices to receive sub matrices
         vector<Matrix> sub_matrices = m_comm_handler.receive_sub_matrices(sub_matrix_row_dim, sub_matrix_col_dim, collaberating_nodes);
+        //std::cout << "reciving matrices " << m_comm_handler.get_rank() << std::endl;
 
         // Placing the received sub problems into their respectable position
-        place_sub_problems(sub_matrices, gamma, sub_problem_index, start_processor, end_processor, num_sub_problems);
+        place_sub_problems(sub_matrices, gamma, sub_problem_index, sub_problem_index_start, sub_problem_index_end);
         gamma.at(sub_problem_index) = std::move(our_sub_problem);
     }
 
@@ -123,13 +146,20 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index
 
 void MultiplyMatrices::place_sub_problems(vector<Matrix> &sub_matrices, vector<Matrix> &gammas,
                                           int current_sub_problem_index,
-                                          int start_processor, int end_processor, int num_sub_problems) {
+                                          int sub_problem_index_start, int sub_problem_index_end) {
 
-    int num_processors = end_processor - start_processor + 1;
-    int group_size = num_processors / (SMIRNOV_SUB_PROBLEMS / num_sub_problems);
+    int num_sub_problems = sub_problem_index_end - sub_problem_index_start + 1;
+    int relative_sub_problem_in_group = current_sub_problem_index - sub_problem_index_start;
+
+    //std::cout << "in rank " << m_comm_handler.get_rank() << " group size is " << num_sub_problems << std::endl;
 
     for (int i = 0; i < sub_matrices.size(); ++i) {
-        gammas[current_sub_problem_index + i * group_size] = std::move(sub_matrices[i]);
+        int sub_problem_position = relative_sub_problem_in_group + i * num_sub_problems;
+
+        if ( sub_problem_position  != current_sub_problem_index) {
+            gammas[relative_sub_problem_in_group + i * num_sub_problems] = std::move(sub_matrices[i]);
+        }
+        //std::cout  << "in rank " << m_comm_handler.get_rank() << " sub problem index in gamma " << current_sub_problem_index + i * num_sub_problems << " sub matrice posotion " << i << std::endl;
     }
 }
 
@@ -158,7 +188,8 @@ int MultiplyMatrices::get_sub_problem_index_start(int start_processor, int end_p
     // Calculating to which group we "fall" into
     int group =  our_relative_rank/group_size;
 
-    return group * num_sub_problems + start_processor;
+    //std::cout << "rank " << m_comm_handler.get_rank() << " num_processors " << num_processors << " group size " << group_size << " our group index " << group << std::endl;
+    return group * num_sub_problems;
 }
 
 int MultiplyMatrices::get_sub_problem_index_end(int start_processor, int end_processor, int num_sub_problems) {
@@ -169,29 +200,29 @@ int MultiplyMatrices::get_sub_problem_index_end(int start_processor, int end_pro
 
     int group_size = num_processors / (SMIRNOV_SUB_PROBLEMS / num_sub_problems);
 
-    return get_sub_problem_index_start(start_processor, end_processor, num_processors) + group_size -1;
+    return get_sub_problem_index_start(start_processor, end_processor, num_sub_problems) + num_sub_problems -1;
 }
 
-int MultiplyMatrices::get_sub_problem_processors_start(int start_processor, int end_processor) {
+int MultiplyMatrices::get_sub_problem_processors_start(int start_processor, int end_processor, int num_sub_problems) {
 
     int our_relative_rank = m_comm_handler.get_rank() - start_processor;
 
     int num_processors = end_processor - start_processor + 1;
 
-    int group_size = num_processors / SMIRNOV_SUB_PROBLEMS;
+    int group_size = num_processors / (SMIRNOV_SUB_PROBLEMS / num_sub_problems);
 
     int our_group_index = our_relative_rank/group_size;
 
     return our_group_index * group_size + start_processor;
 }
 
-int MultiplyMatrices::get_sub_problem_processors_end(int start_processor, int end_processor) {
+int MultiplyMatrices::get_sub_problem_processors_end(int start_processor, int end_processor, int num_sub_problems) {
 
     int num_processors = end_processor - start_processor + 1;
 
-    int group_size = num_processors / SMIRNOV_SUB_PROBLEMS;
+    int group_size = num_processors / (SMIRNOV_SUB_PROBLEMS / num_sub_problems);
 
-    return get_sub_problem_processors_start(start_processor, end_processor) + group_size - 1;
+    return get_sub_problem_processors_start(start_processor, end_processor, num_sub_problems) + group_size - 1;
 
 }
 
@@ -227,10 +258,15 @@ vector<int> MultiplyMatrices::generate_collaberating_nodes(int start_processor, 
 
     int our_relative_position = (m_comm_handler.get_rank() - start_processor) % group_size;
 
-    vector<int> collabarating_nodes(SMIRNOV_SUB_PROBLEMS);
-    for (int i = 0; i < SMIRNOV_SUB_PROBLEMS; ++i) {
+    //std::cout << "rank " << m_comm_handler.get_rank() << " ";
+
+    int num_collaborators = num_processors / group_size;
+    vector<int> collabarating_nodes(num_collaborators);
+    for (int i = 0; i < num_collaborators; ++i) {
+       // std::cout << " node " << start_processor + our_relative_position  + group_size * i;
         collabarating_nodes.at(i) = start_processor + our_relative_position  + group_size * i;
     }
+    //std::cout << std::endl;
 
     return collabarating_nodes;
 }

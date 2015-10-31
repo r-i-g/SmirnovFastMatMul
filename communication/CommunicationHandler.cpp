@@ -53,10 +53,10 @@ Matrix CommunicationHandler::receive_matrix(int row_dim, int col_dim, int from_n
 vector<Matrix> CommunicationHandler::receive_sub_matrices(int row_dim, int col_dim, const vector<int>& nodes) {
 
     vector<Matrix> sub_matrices;
-    sub_matrices.reserve(SMIRNOV_SUB_PROBLEMS);
+    sub_matrices.reserve(nodes.size());
 
-    // Initializing the sub_matrices vecotr
-    for (int j = 0; j < SMIRNOV_SUB_PROBLEMS; ++j) {
+    // Initializing the sub_matrices vector
+    for (int j = 0; j < nodes.size(); ++j) {
         sub_matrices.push_back(std::move(Matrix(NULL,row_dim, col_dim)));
     }
 

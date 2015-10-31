@@ -42,13 +42,13 @@ namespace SmirnovFastMul{
             int get_sub_problem_index_start(int start_processor, int end_processor, int num_sub_problems=1);
             int get_sub_problem_index_end(int start_processor, int end_processor, int num_sub_problems=1);
 
-            int get_sub_problem_processors_start(int start_processor, int end_processor);
-            int get_sub_problem_processors_end(int start_processor, int end_processor);
+            int get_sub_problem_processors_start(int start_processor, int end_processor, int num_sub_problems=1);
+            int get_sub_problem_processors_end(int start_processor, int end_processor, int num_sub_problems=1);
 
             vector<int> generate_collaberating_nodes(int start_processor, int end_processor, int num_sub_problems=1);
 
             void place_sub_problems(vector<Matrix> &sub_matrices, vector<Matrix> &gammas, int current_sub_problem_index,
-                                    int start_processor, int end_processor, int num_sub_problems = 1);
+                                    int sub_problem_index_start, int sub_problem_index_end);
 
         private:
 

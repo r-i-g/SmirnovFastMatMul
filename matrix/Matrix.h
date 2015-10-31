@@ -62,6 +62,21 @@ namespace SmirnovFastMul {
             int get_stride() const;
             bool get_is_view() { return m_is_view;}
 
+            friend bool operator== (Matrix& first, Matrix& second) {
+                for (int i = 0; i < first.get_row_dimension(); ++i) {
+                    for (int j = 0; j < first.get_col_dimension(); ++j) {
+                        if (first(i,j) != second(i,j)) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            friend bool operator!= (Matrix& first, Matrix& second) {
+                return !(first == second);
+            }
+
 			friend std::ostream& operator<<(std::ostream& os, const Matrix& mat) {
 				for (int i = 0; i < mat.get_row_dimension(); ++i) {
 					for (int j = 0; j < mat.get_col_dimension(); ++j) {
