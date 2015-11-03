@@ -6,6 +6,7 @@
 #include "SmirnovAlgorithm_336.h"
 #include "SmirnovAlgorithm_363.h"
 #include "SmirnovAlgorithm_633.h"
+#include <mpi.h>
 #include <iostream>
 
 #include "../common/common.h"
@@ -28,7 +29,7 @@ void MultiplyMatrices::multiply(Matrix &A, Matrix &B, Matrix &C) {
 
 }
 
-void MultiplyMatrices::dfs(Matrix &A, Matrix &B, Matrix &C, int l, int alg_index) {
+void MultiplyMatrices::dfs(Matrix &A, Matrix &B, Matrix &C, int l, int alg_index, int debug) {
 
     if( l <= 0) {
         SmirnovAlgorithm alg = m_algorithms[alg_index];
@@ -64,8 +65,17 @@ void MultiplyMatrices::dfs(Matrix &A, Matrix &B, Matrix &C, int l, int alg_index
     int sub_matrix_col_dim = b_dim / alg.get_b_base_col_dim();
     for (int i = 0; i < SMIRNOV_SUB_PROBLEMS; ++i) {
         Matrix sub(sub_matrix_row_dim, sub_matrix_col_dim);
-        dfs(alpha[i], beta[i], sub, l-1, advance_algorithm(alg_index));
+        if(i==7) {
+            std::cout << "hi" << std::endl;
+            dfs(alpha[i], beta[i], sub, l-1, advance_algorithm(alg_index), 7);
+        }
+        dfs(alpha[i], beta[i], sub, l-1, advance_algorithm(alg_index),debug);
         sub_matrices.push_back(std::move(sub));
+    }
+    if(debug == 7) {
+        for (int i = 0; i < sub_matrices.size(); ++i) {
+            std::cout << sub_matrices[i] << std::endl;
+        }
     }
     alg.calculate_c(sub_matrices,C);
 }
@@ -111,6 +121,13 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index
 
         Matrix our_sub_problem(sub_matrix_row_dim, sub_matrix_col_dim);
 
+        // Locally computing C from sub_matrices;
+        if( m_comm_handler.get_rank() == 20 && k==2 && sub_problem_index == sub_problem_index_end) {
+
+            //std::cout << "11111111111111111111111111111111111111111111111111111111111111111" << std::endl;
+
+        }
+
         bfs(alpha.at(sub_problem_index), beta.at(sub_problem_index), our_sub_problem,
             k - 1, advance_algorithm(alg_index), sub_problem_process_start, sub_problem_process_end,
             num_sub_problems);
@@ -126,6 +143,9 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index
             std::cout << std::endl;*/
 
         m_comm_handler.scatter_matrix(our_sub_problem, collaberating_nodes);
+        if( m_comm_handler.get_rank() == 10 && sub_problem_index==7 && k==2) {
+            std::cout << m_comm_handler.get_rank() << " " << our_sub_problem << std::endl;
+        }
         // TODO: remove/turn this debug print
         //std::cout << "sending matrices " << m_comm_handler.get_rank() << std::endl;
 
@@ -133,13 +153,22 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index
         // Receiving sub matrices from other processors to complete our sub matrices list
         // TODO: add sub matrices to receive sub matrices
         vector<Matrix> sub_matrices = m_comm_handler.receive_sub_matrices(sub_matrix_row_dim, sub_matrix_col_dim, collaberating_nodes);
+        if( m_comm_handler.get_rank() == 0 && sub_problem_index==3 && k==2) {
+            std::cout << m_comm_handler.get_rank() << " " << sub_matrices[1] << std::endl;
+        }
         //std::cout << "reciving matrices " << m_comm_handler.get_rank() << std::endl;
 
         // Placing the received sub problems into their respectable position
         place_sub_problems(sub_matrices, gamma, sub_problem_index, sub_problem_index_start, sub_problem_index_end);
         gamma.at(sub_problem_index) = std::move(our_sub_problem);
+
     }
 
+    /*if( m_comm_handler.get_rank() == 0 && k==2) {
+        for (int i = 0; i < gamma.size(); ++i) {
+            std::cout << gamma[i] << std::endl;
+        }
+    }*/
     // Locally computing C from sub_matrices;
     alg.calculate_c(gamma,C);
 }
@@ -152,14 +181,21 @@ void MultiplyMatrices::place_sub_problems(vector<Matrix> &sub_matrices, vector<M
     int relative_sub_problem_in_group = current_sub_problem_index - sub_problem_index_start;
 
     //std::cout << "in rank " << m_comm_handler.get_rank() << " group size is " << num_sub_problems << std::endl;
-
+    if( m_comm_handler.get_rank() == 0) {
+       //std::cout << "in rank " << m_comm_handler.get_rank();
+    }
     for (int i = 0; i < sub_matrices.size(); ++i) {
         int sub_problem_position = relative_sub_problem_in_group + i * num_sub_problems;
 
         if ( sub_problem_position  != current_sub_problem_index) {
-            gammas[relative_sub_problem_in_group + i * num_sub_problems] = std::move(sub_matrices[i]);
+                gammas[sub_problem_position] = std::move(sub_matrices[i]);
         }
-        //std::cout  << "in rank " << m_comm_handler.get_rank() << " sub problem index in gamma " << current_sub_problem_index + i * num_sub_problems << " sub matrice posotion " << i << std::endl;
+        if( m_comm_handler.get_rank() == 0) {
+            //std::cout << " sub_problem " << current_sub_problem_index + i * num_sub_problems;
+        }
+    }
+    if( m_comm_handler.get_rank() == 0) {
+        //std::cout << std::endl;
     }
 }
 

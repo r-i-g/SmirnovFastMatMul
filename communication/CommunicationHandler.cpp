@@ -16,8 +16,11 @@ CommunicationHandler::CommunicationHandler() : m_num_nodes(0), m_rank(-1) {
 void CommunicationHandler::send_matrix(const Matrix& matrix, int node) {
 
     // Sending the matrix to node
-    MPI_Send(matrix.get_data(), 1, matrix.get_mpi_interpretation().get_type(), node, 11, MPI_COMM_WORLD);
-
+    MPI_Request request;
+    // IMPORTAT: Sending the entire matrix and not just the subset of the matrix
+    MPI_Isend(matrix.get_data(), matrix.get_row_dimension() * matrix.get_col_dimension() , MPI_DOUBLE, node, 11, MPI_COMM_WORLD, &request);
+    //MPI_Send(matrix.get_data(), 1, matrix.get_mpi_interpretation().get_type(), node, 11, MPI_COMM_WORLD);
+    MPI_Wait(&request, MPI_STATUS_IGNORE);
     //std::cout <<"sending"<<std::endl;
 }
 
@@ -45,8 +48,15 @@ void CommunicationHandler::scatter_sub_matrices(const vector<Matrix>& sub_matric
 Matrix CommunicationHandler::receive_matrix(int row_dim, int col_dim, int from_node) {
 
     Matrix mat(row_dim, col_dim);
-    MPI_Recv(mat.get_data(), row_dim * col_dim, MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //std::cout << "from process " << m_rank << " receiving matrix " <<  mat(0,0) <<" from node " << from_node << std::endl;
+    MPI_Status status;
+    //MPI_Recv(mat.get_data(), row_dim * col_dim, MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(mat.get_data(), row_dim * col_dim, MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, &status);
+    /*if(m_rank==0 && from_node==10) {
+        int number_amount;
+        MPI_Get_count(&status, MPI_DOUBLE, &number_amount);
+        std::cout << "received  " << number_amount << "should have gotten " << row_dim*col_dim << " from " << status.MPI_SOURCE << " with tag " << status.MPI_TAG << std::endl;
+    }*/
+    //std::cout << "from process " << m_rank << " receiving matrix " <<  mat <<" from node " << from_node << std::endl;
     return mat;
 }
 

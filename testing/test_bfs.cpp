@@ -50,11 +50,13 @@ int main() {
     if(rank == 1 ) {
         if(test_result != c2) {
             cout << "error with 4 sub-problems" << endl;
-            cout << c2 << endl;
+            //cout << c2 << endl;
         } else {
             cout << "success with 4 sub_problem" << endl;
         }
     }
+
+    //alg.dfs(a,b,c2,2,0,1);
 
     MPI_Barrier(MPI_COMM_WORLD);
 

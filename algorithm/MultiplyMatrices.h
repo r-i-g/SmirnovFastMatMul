@@ -27,7 +27,7 @@ namespace SmirnovFastMul{
 
         //protected:
 
-            void dfs(Matrix& A, Matrix& B, Matrix& C, int l, int alg_index);
+            void dfs(Matrix& A, Matrix& B, Matrix& C, int l, int alg_index, int debug=1);
 
             /**
              * @num_stages Indicates the amount of steps each processor preforms
