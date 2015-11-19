@@ -17,6 +17,9 @@ namespace SmirnovFastMul {
 
 			CommunicationHandler();
 
+            // c-tor
+            CommunicationHandler(const CommunicationHandler& comm_handler);
+
 			virtual ~CommunicationHandler();
 
             void send_matrix(const Matrix& matrix, int node);
@@ -31,7 +34,7 @@ namespace SmirnovFastMul {
             // Additionally, creating the vector to be of size 40
             vector<Matrix> receive_sub_matrices(int row_dim, int col_dim, const vector<int>& nodes);
 
-            int get_num_node();
+            int get_num_nodes();
             int get_rank();
 			// TODO implement send
 			// TODO implement Isend

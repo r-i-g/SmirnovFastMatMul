@@ -13,6 +13,10 @@ CommunicationHandler::CommunicationHandler() : m_num_nodes(0), m_rank(-1) {
     // TODO Add a check that the number of processes is a power of 40
 }
 
+CommunicationHandler::CommunicationHandler(const CommunicationHandler& comm_handler) : m_num_nodes(comm_handler.m_num_nodes),
+                                                                                       m_rank(comm_handler.m_rank)
+{ }
+
 void CommunicationHandler::send_matrix(const Matrix& matrix, int node) {
 
     // Sending the matrix to node
@@ -24,7 +28,7 @@ void CommunicationHandler::send_matrix(const Matrix& matrix, int node) {
     //std::cout <<"sending"<<std::endl;
 }
 
-int CommunicationHandler::get_num_node() {
+int CommunicationHandler::get_num_nodes() {
     return m_num_nodes;
 }
 
