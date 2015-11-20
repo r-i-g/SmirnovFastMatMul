@@ -7,6 +7,8 @@ using SmirnovFastMul::Computation::Matrix;
 using SmirnovFastMul::ArrayType;
 
 
+//#define ITERATE_MATRIX()
+
 Matrix::Matrix(double* data, ArrayType array_type, int n, int m, int stride, bool is_view):
 m_data(data), m_multiplier(1) ,m_array_type(array_type), m_row_dim(n), m_col_dim(m), m_stride(stride), m_is_view(is_view) {
 }
@@ -136,6 +138,16 @@ void Matrix::init(double value) {
     for (int i = 0; i < get_row_dimension(); ++i) {
         for (int j = 0; j < get_col_dimension(); ++j) {
             m_data[i * m_stride + j] = value;
+        }
+    }
+}
+
+void Matrix::init_range() {
+    int k = 0;
+    for (int i = 0; i < m_row_dim; ++i) {
+        for (int j = 0; j < m_col_dim; ++j) {
+            m_data[i * m_stride + j] = k;
+            ++k;
         }
     }
 }
