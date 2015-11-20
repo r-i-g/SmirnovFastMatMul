@@ -15,18 +15,23 @@ using SmirnovFastMul::Computation::Matrix;
 using SmirnovFastMul::Communication::CommunicationHandler;
 using SmirnovFastMul::Distribution::DistributionHandler;
 
-
 int main() {
-    Matrix a(3);
+    Matrix a(49);
 
     a.init_range();
 
-    cout << a << endl;
+    // TODO to handle the case of double initalization and release
+    DistributionHandler dh;
+    Matrix b = dh.distribute_matrix(a, 1);
 
-    CommunicationHandler comm;
-
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    if (rank == 0) {
+        cout << b << endl;
+    }
 
    // test_distribution_to_0();
+    MPI_Barrier(MPI_COMM_WORLD);
 
     return 0;
 

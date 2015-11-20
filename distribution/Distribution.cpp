@@ -8,6 +8,10 @@
 using SmirnovFastMul::Distribution::DistributionHandler;
 using SmirnovFastMul::Communication::CommunicationHandler;
 
+
+DistributionHandler::DistributionHandler() : m_comm() {
+}
+
 DistributionHandler::DistributionHandler(CommunicationHandler& comm) : m_comm(comm) {
 
 }

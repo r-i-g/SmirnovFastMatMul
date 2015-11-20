@@ -16,6 +16,7 @@ namespace SmirnovFastMul {
         class DistributionHandler {
         public:
 
+            DistributionHandler();
             DistributionHandler(CommunicationHandler& comm);
 
             //void distribute_matrix(const Matrix& matrix, int block_size);
