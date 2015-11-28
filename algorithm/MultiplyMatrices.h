@@ -8,11 +8,13 @@
 #include "../matrix/Matrix.h"
 #include "SmirnovAlgorithm.h"
 #include "../communication/CommunicationHandler.h"
+#include "../distribution/Distribution.h"
 #include <vector>
 
 using SmirnovFastMul::Computation::Matrix;
 using SmirnovFastMul::Computation::SmirnovAlgorithm;
 using SmirnovFastMul::Communication::CommunicationHandler;
+using SmirnovFastMul::Distribution::DistributionHandler;
 using std::vector;
 
 namespace SmirnovFastMul{
@@ -32,10 +34,15 @@ namespace SmirnovFastMul{
             /**
              * @num_stages Indicates the amount of steps each processor preforms
              */
-            void bfs(Matrix& A, Matrix& B, Matrix& C, int k, int alg_index, int start_processor, int end_processor, int num_sub_problems=1);
+            void my_bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index, int start_processor, int end_processor,
+                        int num_sub_problems = 1);
             //void bfs(vector<Matrix>& alphas, vector<Matrix&> betas, vector<Matrix>& gammas, int k, int alg_index, int start_processor, int end_processor);
 
+            void bfs(Matrix &A, Matrix& B, Matrix& C, int k, int num_sub_problems=1);
+
         protected:
+
+            void bfs_aux(Matrix &A, Matrix& B, Matrix& C, int k, int alg_index, int num_sub_problems=1);
 
             void local_multiplication(Matrix&A, Matrix& B, Matrix& C);
 
@@ -61,6 +68,8 @@ namespace SmirnovFastMul{
 
             // The communication handler to be used throughout the multiplication algorithm
             CommunicationHandler m_comm_handler;
+
+            DistributionHandler m_distribution_handler;
 
             vector<SmirnovAlgorithm> m_algorithms;
             int m_internal_algorithm;

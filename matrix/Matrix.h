@@ -99,6 +99,15 @@ namespace SmirnovFastMul {
                 swap(first.m_is_view, second.m_is_view);
             }
 
+            friend Matrix& operator+= (Matrix& first, const Matrix& second) {
+                for (int i = 0; i < first.get_row_dimension(); ++i) {
+                    for (int j = 0; j < first.get_col_dimension(); ++j) {
+                        first(i,j) += second(i,j);
+                    }
+                }
+                return first;
+            }
+
             // Initalized the content of the matrix to be equal to the value passed
             void init(double value);
 

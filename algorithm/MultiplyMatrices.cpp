@@ -13,12 +13,17 @@
 
 using SmirnovFastMul::Computation::MultiplyMatrices;
 using SmirnovFastMul::Communication::CommunicationHandler;
+using std::cout;
+using std::endl;
 
-__inline int advance_algorithm(int alg_index) {
+int advance_algorithm(int alg_index) {
     return (alg_index +1)%3;
 }
 
-MultiplyMatrices::MultiplyMatrices() : m_comm_handler(), m_internal_algorithm(0){
+MultiplyMatrices::MultiplyMatrices() : m_comm_handler(),
+                                       m_internal_algorithm(0),
+                                       m_distribution_handler(m_comm_handler.get_rank(), m_comm_handler.get_num_nodes())
+{
 
     m_algorithms.push_back(SmirnovFastMul::Computation::SmirnovAlgorithm_336());
     m_algorithms.push_back(SmirnovFastMul::Computation::SmirnovAlgorithm_363());
@@ -65,10 +70,6 @@ void MultiplyMatrices::dfs(Matrix &A, Matrix &B, Matrix &C, int l, int alg_index
     int sub_matrix_col_dim = b_dim / alg.get_b_base_col_dim();
     for (int i = 0; i < SMIRNOV_SUB_PROBLEMS; ++i) {
         Matrix sub(sub_matrix_row_dim, sub_matrix_col_dim);
-        if(i==7) {
-            std::cout << "hi" << std::endl;
-            dfs(alpha[i], beta[i], sub, l-1, advance_algorithm(alg_index), 7);
-        }
         dfs(alpha[i], beta[i], sub, l-1, advance_algorithm(alg_index),debug);
         sub_matrices.push_back(std::move(sub));
     }
@@ -81,7 +82,8 @@ void MultiplyMatrices::dfs(Matrix &A, Matrix &B, Matrix &C, int l, int alg_index
 }
 
 
-void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index, int start_processor, int end_processor, int num_sub_problems) {
+void MultiplyMatrices::my_bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index, int start_processor,
+                              int end_processor, int num_sub_problems) {
 
     if(k==0) {
         // TODO: remove/turn this debug print
@@ -122,15 +124,9 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index
         Matrix our_sub_problem(sub_matrix_row_dim, sub_matrix_col_dim);
 
         // Locally computing C from sub_matrices;
-        if( m_comm_handler.get_rank() == 20 && k==2 && sub_problem_index == sub_problem_index_end) {
-
-            //std::cout << "11111111111111111111111111111111111111111111111111111111111111111" << std::endl;
-
-        }
-
-        bfs(alpha.at(sub_problem_index), beta.at(sub_problem_index), our_sub_problem,
-            k - 1, advance_algorithm(alg_index), sub_problem_process_start, sub_problem_process_end,
-            num_sub_problems);
+        my_bfs(alpha.at(sub_problem_index), beta.at(sub_problem_index), our_sub_problem,
+               k - 1, advance_algorithm(alg_index), sub_problem_process_start, sub_problem_process_end,
+               num_sub_problems);
 
         // Sending our computed parts to the other processors
         // collaborating nodes contains the entire list of collaborating_nodes
@@ -171,6 +167,77 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index
     }*/
     // Locally computing C from sub_matrices;
     alg.calculate_c(gamma,C);
+}
+
+void MultiplyMatrices::bfs(Matrix &A, Matrix& B, Matrix& C, int k, int num_sub_problems) {
+    // Distributing the matrix to the processors
+    Matrix dist_A = m_distribution_handler.distribute_matrix(A,1);
+    Matrix dist_B = m_distribution_handler.distribute_matrix(B,1);
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    bfs_aux(dist_A, dist_B, C, k, 0, num_sub_problems);
+}
+
+void MultiplyMatrices::bfs_aux(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index, int num_sub_problems) {
+
+    if(k==0) {
+        local_multiplication(A,B,C);
+        return;
+    }
+
+    // Locally computing alphas and betas from A and B
+    SmirnovAlgorithm alg = m_algorithms[alg_index];
+    vector<Matrix> alpha = alg.calculate_alpha(A);
+    vector<Matrix> beta = alg.calculate_beta(B);
+
+    vector<Matrix> gamma(SMIRNOV_SUB_PROBLEMS);
+    gamma.reserve(SMIRNOV_SUB_PROBLEMS);
+
+    int sub_problem_start = m_distribution_handler.sub_problem_start(k, num_sub_problems);
+    int sub_problem_end = m_distribution_handler.sub_problem_end(k, num_sub_problems);
+
+    // Sending to targets and receiving from targets
+    for (int i = 0; i < SMIRNOV_SUB_PROBLEMS / num_sub_problems ; ++i) {
+
+        int target_processor = m_distribution_handler.target_processor(i, k, num_sub_problems);
+
+        // There's no need to send ourselves the data
+        if (target_processor == m_comm_handler.get_rank()) {
+            continue;
+        }
+
+        // TODO is there a better way to represent and copy the matrices?
+        // i is the group of sub_problems we send
+        m_comm_handler.send_receive(alpha, i, num_sub_problems, target_processor, sub_problem_start);
+
+        //m_comm_handler.send_receive(beta, i, num_sub_problems, target_processor, sub_problem_start);
+    }
+
+    int sub_matrix_row_dim = A.get_row_dimension() / alg.get_a_base_row_dim();
+    int sub_matrix_col_dim = B.get_col_dimension() / alg.get_b_base_col_dim();
+
+    /*for (int i = sub_problem_start; i < sub_problem_end; ++i) {
+
+        // Creating an empty matrix as gamma[i]
+        gamma[i] = std::move(Matrix(sub_matrix_row_dim, sub_matrix_col_dim));
+
+        bfs_aux(alpha[i], beta[i], gamma[i], k-1, advance_algorithm(alg_index), num_sub_problems);
+    }
+
+    for (int i = 0; i < SMIRNOV_SUB_PROBLEMS / num_sub_problems; ++i) {
+
+        int target_processor = m_distribution_handler.target_processor(i, k, num_sub_problems);
+
+        // There's no need to send ourselves the data
+        if (target_processor == m_comm_handler.get_rank()) {
+            continue;
+        }
+
+        m_comm_handler.send_receive_to(gamma, sub_problem_start, num_sub_problems, target_processor, i);
+    }
+
+    // Locally computing C from gammas
+    alg.calculate_c(gamma, C);*/
 }
 
 void MultiplyMatrices::place_sub_problems(vector<Matrix> &sub_matrices, vector<Matrix> &gammas,

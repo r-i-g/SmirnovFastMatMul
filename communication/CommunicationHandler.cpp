@@ -2,6 +2,8 @@
 #include <iostream>
 
 using SmirnovFastMul::Communication::CommunicationHandler;
+using std::cout;
+using std::endl;
 
 CommunicationHandler::CommunicationHandler() : m_num_nodes(0), m_rank(-1) {
 
@@ -96,5 +98,40 @@ void CommunicationHandler::scatter_matrix(const Matrix& matrix, const vector<int
         //std::cout << "from process " << m_rank << " sending matrix to node " << node << std::endl;
         send_matrix(matrix, node);
     }
+}
+
+void CommunicationHandler::send_receive(vector<Matrix>& sub_matrices, int sub_problem, int num_sub_problems,
+                                        int target_processor, int process_sub_problem_start) {
+
+    for (int i = 0; i < num_sub_problems; ++i) {
+        int send_index = i + sub_problem * num_sub_problems;
+
+        cout << "Rank:" << m_rank << " target_processor:" << target_processor << endl;
+        cout << "Sending index:" << send_index << endl;
+        send_matrix(sub_matrices[send_index], target_processor);
+
+        int row_dim = sub_matrices[send_index].get_row_dimension();
+        int col_dim = sub_matrices[send_index].get_col_dimension();
+
+        int receive_to = process_sub_problem_start + i;
+        sub_matrices[receive_to] += receive_matrix(row_dim, col_dim, target_processor);
+    }
+}
+
+void CommunicationHandler::send_receive_to(vector<Matrix>& gamma, int sub_problem_start, int num_sub_problems,
+                                           int target_processor, int receive_sub_problem) {
+
+    for (int i = 0; i < num_sub_problems; ++i) {
+        int send_index = i + sub_problem_start;
+
+        send_matrix(gamma[send_index], target_processor);
+
+        int row_dim = gamma[send_index].get_row_dimension();
+        int col_dim = gamma[send_index].get_col_dimension();
+
+        int receive_to = receive_sub_problem * num_sub_problems + i;
+        gamma[receive_to] += receive_matrix(row_dim, col_dim, target_processor);
+    }
+
 }
 

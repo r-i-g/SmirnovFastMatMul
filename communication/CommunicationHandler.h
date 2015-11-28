@@ -34,6 +34,20 @@ namespace SmirnovFastMul {
             // Additionally, creating the vector to be of size 40
             vector<Matrix> receive_sub_matrices(int row_dim, int col_dim, const vector<int>& nodes);
 
+            /**
+             *  Sending num_sub_problems starting at sub_problem to target_processor
+             *  @sub_matrices
+             *  @sub_problem
+             *  @num_sub_problem
+             *  @target_processor
+             *  @process_sub_problem_start
+             */
+            void send_receive(vector<Matrix>& sub_matrices, int sub_problem, int num_sub_problems,
+                              int target_processor, int process_sub_problem_start);
+
+            void send_receive_to(vector<Matrix>& gamma, int sub_problem_start, int num_sub_problems,
+                                 int target_processor, int receive_sub_problem);
+
             int get_num_nodes();
             int get_rank();
 			// TODO implement send

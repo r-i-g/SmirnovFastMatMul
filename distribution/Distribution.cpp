@@ -4,17 +4,18 @@
 
 #include "Distribution.h"
 #include <math.h>
+#include <iostream>
 
 using SmirnovFastMul::Distribution::DistributionHandler;
-using SmirnovFastMul::Communication::CommunicationHandler;
+//using SmirnovFastMul::Communication::CommunicationHandler;
 
+using std::cout;
+using std::endl;
 
-DistributionHandler::DistributionHandler() : m_comm() {
-}
+DistributionHandler::DistributionHandler(int rank, int num_nodes, int processor_grid_base) :
+        m_rank(rank), m_num_nodes(num_nodes), m_processor_grid_base(processor_grid_base)
+{ }
 
-DistributionHandler::DistributionHandler(CommunicationHandler& comm) : m_comm(comm) {
-
-}
 
 /*
 void Distribution::distribute_matrix(const Matrix& matrix, int block_size) {
@@ -36,9 +37,48 @@ void Distribution::distribute_matrix(const Matrix& matrix, int block_size) {
 
 }*/
 
+int DistributionHandler::sub_problem_start(int recursion_level, int num_sub_problems) {
+    int rank = m_rank;
+
+    // Viewing the process rank as a number in 40 base
+    char conversion[32] = {0};
+    for (int i = 0; rank != 0; ++i) {
+        conversion[i] = rank % m_processor_grid_base;
+        rank = rank / m_processor_grid_base;
+    }
+
+    return conversion[recursion_level-1] * num_sub_problems;
+}
+
+int DistributionHandler::sub_problem_end(int recursion_level, int num_sub_problems) {
+    return sub_problem_start(recursion_level, num_sub_problems) + num_sub_problems - 1;
+}
+
+int DistributionHandler::target_processor(int sub_problem_index, int recursion_level, int num_sub_problems) {
+    int rank = m_rank;
+
+    // Viewing the process rank as a number in 40 base
+    char conversion[32] = {0};
+    for (int i = 0; rank != 0; ++i) {
+        conversion[i] = rank % m_processor_grid_base;
+        rank = rank / m_processor_grid_base;
+    }
+
+    conversion[recursion_level-1] = sub_problem_index / num_sub_problems;
+
+    int target = 0;
+    int exp = 1;
+    for(int i=0; i<32; i++) {
+        target += conversion[i] * exp;
+        exp = exp * m_processor_grid_base;
+    }
+
+    return target;
+}
+
 bool DistributionHandler::are_coordinates_contained(int i, int j, int block_size) {
-    int our_rank = m_comm.get_rank();
-    int processor_matrix_dimension = (int)sqrt(m_comm.get_num_nodes());
+    int our_rank = m_rank;
+    int processor_matrix_dimension = (int)sqrt(m_num_nodes);
 
     // Converting the coordinates to be in the scale of our block size
     int i_in_block_size = i / block_size;
@@ -60,7 +100,7 @@ Matrix DistributionHandler::distribute_matrix(const Matrix& matrix, int block_si
         for (int j = 0; j < matrix.get_col_dimension(); ++j) {
 
             if ( are_coordinates_contained(i,j,block_size) ) {
-                *processor_version_matrix.get_data(i,j) = *matrix.get_data(i,j);
+                processor_version_matrix(i,j) = matrix(i,j);
             }
 
         }
