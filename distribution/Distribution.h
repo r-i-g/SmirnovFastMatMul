@@ -17,6 +17,19 @@ namespace SmirnovFastMul {
         public:
 
             DistributionHandler(int rank, int num_nodes, int processor_grid_base =SMIRNOV_SUB_PROBLEMS);
+
+            // c-tor
+            DistributionHandler(const DistributionHandler& dh);
+
+            DistributionHandler& operator= (const DistributionHandler& other) {
+                if(this != &other) {
+                    m_rank = other.m_rank;
+                    m_num_nodes = other.m_num_nodes;
+                    m_processor_grid_base = other.m_processor_grid_base;
+                }
+                return *this;
+            }
+
             //void distribute_matrix(const Matrix& matrix, int block_size);
 
             bool are_coordinates_contained(int i, int j, int block_size);
@@ -27,9 +40,10 @@ namespace SmirnovFastMul {
 
             /**
              * Treats the number of processors as an array base SMIRNOV_SUB_PROBLEMS
+             * @sub_problem_index the sub problem group we are currently working on
              * @return to which process we should send the sub_problem
              */
-            int target_processor(int sub_problem_index, int recursion_level, int num_sub_problems=1);
+            int target_processor(int sub_problem_index, int recursion_level);
 
 
             // Each processor creates a new matrix containing only its entries obtained from the original matrix

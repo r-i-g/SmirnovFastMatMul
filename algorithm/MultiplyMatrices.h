@@ -24,8 +24,11 @@ namespace SmirnovFastMul{
         public:
 
             MultiplyMatrices();
+            MultiplyMatrices(const DistributionHandler& dh);
 
             void multiply(Matrix& A, Matrix& B, Matrix& C);
+
+            void set_distribution_handler(const DistributionHandler& dh);
 
         //protected:
 

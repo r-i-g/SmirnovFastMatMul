@@ -46,7 +46,7 @@ int main() {
 
     // Testing 2 levels of recursion by making each process work on 4 sub-problems
     Matrix c2(54);
-    alg.bfs(a,b,c2,2,0,0,99,4);
+    alg.my_bfs(a,b,c2,2,0,0,99,4);
     if(rank == 1 ) {
         if(test_result != c2) {
             cout << "error with 4 sub-problems" << endl;

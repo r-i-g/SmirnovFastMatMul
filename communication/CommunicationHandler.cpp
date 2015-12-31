@@ -100,24 +100,47 @@ void CommunicationHandler::scatter_matrix(const Matrix& matrix, const vector<int
     }
 }
 
+void CommunicationHandler::send(vector<Matrix>& sub_matrices, int target_processor, int sub_problem_index, int sub_problem_group, int num_sub_problems) {
+
+    int send_index = sub_problem_index + sub_problem_group * num_sub_problems;
+
+        //cout << "Rank:" << m_rank << " target_processor:" << target_processor << " Sending index:" << send_index << " with group index:" << sub_problem_group << endl;
+
+    send_matrix(sub_matrices[send_index], target_processor);
+}
+
+void CommunicationHandler::receive(vector<Matrix>& sub_matrices, int target_processor, int sub_problem_index, int sub_problem_group, int num_sub_problems,
+            int process_sub_problem_start) {
+
+    int send_index = sub_problem_index + sub_problem_group * num_sub_problems;
+    int row_dim = sub_matrices[send_index].get_row_dimension();
+    int col_dim = sub_matrices[send_index].get_col_dimension();
+
+    int receive_to = process_sub_problem_start + sub_problem_index;
+    sub_matrices[receive_to] += receive_matrix(row_dim, col_dim, target_processor);
+}
+
 void CommunicationHandler::send_receive(vector<Matrix>& sub_matrices, int sub_problem, int num_sub_problems,
                                         int target_processor, int process_sub_problem_start) {
 
     for (int i = 0; i < num_sub_problems; ++i) {
-        int send_index = i + sub_problem * num_sub_problems;
 
-        cout << "Rank:" << m_rank << " target_processor:" << target_processor << endl;
-        cout << "Sending index:" << send_index << endl;
-        send_matrix(sub_matrices[send_index], target_processor);
+        // We remove deadlocks buy deciding which action we will perform first
+        if ( target_processor > m_rank) {
 
-        int row_dim = sub_matrices[send_index].get_row_dimension();
-        int col_dim = sub_matrices[send_index].get_col_dimension();
+            send(sub_matrices, target_processor, i, sub_problem, num_sub_problems);
+            receive(sub_matrices, target_processor, i, sub_problem, num_sub_problems, process_sub_problem_start);
 
-        int receive_to = process_sub_problem_start + i;
-        sub_matrices[receive_to] += receive_matrix(row_dim, col_dim, target_processor);
+        } else {
+
+            receive(sub_matrices, target_processor, i, sub_problem, num_sub_problems, process_sub_problem_start);
+            send(sub_matrices, target_processor, i, sub_problem, num_sub_problems);
+        }
+
     }
 }
 
+// TODO add the break of deadlock
 void CommunicationHandler::send_receive_to(vector<Matrix>& gamma, int sub_problem_start, int num_sub_problems,
                                            int target_processor, int receive_sub_problem) {
 
@@ -130,7 +153,8 @@ void CommunicationHandler::send_receive_to(vector<Matrix>& gamma, int sub_proble
         int col_dim = gamma[send_index].get_col_dimension();
 
         int receive_to = receive_sub_problem * num_sub_problems + i;
-        gamma[receive_to] += receive_matrix(row_dim, col_dim, target_processor);
+        // Here, we receive the entire matrix and not a partial one, so we assign instead of add
+        gamma[receive_to] = receive_matrix(row_dim, col_dim, target_processor);
     }
 
 }

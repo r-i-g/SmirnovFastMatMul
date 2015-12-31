@@ -57,6 +57,11 @@ namespace SmirnovFastMul {
 
 		protected:
 
+            void send(vector<Matrix>& sub_matrices, int target_processor, int sub_problem_index, int sub_problem_group, int num_sub_problems);
+
+            void receive(vector<Matrix>& sub_matrices, int target_processor, int sub_problem_index, int sub_problem_group, int num_sub_problems,
+                         int process_sub_problem_start);
+
 			int m_num_nodes;
 			int m_rank;
 

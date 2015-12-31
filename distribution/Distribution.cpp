@@ -16,6 +16,10 @@ DistributionHandler::DistributionHandler(int rank, int num_nodes, int processor_
         m_rank(rank), m_num_nodes(num_nodes), m_processor_grid_base(processor_grid_base)
 { }
 
+DistributionHandler::DistributionHandler(const DistributionHandler& dh) :
+        DistributionHandler(dh.m_rank, dh.m_num_nodes, dh.m_processor_grid_base)
+{ }
+
 
 /*
 void Distribution::distribute_matrix(const Matrix& matrix, int block_size) {
@@ -54,7 +58,7 @@ int DistributionHandler::sub_problem_end(int recursion_level, int num_sub_proble
     return sub_problem_start(recursion_level, num_sub_problems) + num_sub_problems - 1;
 }
 
-int DistributionHandler::target_processor(int sub_problem_index, int recursion_level, int num_sub_problems) {
+int DistributionHandler::target_processor(int sub_problem_index, int recursion_level) {
     int rank = m_rank;
 
     // Viewing the process rank as a number in 40 base
@@ -64,7 +68,7 @@ int DistributionHandler::target_processor(int sub_problem_index, int recursion_l
         rank = rank / m_processor_grid_base;
     }
 
-    conversion[recursion_level-1] = sub_problem_index / num_sub_problems;
+    conversion[recursion_level-1] = sub_problem_index;
 
     int target = 0;
     int exp = 1;

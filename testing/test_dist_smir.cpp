@@ -16,6 +16,7 @@ using SmirnovFastMul::Computation::MultiplyMatrices;
 using std::cout;
 using std::endl;
 
+/*
 void test_matrix_addition() {
     Matrix a(3);
     a.init(3);
@@ -115,24 +116,33 @@ void test_sub_problem_assignment() {
     cout << "Sub problem: True" << endl;
     //cout << sub_start << sub_end << endl;
 }
-
+*/
 void test_bfs() {
-    Matrix a(54);
-    Matrix b(54);
+    Matrix a(90);
+    Matrix b(90);
 
-    Matrix c(54);
+    Matrix t(90);
+    Matrix c(90);
 
 
     a.init(2);
     b.init(3);
+    t.init(540);
 
     MultiplyMatrices alg;
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+    int num_nodes;
+    MPI_Comm_size(MPI_COMM_WORLD, &num_nodes);
+    alg.set_distribution_handler(DistributionHandler(rank, num_nodes, 10));
+
     alg.bfs(a,b,c,2,4);
     if( 0 == rank) {
-        cout << c << endl;
+        if ( c == t)
+            cout << "True" << endl;
+        else
+            cout << "False" << endl;
     }
 
     MPI_Barrier(MPI_COMM_WORLD);

@@ -3,15 +3,12 @@
 //
 
 #include "../matrix/Matrix.h"
-#include "../algorithm/SmirnovAlgorithm_336.h"
 #include "../algorithm/MultiplyMatrices.h"
 #include <vector>
 #include <iostream>
 
 using SmirnovFastMul::Computation::Matrix;
-using SmirnovFastMul::Computation::MatrixPtr;
-using SmirnovFastMul::Computation::SmirnovAlgorithm_336;
-using SmirnovFastMatMul::Computation::MultiplyMatrices;
+using SmirnovFastMul::Computation::MultiplyMatrices;
 using std::vector;
 using std::cout;
 using std::endl;
@@ -56,19 +53,16 @@ int main() {
     m.dfs(a,b,c,1,1);
     cout << c << endl;*/
 
-    Matrix a(2916);
-    Matrix b(2916);
-    Matrix c(2916);
+    Matrix a(90);
+    Matrix b(90);
+    Matrix c(90);
 
-    for (int i = 0; i < 2916; ++i) {
-        for (int j = 0; j < 2916; ++j) {
-            a(i,j) = 2;
-            b(i,j) = 3;
-        }
-    }
+    a.init(2);
+    b.init(3);
+
 
     MultiplyMatrices m;
-    m.dfs(a,b,c,5,0);
+    m.dfs(a,b,c,2,0);
     cout << c << endl;
     //
     //alg.calculate_c(, c);
