@@ -115,8 +115,17 @@ void test_sub_problem_assignment() {
 
     cout << "Sub problem: True" << endl;
     //cout << sub_start << sub_end << endl;
+}*/
+
+void test_condensed_distribution() {
+    Matrix a(7*4);
+    a.init_range();
+
+    DistributionHandler dh(1, 49, 7);
+    Matrix t = dh.condensed_distributed_matrix(a, 1);
+    cout << t << endl;
 }
-*/
+
 void test_bfs() {
     Matrix a(90);
     Matrix b(90);
@@ -153,7 +162,8 @@ int main() {
     //test_matrix_addition();
     //test_distribution();
     //test_sub_problem_assignment();
-    test_bfs();
+    //test_bfs();
+    test_condensed_distribution();
 
     return  0;
 }

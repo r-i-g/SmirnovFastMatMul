@@ -108,6 +108,9 @@ namespace SmirnovFastMul {
                 return first;
             }
 
+            // The offset relative to the first cell where we shall merge the data
+            void merge(Matrix& to_add, int insertion_offset);
+
             // Initalized the content of the matrix to be equal to the value passed
             void init(double value);
 
@@ -125,6 +128,8 @@ namespace SmirnovFastMul {
 			//friend Matrix operator- ();
 	
 		protected:
+
+            virtual int num_elements();
 			
 			// The data structure decided upon is a continuous block of memory, rows concatenated.
 			double* m_data;

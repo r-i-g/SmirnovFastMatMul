@@ -134,6 +134,15 @@ std::ostream& operator<<(std::ostream& os, const Matrix& mat)
 
 }*/
 
+void Matrix::merge(Matrix& to_add, int insertion_offset) {
+    int new_array_size = m_row_dim * m_col_dim + to_add.m_row_dim * to_add.m_col_dim;
+
+    for (int i=0; i < m_row_dim ; ++i) {
+
+        // Inserting the entries from our matrix
+    }
+}
+
 void Matrix::init(double value) {
     for (int i = 0; i < get_row_dimension(); ++i) {
         for (int j = 0; j < get_col_dimension(); ++j) {
@@ -150,4 +159,8 @@ void Matrix::init_range() {
             ++k;
         }
     }
+}
+
+int Matrix::num_elements() {
+    return m_row_dim * m_col_dim;
 }

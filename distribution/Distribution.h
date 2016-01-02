@@ -6,17 +6,18 @@
 #define FASTMATMUL_DISTRIBUTION_H
 
 #include "../matrix/Matrix.h"
+#include "../matrix/CondensedMatrix.h"
 #include "../common/common.h"
 
 using SmirnovFastMul::Computation::Matrix;
-
+using SmirnovFastMul::Computation::CondensedMatrix;
 
 namespace SmirnovFastMul {
     namespace Distribution {
         class DistributionHandler {
         public:
 
-            DistributionHandler(int rank, int num_nodes, int processor_grid_base =SMIRNOV_SUB_PROBLEMS);
+            DistributionHandler(int rank, int num_nodes, int processor_grid_base = SMIRNOV_SUB_PROBLEMS);
 
             // c-tor
             DistributionHandler(const DistributionHandler& dh);
@@ -48,6 +49,10 @@ namespace SmirnovFastMul {
 
             // Each processor creates a new matrix containing only its entries obtained from the original matrix
             Matrix distribute_matrix(const Matrix& matrix, int block_size);
+
+            // Similar to distribute_matrix, only that the data kept is condensed, i.e. only the data obtained will be
+            // contained in the matrix
+            CondensedMatrix condensed_distributed_matrix(const Matrix& matrix, int block_size);
 
         private:
             int m_rank;

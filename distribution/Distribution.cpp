@@ -112,3 +112,30 @@ Matrix DistributionHandler::distribute_matrix(const Matrix& matrix, int block_si
 
     return processor_version_matrix;
 }
+
+
+CondensedMatrix DistributionHandler::condensed_distributed_matrix(const Matrix& matrix, int block_size) {
+
+    int processor_matrix_dimension = (int)sqrt(m_num_nodes);
+    int matrix_dimension = matrix.get_row_dimension() / processor_matrix_dimension;
+    int matrix_row_dimension = matrix.get_row_dimension();
+    int matrix_col_dimension = matrix.get_col_dimension();
+
+    int condensed_row_dimension = matrix_row_dimension / processor_matrix_dimension;
+    int condensed_col_dimension = matrix_col_dimension / processor_matrix_dimension;
+
+    CondensedMatrix condensed_matrix(matrix_row_dimension, matrix_col_dimension,
+                                     condensed_row_dimension, condensed_col_dimension);
+
+    for (int i = 0; i < matrix.get_row_dimension(); ++i) {
+        for (int j = 0; j < matrix.get_col_dimension(); ++j) {
+
+            if ( are_coordinates_contained(i,j,block_size) ) {
+                condensed_matrix.condense(matrix(i,j), processor_matrix_dimension, i,j);
+            }
+
+        }
+    }
+
+    return condensed_matrix;
+}
