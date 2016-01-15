@@ -5,21 +5,56 @@
 #include "CondensedMatrix.h"
 #include "Matrix.h"
 #include <iostream>
+#include <mpi.h>
 
 using SmirnovFastMul::Computation::CondensedMatrix;
 using std::cout;
 using std::endl;
 
-// TODO initialize the values of containing_n and containing_m
-CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int n, int m) :
-        m_containing_n(containing_n), m_containing_m(containing_m), Matrix(n,m)
+
+CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int condense_factor, int* positions, Matrix&& matrix,
+                                 bool is_view) :
+        Matrix(std::move(matrix)),
+        m_containing_n(containing_n), m_containing_m(containing_m), m_condense_factor(condense_factor), m_positions(positions)
 {
-    m_positions = new int[n*m];
+    m_is_view = is_view;
 }
 
-CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int n) :
-        CondensedMatrix(containing_n,containing_m, n, n)
+CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int n, int m) :
+        CondensedMatrix(containing_n, containing_m, containing_n / n)
 { }
+
+CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int condense_factor):
+        Matrix(containing_n/condense_factor, containing_m/condense_factor),
+        m_containing_n(containing_n), m_containing_m(containing_m), m_condense_factor(condense_factor)
+{
+    int n = containing_n/condense_factor, m = containing_m/condense_factor;
+
+    m_positions = new int[n*m];
+    init(0);
+}
+
+CondensedMatrix::CondensedMatrix(CondensedMatrix&& that) :
+    CondensedMatrix(that.m_containing_n, that.m_containing_n, that.m_condense_factor, that.get_positions(), std::move(that),
+    that.m_is_view)
+{
+    that.m_positions = nullptr;
+    that.m_is_view = true;
+}
+
+CondensedMatrix::~CondensedMatrix() {
+    if(!m_is_view) {
+        // Only if we own the data we can delete it
+        delete [] m_positions;
+    }
+}
+
+CondensedMatrix CondensedMatrix::sub_matrix(int num_rows, int num_col, int start_row, int start_col) {
+    Matrix sub_matrix = Matrix::sub_matrix(num_rows, num_col, start_row, start_col);
+    return CondensedMatrix(m_containing_n/num_rows, m_containing_m/num_col, m_condense_factor,
+                           get_positions(start_row,start_col),
+                           std::move(sub_matrix),true);
+}
 
 void CondensedMatrix::condense(double matrix_value, int condense_factor, int i, int j) {
     int condensed_i = i / condense_factor;
@@ -45,6 +80,11 @@ int col_amount(int* positions, int len, int num_columns) {
         }
     }
 }
+
+bool CondensedMatrix::is_contained(int i, int j) {
+
+}
+
 
 void CondensedMatrix::merge(CondensedMatrix& mat) {
     int current_index = 0;
@@ -89,10 +129,10 @@ void CondensedMatrix::merge(CondensedMatrix& mat) {
     }
 
     // Cleaning our data and assigning the new merged data and positions
-    delete m_data;
+    delete [] m_data;
     m_data = merged_data;
 
-    delete m_positions;
+    delete [] m_positions;
     m_positions = merged_position;
 
     // Changing the dimensions of the inner represented matrix
@@ -101,6 +141,33 @@ void CondensedMatrix::merge(CondensedMatrix& mat) {
     m_stride = m_col_dim;
 }
 
-const int* CondensedMatrix::get_positions() const {
+int CondensedMatrix::position_len() const {
+    return num_elements();
+}
+
+int* CondensedMatrix::get_positions() const {
     return m_positions;
+}
+
+// The indices are 0 based
+const double& CondensedMatrix::operator()(int i, int j) const {
+    int condensed_i = i / m_condense_factor;
+    int condensed_j = j / m_condense_factor;
+    return m_data[condensed_i * get_stride() + condensed_j];
+}
+
+double& CondensedMatrix::operator()(int i, int j) {
+    int condensed_i = i / m_condense_factor;
+    int condensed_j = j / m_condense_factor;
+    return m_data[condensed_i * get_stride() + condensed_j];
+}
+
+void CondensedMatrix::init(int value) {
+    for (int i = 0; i < position_len(); ++i) {
+        m_positions[i] = value;
+    }
+}
+
+int* CondensedMatrix::get_positions(int i, int j) const {
+    return m_positions + i * m_stride + j;
 }

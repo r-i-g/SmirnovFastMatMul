@@ -8,6 +8,7 @@
 #include "../matrix/Matrix.h"
 #include <vector>
 #include <memory>
+#include <functional>
 
 using std::vector;
 using SmirnovFastMul::Computation::Matrix;
@@ -43,9 +44,12 @@ namespace SmirnovFastMul {
             void add_gamma_entrance(AlgorithmEntrance gamma);
 
 
+            vector<Matrix> create_sub_matrices(int alg_base_row_dim, int alg_base_col_dim, Matrix &src);
             // sub_matrices is output
             vector<Matrix> calculate_alpha(Matrix &A);
+
             vector<Matrix> calculate_beta(Matrix &B);
+
             void calculate_c(vector<Matrix>& sub_matrices, Matrix& C);
 
             int get_a_base_row_dim() {
@@ -58,7 +62,6 @@ namespace SmirnovFastMul {
                 return m_B_base_col_dim;
             }
 
-            vector<Matrix> create_sub_matrices(int alg_base_row_dim, int alg_base_col_dim, Matrix &src);
         protected:
 
             vector<AlgorithmEntrance> m_alpha;

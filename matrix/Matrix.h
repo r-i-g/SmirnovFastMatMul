@@ -83,8 +83,8 @@ namespace SmirnovFastMul {
 						os << mat(i, j) << " ";
 				}
 				os << std::endl;
-			}
-			return os;
+			    }
+			    return os;
 
 			}
 
@@ -126,11 +126,11 @@ namespace SmirnovFastMul {
 			// Generate a matrix with random uniform entries on [0, 1]
 			
 			//friend Matrix operator- ();
-	
+            virtual int num_elements() const;
+
 		protected:
 
-            virtual int num_elements();
-			
+
 			// The data structure decided upon is a continuous block of memory, rows concatenated.
 			double* m_data;
 			double m_multiplier;

@@ -54,7 +54,7 @@ void MultiplyMatrices::dfs(Matrix &A, Matrix &B, Matrix &C, int l, int alg_index
     if( l <= 0) {
         local_multiplication(A,B,C);
         return;
-        /*SmirnovAlgorithm alg = m_algorithms[alg_index];
+        /*SmirnovAlgorithmTempalte alg = m_algorithms[alg_index];
         vector<Matrix> alpha = alg.calculate_alpha(A);
         vector<Matrix> beta = alg.calculate_beta(B);
 
@@ -204,6 +204,14 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix& B, Matrix& C, int k, int num_sub_p
     bfs_aux(dist_A, dist_B, C, k, 0, num_sub_problems);
 }
 
+void MultiplyMatrices::bfs(CondensedMatrix& A, CondensedMatrix& B, CondensedMatrix& C, int k, int num_sub_problems) {
+    CondensedMatrix dist_A = m_distribution_handler.condensed_distributed_matrix(A,1);
+    CondensedMatrix dist_B = m_distribution_handler.condensed_distributed_matrix(B,1);
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    bfs_aux(dist_A, dist_B, C, k, 0, num_sub_problems);
+}
+
 void MultiplyMatrices::bfs_aux(Matrix &A, Matrix &B, Matrix &C, int k, int alg_index, int num_sub_problems) {
 
     if(k==0) {
@@ -213,9 +221,9 @@ void MultiplyMatrices::bfs_aux(Matrix &A, Matrix &B, Matrix &C, int k, int alg_i
 
     // Locally computing alphas and betas from A and B
     SmirnovAlgorithm alg = m_algorithms[alg_index];
+
     vector<Matrix> alpha = alg.calculate_alpha(A);
     vector<Matrix> beta = alg.calculate_beta(B);
-
     vector<Matrix> gamma(SMIRNOV_SUB_PROBLEMS);
     gamma.reserve(SMIRNOV_SUB_PROBLEMS);
 

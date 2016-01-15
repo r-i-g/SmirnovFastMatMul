@@ -30,27 +30,6 @@ void CommunicationHandler::send_matrix(const Matrix& matrix, int node) {
     //std::cout <<"sending"<<std::endl;
 }
 
-int CommunicationHandler::get_num_nodes() {
-    return m_num_nodes;
-}
-
-int CommunicationHandler::get_rank() {
-    return m_rank;
-}
-
-CommunicationHandler::~CommunicationHandler() {
-    //std::cout << "rank " << m_rank << "called dest";
-    // TODO add a check using mpi_finalized
-    MPI_Finalize();
-}
-
-void CommunicationHandler::scatter_sub_matrices(const vector<Matrix>& sub_matrices, const vector<int>& nodes) {
-
-    for (int i = 0; i < nodes.size(); ++i) {
-        send_matrix(sub_matrices.at(i), nodes.at(i));
-    }
-}
-
 Matrix CommunicationHandler::receive_matrix(int row_dim, int col_dim, int from_node) {
 
     Matrix mat(row_dim, col_dim);
@@ -65,6 +44,50 @@ Matrix CommunicationHandler::receive_matrix(int row_dim, int col_dim, int from_n
     //std::cout << "from process " << m_rank << " receiving matrix " <<  mat <<" from node " << from_node << std::endl;
     return mat;
 }
+
+void CommunicationHandler::send_matrix(const CondensedMatrix& matrix, int node) {
+
+    // Sending the position array
+    MPI_Send(matrix.get_positions(), matrix.position_len() , MPI_INT, node, 11, MPI_COMM_WORLD);
+
+    // Sending the data array
+    MPI_Send(matrix.get_data(), matrix.num_elements() , MPI_DOUBLE, node, 11, MPI_COMM_WORLD);
+}
+
+CondensedMatrix CommunicationHandler::receive_matrix(int containing_row_dim, int containing_col_dim,
+                                                     int row_dim, int col_dim, int from_node) {
+    CondensedMatrix mat(containing_row_dim, containing_col_dim, row_dim, col_dim);
+    MPI_Status status;
+    // Receiving the positions
+    MPI_Recv(mat.get_positions(), mat.position_len() , MPI_INT, from_node, 11, MPI_COMM_WORLD, &status);
+
+    // Receiving the data
+    MPI_Recv(mat.get_data(), mat.num_elements() , MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, &status);
+
+    return mat;
+}
+
+int CommunicationHandler::get_num_nodes() {
+    return m_num_nodes;
+}
+
+int CommunicationHandler::get_rank() {
+    return m_rank;
+}
+
+void CommunicationHandler::scatter_sub_matrices(const vector<Matrix>& sub_matrices, const vector<int>& nodes) {
+
+    for (int i = 0; i < nodes.size(); ++i) {
+        send_matrix(sub_matrices.at(i), nodes.at(i));
+    }
+}
+
+CommunicationHandler::~CommunicationHandler() {
+    //std::cout << "rank " << m_rank << "called dest";
+    // TODO add a check using mpi_finalized
+    MPI_Finalize();
+}
+
 
 vector<Matrix> CommunicationHandler::receive_sub_matrices(int row_dim, int col_dim, const vector<int>& nodes) {
 
@@ -138,6 +161,11 @@ void CommunicationHandler::send_receive(vector<Matrix>& sub_matrices, int sub_pr
         }
 
     }
+}
+
+void CommunicationHandler::send_receive(vector<CondensedMatrix>& sub_matrices, int sub_problem, int num_sub_problems,
+                                        int target_processor, int process_sub_problem_start) {
+    // TODO implement
 }
 
 // TODO add the break of deadlock

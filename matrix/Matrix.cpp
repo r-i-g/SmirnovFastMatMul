@@ -6,7 +6,8 @@
 using SmirnovFastMul::Computation::Matrix;
 using SmirnovFastMul::ArrayType;
 
-
+using std::cout;
+using std::endl;
 //#define ITERATE_MATRIX()
 
 Matrix::Matrix(double* data, ArrayType array_type, int n, int m, int stride, bool is_view):
@@ -111,6 +112,7 @@ Matrix::~Matrix() {
 	if(!m_is_view) {
 		// Only if we own the data we can delete it
 		delete [] m_data;
+
 	}
 }
 
@@ -161,6 +163,6 @@ void Matrix::init_range() {
     }
 }
 
-int Matrix::num_elements() {
+int Matrix::num_elements() const{
     return m_row_dim * m_col_dim;
 }

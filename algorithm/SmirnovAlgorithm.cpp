@@ -3,6 +3,7 @@
 //
 
 #include "SmirnovAlgorithm.h"
+#include "../common/common.h"
 #include <iostream>
 
 using SmirnovFastMul::Computation::Matrix;

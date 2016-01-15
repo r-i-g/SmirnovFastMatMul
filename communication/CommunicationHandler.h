@@ -3,9 +3,11 @@
 
 #include <mpi.h>
 #include "../matrix/Matrix.h"
+#include "../matrix/CondensedMatrix.h"
 #include <vector>
 
 using SmirnovFastMul::Computation::Matrix;
+using SmirnovFastMul::Computation::CondensedMatrix;
 using std::vector;
 
 namespace SmirnovFastMul {
@@ -22,13 +24,22 @@ namespace SmirnovFastMul {
 
 			virtual ~CommunicationHandler();
 
+
             void send_matrix(const Matrix& matrix, int node);
+
+            Matrix receive_matrix(int row_dim, int col_dim, int from_node);
+
+
+            void send_matrix(const CondensedMatrix& matrix, int node);
+
+            CondensedMatrix receive_matrix(int containing_row_dim, int containing_col_dim,
+                                           int row_dim, int col_dim, int from_node);
+
 
             void scatter_sub_matrices(const vector<Matrix>& sub_matrices, const vector<int>& nodes);
 
             void scatter_matrix(const Matrix& matrix, const vector<int>& nodes);
 
-            Matrix receive_matrix(int row_dim, int col_dim, int from_node);
 
             // The vector already consists of constructed matrices
             // Additionally, creating the vector to be of size 40
@@ -43,6 +54,9 @@ namespace SmirnovFastMul {
              *  @process_sub_problem_start
              */
             void send_receive(vector<Matrix>& sub_matrices, int sub_problem, int num_sub_problems,
+                              int target_processor, int process_sub_problem_start);
+
+            void send_receive(vector<CondensedMatrix>& sub_matrices, int sub_problem, int num_sub_problems,
                               int target_processor, int process_sub_problem_start);
 
             void send_receive_to(vector<Matrix>& gamma, int sub_problem_start, int num_sub_problems,

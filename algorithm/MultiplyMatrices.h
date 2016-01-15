@@ -6,12 +6,14 @@
 #define FASTMATMUL_MULTIPLYMATRICES_H
 
 #include "../matrix/Matrix.h"
+#include "../matrix/CondensedMatrix.h"
 #include "SmirnovAlgorithm.h"
 #include "../communication/CommunicationHandler.h"
 #include "../distribution/Distribution.h"
 #include <vector>
 
 using SmirnovFastMul::Computation::Matrix;
+using SmirnovFastMul::Computation::CondensedMatrix;
 using SmirnovFastMul::Computation::SmirnovAlgorithm;
 using SmirnovFastMul::Communication::CommunicationHandler;
 using SmirnovFastMul::Distribution::DistributionHandler;
@@ -42,6 +44,8 @@ namespace SmirnovFastMul{
             //void bfs(vector<Matrix>& alphas, vector<Matrix&> betas, vector<Matrix>& gammas, int k, int alg_index, int start_processor, int end_processor);
 
             void bfs(Matrix &A, Matrix& B, Matrix& C, int k, int num_sub_problems=1);
+
+            void bfs(CondensedMatrix& A, CondensedMatrix& B, CondensedMatrix& C, int k, int num_sub_problems=1);
 
         protected:
 
