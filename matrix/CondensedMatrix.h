@@ -67,13 +67,15 @@ namespace SmirnovFastMul {
 
 
             // The indices are 0 based
+            // This function is used as a view to the elements represnted
             const double& operator()(int i, int j) const;
             double& operator()(int i, int j);
 
             friend std::ostream& operator<<(std::ostream& os, const CondensedMatrix& mat) {
-
-                for (int i = 0; i < mat.position_len(); ++i) {
-                    os << mat.get_positions()[i] << " ";
+                for (int i = 0; i < mat.get_row_dimension(); ++i) {
+                    for (int j = 0; j < mat.get_col_dimension(); ++j) {
+                        cout << *mat.get_positions(i, j) << " ";
+                    }
                 }
                 os << endl;
 
