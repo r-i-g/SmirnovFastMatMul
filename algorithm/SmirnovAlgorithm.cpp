@@ -4,9 +4,11 @@
 
 #include "SmirnovAlgorithm.h"
 #include "../common/common.h"
+#include "../matrix/CondensedMatrix.h"
 #include <iostream>
 
 using SmirnovFastMul::Computation::Matrix;
+using SmirnovFastMul::Computation::CondensedMatrix;
 using SmirnovFastMul::Computation::SmirnovAlgorithm;
 using SmirnovFastMul::Computation::AlgorithmEntrance;
 
@@ -15,7 +17,7 @@ SmirnovAlgorithm::SmirnovAlgorithm(int A_base_row_dim, int A_base_col_dim, int B
 }
 
 vector<Matrix> SmirnovAlgorithm::implement_algorithm(int alg_row_dim, int alg_col_dim, vector<Matrix> &sub_matrices,
-                                   vector<AlgorithmEntrance> &algorithm) {
+                                   vector<AlgorithmEntrance<Matrix>::type> &algorithm) {
     // Iterating over the algorithms we need to apply
     vector<Matrix> alg_results_matrices;
     // So c-tor want be called when resizing the vector in push_back
@@ -33,6 +35,28 @@ vector<Matrix> SmirnovAlgorithm::implement_algorithm(int alg_row_dim, int alg_co
     return alg_results_matrices;
 }
 
+vector<CondensedMatrix> SmirnovAlgorithm::implement_algorithm(int alg_row_dim, int alg_col_dim, vector<CondensedMatrix> &sub_matrices,
+                                                     vector<AlgorithmEntrance<CondensedMatrix>::type> &algorithm) {
+    // Iterating over the algorithms we need to apply
+    vector<CondensedMatrix> alg_results_matrices;
+    // So c-tor want be called when resizing the vector in push_back
+    alg_results_matrices.reserve(algorithm.size());
+    // Setting the condense facot
+    int condense_factor = sub_matrices[0].get_condense_factor();
+    for(auto alg_entrance : algorithm) {
+        CondensedMatrix output(alg_row_dim, alg_col_dim, condense_factor);
+
+        alg_entrance(sub_matrices, output);
+        // Setting the position of the output matrix
+        output.set_positions();
+        alg_results_matrices.push_back(std::move(output));
+    }
+
+    return alg_results_matrices;
+}
+
+
+
 void SmirnovAlgorithm::implement_algorithm(int alg_row_dim, int alg_col_dim, vector<Matrix> &sub_matrices,
                                            vector<AlgorithmEntrance> &algorithm, vector<Matrix>& out) {
     for (int i = 0; i < algorithm.size(); ++i) {
@@ -40,6 +64,7 @@ void SmirnovAlgorithm::implement_algorithm(int alg_row_dim, int alg_col_dim, vec
     }
 }
 
+/* TODO remove or maintain
 vector<Matrix> SmirnovAlgorithm::create_sub_matrices(int alg_base_row_dim, int alg_base_col_dim, Matrix &src) {
     int src_row_dim = src.get_row_dimension();
     int src_col_dim = src.get_col_dimension();
@@ -60,8 +85,9 @@ vector<Matrix> SmirnovAlgorithm::create_sub_matrices(int alg_base_row_dim, int a
     }
 
     return sub_matrices;
-}
+}*/
 
+/* TODO remove or matintain
 vector<Matrix> SmirnovAlgorithm::calculate_alpha(Matrix &A) {
 
     int src_row_dim = A.get_row_dimension();
@@ -74,7 +100,7 @@ vector<Matrix> SmirnovAlgorithm::calculate_alpha(Matrix &A) {
     //Matrix* output = new Matrix(alg_row_dim, alg_col_dim);
     //alpha_add0(sub_matrices, *output);
     return implement_algorithm(alg_row_dim, alg_col_dim, sub_matrices, m_alpha);
-}
+}*/
 
 vector<Matrix> SmirnovAlgorithm::calculate_beta(Matrix &B) {
 

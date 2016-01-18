@@ -85,6 +85,22 @@ bool CondensedMatrix::is_contained(int i, int j) {
 
 }
 
+void CondensedMatrix::set_positions() {
+    int position_index = 0;
+    for (int i = 0; i < m_row_dim; ++i) {
+        for (int j = 0; j < m_col_dim; ++j) {
+            int real_i = i * m_condense_factor;
+            int real_j = j * m_condense_factor;
+            m_positions[position_index] = real_i * m_containing_m * real_j;
+            position_index++;
+        }
+    }
+}
+
+int CondensedMatrix::get_condense_factor() {
+    return m_condense_factor;
+}
+
 
 void CondensedMatrix::merge(CondensedMatrix& mat) {
     int current_index = 0;

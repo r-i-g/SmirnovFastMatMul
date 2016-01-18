@@ -65,6 +65,10 @@ namespace SmirnovFastMul {
 
             int position_len() const;
 
+            // Sets the position array containing the elements represented by the class
+            void set_positions();
+
+            int get_condense_factor();
 
             // The indices are 0 based
             // This function is used as a view to the elements represnted

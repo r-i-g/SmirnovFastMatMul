@@ -5,11 +5,14 @@
 #include "../matrix/CondensedMatrix.h"
 #include "../distribution/Distribution.h"
 #include "../communication/CommunicationHandler.h"
+#include "../algorithm/SmirnovAlgorithm_336.h"
+#include "../algorithm/SmirnovAlgorithm.h"
 #include <iostream>
 
 using SmirnovFastMul::Computation::CondensedMatrix;
 using SmirnovFastMul::Distribution::DistributionHandler;
 using SmirnovFastMul::Communication::CommunicationHandler;
+using SmirnovFastMul::Computation::SmirnovAlgorithm;
 
 using std::cout;
 using std::endl;
@@ -94,6 +97,39 @@ void test_condensed_sub_matrix() {
     cout << cm2 << endl;
 }
 
+void test_changes_to_inner_algorithm() {
+    Matrix matrix(12);
+    matrix.init_range();
+
+    SmirnovAlgorithm alg = SmirnovFastMul::Computation::SmirnovAlgorithm_336();
+    vector<Matrix> alpha = alg.calculate_alpha(matrix);
+
+    cout << "Original sub matrix len:" << alpha.size() << endl;
+
+    CommunicationHandler ch;
+    int rank = ch.get_rank();
+
+    DistributionHandler dh(rank,4,4);
+    CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
+
+    vector<CondensedMatrix> alpha2 = alg.calculate_alpha(cm);
+
+    for (int i = 0; i < alpha.size(); ++i) {
+        for (int j = 0; j < 4; ++j) {
+            for (int k = 0; k < 4; ++k) {
+                if(alpha2[i].is_contained(j,k)) {
+                    if( alpha2[i](i,j) != alpha[i](i,j)) {
+                        cout << "difference in matrices " << endl;
+                        cout << alpha2[i] << endl;
+                        cout << alpha[i](i,j) << endl;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
 int main() {
     //CondensedMatrix cm(4,4,2);
     //cm.init_range();
@@ -101,6 +137,7 @@ int main() {
     //test_condense();
     //test_merge();
     //test_merge_send_receive();
-    test_condensed_sub_matrix();
+    //test_condensed_sub_matrix();
+    test_changes_to_inner_algorithm();
     return 0;
 }
