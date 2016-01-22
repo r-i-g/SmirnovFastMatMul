@@ -17,6 +17,8 @@ class AlgGen():
         self._b_row_dim = self._alg_tuple[1]
         self._b_col_dim = self._alg_tuple[2]
 
+        self._indent_base = 0
+
         from os import path
         self._outfile = open('./SmirnovAlgorithm_{alg_tuple}.cpp'.format(alg_tuple=self._alg_tuple_as_string),'a')
 
@@ -26,7 +28,7 @@ class AlgGen():
             self.write_line(line,indent_level)
 
     def write_line(self, line, indent_level=1):
-        self._outfile.write(' ' * 4 * indent_level + line + '\n')
+        self._outfile.write(' ' * 4 * (indent_level + self._indent_base) + line + '\n')
 
     def _create_function_defnition(self, type, index):
         function_definition = "void SmirnovFastMul::Computation::SmirnovAlgorithm_{alg_tuple}::{type}_add{index}(std::vector<Matrix>& sub_matrices, " \
@@ -132,27 +134,30 @@ class AlgGen():
             self._end_function_definiton()
         alg.close()
 
+    def _write_algorithm_entrance(self, type, entrance, entrance_alg):
+        self._create_simple_function_defnition(type,entrance)
+        self._create_variables(entrance_alg)
+        self._create_iteration()
+
+        data_out =  "data_out[i * stride_out + j] = "
+        for index, scalar in enumerate(entrance_alg):
+            if scalar == '0':
+                continue
+            coeef = scalar
+            if float(scalar) > 0:
+                    coeef = "+"+scalar
+            data_out += ' {coeef} * data{index}[i * stride{index} + j]'.format(coeef=coeef, index=index)
+        data_out += ";"
+        self.write_line(data_out,3)
+
+        self._end_iteration()
+        self._end_function_definiton()
+
     def write_simple_algorithm(self, algorithm_path, type):
         alg = open(algorithm_path, 'r')
         # Each row represents an entrance in the output algorithm
         for entrance, entrance_alg in enumerate([line.rstrip('\n').split(',') for line in alg]):
-            self._create_simple_function_defnition(type,entrance)
-            self._create_variables(entrance_alg)
-            self._create_iteration()
-
-            data_out =  "data_out[i * stride_out + j] = "
-            for index, scalar in enumerate(entrance_alg):
-                if scalar == '0':
-                    continue
-                coeef = scalar
-                if float(scalar) > 0:
-                        coeef = "+"+scalar
-                data_out += ' {coeef} * data{index}[i * stride{index} + j]'.format(coeef=coeef, index=index)
-            data_out += ";"
-            self.write_line(data_out,3)
-
-            self._end_iteration()
-            self._end_function_definiton()
+            self._write_algorithm_entrance(type, entrance, entrance_alg)
         alg.close()
 
     def _write_ctor_definition(self):
@@ -198,21 +203,79 @@ class AlgGen():
         self.write_object_algorithm('./smirnov_c_{alg_tuple}.txt'.format(alg_tuple=self._alg_tuple_as_string), 'gamma')
         self._write_object_constructor()
 
-    def create_simple_scripts(self):
+    def write_algorithms(self):
         self.write_simple_algorithm('./smirnov_a_{alg_tuple}.txt'.format(alg_tuple=self._alg_tuple_as_string), 'alpha')
         self.write_simple_algorithm('./smirnov_b_{alg_tuple}.txt'.format(alg_tuple=self._alg_tuple_as_string), 'beta')
         self.write_simple_algorithm('./smirnov_c_{alg_tuple}.txt'.format(alg_tuple=self._alg_tuple_as_string), 'gamma')
+
+    def create_simple_scripts(self):
+        self.write_algorithms()
         self.write_simple_constructor()
+
+class TemplateAlgorithmEntrance(AlgGen):
+
+    def __init__(self, alg_tuple):
+        AlgGen.__init__(self, alg_tuple)
+
+    def _create_simple_function_defnition(self, type, index):
+        self.write_line("void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {")
+        self._indent_base += 1
+
+    def _write_class_definition(self, type, index):
+        self.write_line("template <typename MatrixType> struct {type}_add{index}_{alg_tuple} : "
+                   "public AlgorithmEntrance<MatrixType> {{".format(type=type,
+                                                       index=index,
+                                                       alg_tuple=self._alg_tuple_as_string),0)
+
+    def _end_class_definition(self):
+        self.write_line("};",0)
+
+    def _write_algorithm_entrance(self, type, entrance, entrance_alg):
+        self._write_class_definition(type, entrance)
+        #self._indent_base = 1
+        AlgGen._write_algorithm_entrance(self, type, entrance, entrance_alg)
+        self._indent_base = 0
+        self._end_class_definition()
+
+    def _write_virtual_algorithm(self, type):
+        self.write_line("template <typename MatrixType> vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> "
+                        "SmirnovAlgorithm_{alg_tuple}<MatrixType>::get_{type}_alg() {{".format(type=type,
+                                                                                               alg_tuple=self._alg_tuple_as_string),0)
+        self.write_line("vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> {type}_algorithm;".format(type=type))
+        insertion = "{type}_algorithm.push_back(std::make_shared<{type}_add{index}_{alg_tuple}<MatrixType>>() );"
+        if type == 'gamma':
+            for i in range(self._a_row_dim * self._b_col_dim):
+               self.write_line(insertion.format(type=type,
+                                                index=i,
+                                                alg_tuple=self._alg_tuple_as_string))
+        else:
+            for i in range(40):
+               self.write_line(insertion.format(type=type,
+                                                index=i,
+                                                alg_tuple=self._alg_tuple_as_string))
+
+        self.write_line("return {type}_algorithm;".format(type=type))
+        self._end_function_definiton()
+
+    def write_virtual_algorithms(self):
+        self._write_virtual_algorithm("alpha")
+        self._write_virtual_algorithm("beta")
+        self._write_virtual_algorithm("gamma")
+
+    def create_simple_scripts(self):
+        self.write_algorithms()
+        self.write_virtual_algorithms()
 
 if __name__ == '__main__':
     '''ROW_DIM = sys.argv[0]
     COL_DIM = sys.argv[1]
     ALG_ROW_DIM = sys.argv[2]
     ALG_COL_DIM = sys.argv[3]'''
-    gen_3_3_6 = AlgGen((3,3,6))
+    print "creating scripts"
+    gen_3_3_6 = TemplateAlgorithmEntrance((3,3,6))
     gen_3_3_6.create_simple_scripts()
-    gen_3_3_6 = AlgGen((3,6,3))
+    '''gen_3_3_6 = AlgGen((3,6,3))
     gen_3_3_6.create_simple_scripts()
     gen_3_3_6 = AlgGen((6,3,3))
-    gen_3_3_6.create_simple_scripts()
+    gen_3_3_6.create_simple_scripts()'''
 
