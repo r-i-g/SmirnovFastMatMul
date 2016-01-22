@@ -20,7 +20,7 @@ namespace SmirnovFastMul {
 
         template <typename MatrixType> class AlgorithmEntrance {
         public:
-            typedef void (*type)(vector<MatrixType>& sub_matrices, MatrixType& calculated_matrix);
+            virtual void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) = 0;
         };
 
         /*class AlgorithmEntrance {
@@ -34,31 +34,9 @@ namespace SmirnovFastMul {
         template <typename MatrixType> class SmirnovAlgorithm {
         public:
 
-            SmirnovAlgorithm(int A_base_row_dim, int A_base_col_dim, int B_base_col_dim);
-
-            void set_alpha(vector<AlgorithmEntrance<MatrixType>::type>& alpha) {
-                m_alpha = alpha;
-            }
-            void set_beta(vector<AlgorithmEntrance>& beta) {
-                m_beta = beta;
-            }
-            void set_gamma(vector<AlgorithmEntrance>& gamma) {
-                m_gamma = gamma;
-            }
-
-            void add_alpha_entrance(AlgorithmEntrance entrance);
-            void add_beta_entrance(AlgorithmEntrance beta);
-            void add_gamma_entrance(AlgorithmEntrance gamma);
-
-            // TODO remove or maintain
-            //vector<Matrix> create_sub_matrices(int alg_base_row_dim, int alg_base_col_dim, Matrix &src);
-            // sub_matrices is output
-            // TODO remove or maintain
-            //vector<Matrix> calculate_alpha(Matrix &A);
-
-            vector<Matrix> calculate_beta(Matrix &B);
-
-            void calculate_c(vector<Matrix>& sub_matrices, Matrix& C);
+            SmirnovAlgorithm(int A_base_row_dim, int A_base_col_dim, int B_base_col_dim) :
+                    m_A_base_row_dim(A_base_row_dim), m_A_base_col_dim(A_base_col_dim), m_B_base_col_dim(B_base_col_dim)
+            {}
 
             int get_a_base_row_dim() {
                 return m_A_base_row_dim;
@@ -70,12 +48,9 @@ namespace SmirnovFastMul {
                 return m_B_base_col_dim;
             }
 
-            /**
-             * Template section
-             */
-            template <typename MatrixType> vector<MatrixType> create_sub_matrices(int alg_base_row_dim,
-                                                                                  int alg_base_col_dim,
-                                                                                  MatrixType &src) {
+            vector<MatrixType> create_sub_matrices(int alg_base_row_dim,
+                                                  int alg_base_col_dim,
+                                                  MatrixType &src) {
                 int src_row_dim = src.get_row_dimension();
                 int src_col_dim = src.get_col_dimension();
 
@@ -97,43 +72,100 @@ namespace SmirnovFastMul {
                 return sub_matrices;
             }
 
-            template <typename MatrixType> vector<MatrixType> calculate_alpha(MatrixType& A) {
+            vector<MatrixType> calculate_alpha(MatrixType& A) {
                 int src_row_dim = A.get_row_dimension();
                 int src_col_dim = A.get_col_dimension();
 
                 int alg_row_dim = src_row_dim / m_A_base_row_dim;
                 int alg_col_dim = src_col_dim / m_A_base_col_dim;
 
-                vector<MatrixType> sub_matrices = create_sub_matrices<MatrixType>(m_A_base_row_dim, m_A_base_col_dim, A);
+                vector<MatrixType> sub_matrices = create_sub_matrices(m_A_base_row_dim, m_A_base_col_dim, A);
                 //Matrix* output = new Matrix(alg_row_dim, alg_col_dim);
                 //alpha_add0(sub_matrices, *output);
-                return implement_algorithm(alg_row_dim, alg_col_dim, sub_matrices, m_alpha);
+                return implement_algorithm(alg_row_dim, alg_col_dim, sub_matrices, get_alpha_alg());
             }
+
+            vector<MatrixType> calculate_beta(MatrixType& B) {
+                int src_row_dim = B.get_row_dimension();
+                int src_col_dim = B.get_col_dimension();
+
+                int alg_row_dim = src_row_dim / m_A_base_col_dim;
+                int alg_col_dim = src_col_dim / m_B_base_col_dim;
+
+                vector<MatrixType> sub_matrices = create_sub_matrices(m_A_base_col_dim, m_B_base_col_dim, B);
+                return implement_algorithm(alg_row_dim, alg_col_dim, sub_matrices, get_beta_alg());
+            }
+
+            void calculate_c(vector<MatrixType>& sub_matrices, MatrixType& C) {
+                int alg_row_dim = C.get_row_dimension() / m_A_base_row_dim;
+                int alg_col_dim = C.get_col_dimension() / m_B_base_col_dim;
+
+                vector<MatrixType> c_sub_matrices = create_sub_matrices(m_A_base_row_dim, m_B_base_col_dim, C);
+                implement_algorithm(alg_row_dim, alg_col_dim, sub_matrices, get_gamma_alg(), c_sub_matrices);
+            }
+
+            virtual vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> get_alpha_alg() = 0;
+            virtual vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> get_beta_alg() = 0;
+            virtual vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> get_gamma_alg() = 0;
 
         protected:
 
-            vector<AlgorithmEntrance> m_alpha;
-            vector<AlgorithmEntrance> m_beta;
-            vector<AlgorithmEntrance> m_gamma;
             int m_A_base_row_dim;
             int m_A_base_col_dim;
             int m_B_base_col_dim;
 
-            vector<Matrix> implement_algorithm(int alg_row_dim, int alg_col_dim, vector<Matrix> &sub_matrices,
-                                               vector<AlgorithmEntrance> &algorithm);
+            vector<Matrix> implement_algorithm(int alg_row_dim, int alg_col_dim, vector<Matrix>& sub_matrices,
+                                               const vector<std::shared_ptr<AlgorithmEntrance<Matrix>>>& algorithm) {
+                // Iterating over the algorithms we need to apply
+                vector<Matrix> alg_results_matrices;
+                // So c-tor want be called when resizing the vector in push_back
+                alg_results_matrices.reserve(algorithm.size());
+                for(auto alg_entrance : algorithm) {
+                    Matrix output(alg_row_dim, alg_col_dim);
 
-            vector<CondensedMatrix> implement_algorithm(int alg_row_dim, int alg_col_dim, vector<CondensedMatrix> &sub_matrices,
-                                                        vector<AlgorithmEntrance<Matrix>::type> &algorithm);
+                    //std::cout << "in alg imp " << std::endl;
+                    //std::cout << "iteration " << i++ << std::endl;
+                    //std::cout << &sub_matrices << std::endl;
+                    (*alg_entrance)(sub_matrices, output);
+                    alg_results_matrices.push_back(std::move(output));
+                }
 
-            void implement_algorithm(int alg_row_dim, int alg_col_dim, vector<Matrix> &sub_matrices,
-                                     vector<AlgorithmEntrance<CondensedMatrix>::type> &algorithm, vector<Matrix>& out);
+                return alg_results_matrices;
+            }
+
+            vector<CondensedMatrix> implement_algorithm(int alg_row_dim, int alg_col_dim, vector<CondensedMatrix>& sub_matrices,
+                                                        const vector<std::shared_ptr<AlgorithmEntrance<CondensedMatrix>>>& algorithm) {
+                // Iterating over the algorithms we need to apply
+                vector<CondensedMatrix> alg_results_matrices;
+                // So c-tor want be called when resizing the vector in push_back
+                alg_results_matrices.reserve(algorithm.size());
+                // Setting the condense facot
+                int condense_factor = sub_matrices[0].get_condense_factor();
+                for(auto alg_entrance : algorithm) {
+                    CondensedMatrix output(alg_row_dim, alg_col_dim, condense_factor);
+
+                    (*alg_entrance)(sub_matrices, output);
+                    // Setting the position of the output matrix
+                    output.set_positions();
+                    alg_results_matrices.push_back(std::move(output));
+                }
+
+                return alg_results_matrices;
+            }
+
+            void implement_algorithm(int alg_row_dim, int alg_col_dim, vector<MatrixType>& sub_matrices,
+                                     vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>>& algorithm, vector<MatrixType>& out) {
+                for (int i = 0; i < algorithm.size(); ++i) {
+                    auto alg_entrance = algorithm[i];
+                    *alg_entrance(sub_matrices, out[i]);
+                }
+            }
 
         private:
 
 
 
         };
-
     }
 
 }
