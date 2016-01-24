@@ -31,7 +31,7 @@ CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int condens
     int n = containing_n/condense_factor, m = containing_m/condense_factor;
 
     m_positions = new int[n*m];
-    init(0);
+    init_positions(0);
 }
 
 CondensedMatrix::CondensedMatrix(CondensedMatrix&& that) :
@@ -166,6 +166,7 @@ int* CondensedMatrix::get_positions() const {
 }
 
 // The indices are 0 based
+/*
 const double& CondensedMatrix::operator()(int i, int j) const {
     int condensed_i = i / m_condense_factor;
     int condensed_j = j / m_condense_factor;
@@ -176,9 +177,9 @@ double& CondensedMatrix::operator()(int i, int j) {
     int condensed_i = i / m_condense_factor;
     int condensed_j = j / m_condense_factor;
     return m_data[condensed_i * get_stride() + condensed_j];
-}
+}*/
 
-void CondensedMatrix::init(int value) {
+void CondensedMatrix::init_positions(int value) {
     for (int i = 0; i < position_len(); ++i) {
         m_positions[i] = value;
     }

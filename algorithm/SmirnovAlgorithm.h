@@ -154,10 +154,10 @@ namespace SmirnovFastMul {
             }
 
             void implement_algorithm(int alg_row_dim, int alg_col_dim, vector<MatrixType>& sub_matrices,
-                                     vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>>& algorithm, vector<MatrixType>& out) {
+                                     const vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>>& algorithm, vector<MatrixType>& out) {
                 for (int i = 0; i < algorithm.size(); ++i) {
                     auto alg_entrance = algorithm[i];
-                    *alg_entrance(sub_matrices, out[i]);
+                    (*alg_entrance)(sub_matrices, out[i]);
                 }
             }
 
