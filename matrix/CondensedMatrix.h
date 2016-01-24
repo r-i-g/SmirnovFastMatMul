@@ -21,8 +21,7 @@ namespace SmirnovFastMul {
         class CondensedMatrix : public Matrix {
         public:
 
-            CondensedMatrix(int containing_n, int containing_m, int condense_factor, int* positions, Matrix&& matrix,
-                            bool is_view);
+            CondensedMatrix(int containing_n, int containing_m, int condense_factor, int* positions, Matrix&& matrix);
             // deprecated
             CondensedMatrix(int containing_n, int containing_m, int n, int m);
             // deprecated
@@ -31,6 +30,7 @@ namespace SmirnovFastMul {
 
             CondensedMatrix(const CondensedMatrix& that) {
                 // TODO implement
+                cout << "in  copy ctor" << endl;
             }
 
             // move constructor
@@ -48,6 +48,13 @@ namespace SmirnovFastMul {
             // deprecated
             void condense(double matrix_value, int condense_factor, int i, int j);
 
+            /**
+             * Creates a condensed sub matrix representation of the specified sub matrix
+             * @num_rows - Of the contained matrix
+             * @num_col - Of the contained matrix
+             * @start_row - ""
+             * @start_col - ""
+             */
             CondensedMatrix sub_matrix(int num_rows, int num_col, int start_row, int start_col);
 
             bool is_contained(int i, int j);
@@ -57,6 +64,12 @@ namespace SmirnovFastMul {
              * The order of the merge is determined by the inserted positions in the matrices
              */
             void merge(CondensedMatrix& mat);
+
+            // Gets the contained matrix row dimension
+            int get_row_dimension() const;
+
+            // Gets the contained matrix column dimension
+            int get_col_dimension() const;
 
             // Returns the linear positions of the inserted values. The representation is row major.
             int* get_positions() const;
@@ -77,9 +90,10 @@ namespace SmirnovFastMul {
             //double& operator()(int i, int j);
 
             friend std::ostream& operator<<(std::ostream& os, const CondensedMatrix& mat) {
-                for (int i = 0; i < mat.get_row_dimension(); ++i) {
-                    for (int j = 0; j < mat.get_col_dimension(); ++j) {
-                        cout << *mat.get_positions(i, j) << " ";
+                const Matrix& matrix = dynamic_cast<const Matrix&>(mat);
+                for (int i = 0; i < matrix.get_row_dimension(); ++i) {
+                    for (int j = 0; j < matrix.get_col_dimension(); ++j) {
+                        os << *(mat.get_positions(i, j)) << " ";
                     }
                 }
                 os << endl;
@@ -99,7 +113,7 @@ namespace SmirnovFastMul {
         protected:
             // Initializes the position array to the value specified
             void init_positions(int value);
-
+            int* sub_position(int num_rows, int num_col, int start_row, int start_col);
 
             int m_condense_factor;
             int m_containing_n;

@@ -61,6 +61,36 @@ void test_template_algorithm() {
     //SmirnovAlgorithm_633<Matrix> sac3;
 }
 
+void test_template_sub_matrices() {
+    Matrix matrix(6);
+    matrix.init_range();
+
+    DistributionHandler dh(0,4,4);
+    CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
+    cout << cm << endl;
+    SmirnovAlgorithm_336<CondensedMatrix> sa1;
+    auto sub_matrices = sa1.create_sub_matrices(3,3,cm);
+    for (int i = 0; i < 3; ++i) {
+        cout << sub_matrices[i] << endl;
+    }
+    // Excpetion because of a copy constructor
+    /*for(auto matrix: sub_matrices) {
+        cout << matrix << endl;
+    }*/
+}
+
+void test_submatrix() {
+    Matrix matrix(6);
+    matrix.init_range();
+
+    DistributionHandler dh(0,4,4);
+    CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
+
+    CondensedMatrix cm2 = cm.sub_matrix(2,2,0,0);
+    cout << cm << endl;
+    cout << cm2 << endl;
+}
+
 void test_template_algorithm_condensed() {
     // Creating a condensed matrix
     Matrix matrix(6);
@@ -76,6 +106,7 @@ void test_template_algorithm_condensed() {
     }
 
     cout << "condensed alphas" << endl;
+    cout << "the condensed matrix" << cm << endl;
     SmirnovAlgorithm_336<CondensedMatrix> sa2;
     auto alpha2 = sa2.calculate_alpha(cm);
     for (int i = 0; i < 3; ++i) {
@@ -131,5 +162,7 @@ int main()
     //test_template_algorithm();
     //test_template_multiplication();
     test_template_algorithm_condensed();
+    //test_submatrix();
+    //test_template_sub_matrices();
     return 0;
 }

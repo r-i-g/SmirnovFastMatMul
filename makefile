@@ -20,7 +20,7 @@ test_bfs:
 	mpic++ -std=c++11 -g ./testing/test_bfs.cpp ./common/*.cpp ./communication/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./algorithm/*.cpp  2> compile.out.txt
 
 test_cond:
-	mpic++ -std=c++11 -g ./testing/test_condensed.cpp ./common/*.cpp ./communication/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./algorithm/*.cpp  2> compile.out.txt
+	mpic++ -std=c++11 -g ./testing/test_condensed.cpp ./common/*.cpp ./communication/*.cpp ./distribution/*.cpp ./matrix/*.cpp 2> compile.out.txt
 
 test_temp:
 	mpic++ -std=c++11 -g ./testing/test_template.cpp ./common/*.cpp ./communication/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./algorithm_backup/*.cpp 2> compile.out.txt

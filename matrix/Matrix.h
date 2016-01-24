@@ -57,9 +57,13 @@ namespace SmirnovFastMul {
 			void set_multiplier(double multiplier);
 			
 			double get_multiplier() const;
+
 			int get_row_dimension() const;
+
 			int get_col_dimension() const;
+
             int get_stride() const;
+
             bool get_is_view() { return m_is_view;}
 
             friend bool operator== (Matrix& first, Matrix& second) {

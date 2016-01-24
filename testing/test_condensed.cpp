@@ -17,6 +17,7 @@ using SmirnovFastMul::Computation::SmirnovAlgorithm;
 using std::cout;
 using std::endl;
 
+/*
 void test_condense() {
     // Original matrix is 4X4 and represent a 2X2 from it
     Matrix matrix(4);
@@ -79,7 +80,7 @@ void test_merge_send_receive() {
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
-}
+}*/
 
 void test_condensed_sub_matrix() {
     Matrix matrix(4);
@@ -88,15 +89,18 @@ void test_condensed_sub_matrix() {
     CommunicationHandler ch;
     int rank = ch.get_rank();
 
-    DistributionHandler dh(1,4,4);
+    DistributionHandler dh(0,4,4);
     CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
 
     cout << cm << endl;
 
-    CondensedMatrix cm2 = cm.sub_matrix(2,1,0,0);
+    CondensedMatrix cm2 = cm.sub_matrix(3,1,0,0);
     cout << cm2 << endl;
+
+    //CondensedMatrix cm3 = cm3.sub_matrix();
 }
 
+/*
 void test_changes_to_inner_algorithm() {
     Matrix matrix(12);
     matrix.init_range();
@@ -128,7 +132,7 @@ void test_changes_to_inner_algorithm() {
         }
     }
 
-}
+}*/
 
 int main() {
     //CondensedMatrix cm(4,4,2);
@@ -137,7 +141,7 @@ int main() {
     //test_condense();
     //test_merge();
     //test_merge_send_receive();
-    //test_condensed_sub_matrix();
-    test_changes_to_inner_algorithm();
+    test_condensed_sub_matrix();
+    //test_changes_to_inner_algorithm();
     return 0;
 }
