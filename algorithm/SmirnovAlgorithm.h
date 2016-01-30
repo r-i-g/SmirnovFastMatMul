@@ -67,7 +67,7 @@ namespace SmirnovFastMul {
                 // Calculating the sub_matrices used for the algorithm
                 for (int i = 0; i < alg_base_row_dim; ++i) {
                     for (int j = 0; j < alg_base_col_dim; ++j) {
-                        std::cout << "adding the subblock starting at:" << i* sub_block_row_dim << " " << j* sub_block_col_dim << std::endl;
+                        //std::cout << "adding the subblock starting at:" << i* sub_block_row_dim << " " << j* sub_block_col_dim << std::endl;
                         //cout << "row dim:" << sub_block_row_dim << " col dim:" << sub_block_col_dim << endl;
                         //cout << src.sub_matrix(sub_block_row_dim,
                         //                      sub_block_col_dim, i* sub_block_row_dim, j* sub_block_col_dim) << endl;
@@ -87,9 +87,11 @@ namespace SmirnovFastMul {
                 int alg_col_dim = src_col_dim / m_A_base_col_dim;
 
                 vector<MatrixType> sub_matrices = create_sub_matrices(m_A_base_row_dim, m_A_base_col_dim, A);
-
+                //return sub_matrices
+                //auto a =get_alpha_alg();
                 //Matrix* output = new Matrix(alg_row_dim, alg_col_dim);
                 //alpha_add0(sub_matrices, *output);
+                //cout << get_alpha_alg() << endl;
                 return implement_algorithm(alg_row_dim, alg_col_dim, sub_matrices, get_alpha_alg());
             }
 
@@ -149,16 +151,16 @@ namespace SmirnovFastMul {
                 alg_results_matrices.reserve(algorithm.size());
                 // Setting the condense facot
                 int condense_factor = sub_matrices[0].get_condense_factor();
-                for(auto alg_entrance : algorithm) {
-                    cout << "In implement condense" << endl;
+                for(const auto& alg_entrance : algorithm) {
                     // TODO change back to alg_row_dim and alg_col_dim
-                    CondensedMatrix output(alg_row_dim, alg_col_dim, condense_factor);
                     //cout << "In implememt in condense. alg_row_dim: " << alg_row_dim << " alg_col_dim:" << alg_col_dim << " condense factor:"  << condense_factor << endl;
+                    CondensedMatrix output(alg_row_dim * condense_factor, alg_col_dim * condense_factor, condense_factor);
                     //cout << output << endl;
 
                     (*alg_entrance)(sub_matrices, output);
+                    //cout << output << endl;
                     // Setting the position of the output matrix
-                    //output.set_positions();
+                    output.set_positions();
                     alg_results_matrices.push_back(std::move(output));
                 }
 

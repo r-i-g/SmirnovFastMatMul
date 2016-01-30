@@ -35,12 +35,13 @@ CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int condens
 CondensedMatrix::CondensedMatrix(CondensedMatrix&& that) :
     CondensedMatrix(that.m_containing_n, that.m_containing_n, that.m_condense_factor, that.get_positions(), std::move(that))
 {
-    cout << "in move ctor" << endl;
+    //cout << "in move ctor" << endl;
     that.m_positions = nullptr;
 }
 
 CondensedMatrix::~CondensedMatrix() {
     // We always own the data
+    //cout << "in condense d-tor" << endl;
     delete [] m_positions;
 }
 
@@ -50,6 +51,7 @@ int* CondensedMatrix::sub_position(int num_rows, int num_col, int start_row, int
 
     int sub_position_start = start_row * m_stride + start_col;
     int start_value = m_positions[sub_position_start];
+    //cout << "sub_start_porision: " << sub_position_start << " num_rows:" << num_rows << " num columns:" << num_col << endl;
     /*for (int i = 0; i < num_elements(); ++i) {
         cout << m_positions[i] << " ";
     }
@@ -59,16 +61,17 @@ int* CondensedMatrix::sub_position(int num_rows, int num_col, int start_row, int
     int* position_array = new int[num_elements];
     for (int i = 0; i < num_rows; ++i) {
         for (int j = 0; j < num_col; ++j) {
-            //cout << *get_positions(i + start_row,j + start_col) << " ";
-            position_array[i * m_stride + j] = *get_positions(i + start_row,j + start_col);
+            //cout << i * num_col + j <<"," << *get_positions(i + start_row,j + start_col) << " ";
+            position_array[i * num_col + j] = *get_positions(i + start_row,j + start_col);
         }
     }
+    //cout << endl;
 
     return position_array;
 }
 
 CondensedMatrix CondensedMatrix::sub_matrix(int num_rows, int num_col, int start_row, int start_col) {
-    int condensed_rows = ceil(num_rows/ (double)m_condense_factor);
+    /*int condensed_rows = ceil(num_rows/ (double)m_condense_factor);
     int condensed_columns = ceil( num_col/ (double) m_condense_factor);
     int condensed_start_row = ceil (start_row/ (double) m_condense_factor);
     int condensed_start_col = ceil ( start_col/ (double) m_condense_factor);
@@ -79,13 +82,27 @@ CondensedMatrix CondensedMatrix::sub_matrix(int num_rows, int num_col, int start
                                            condensed_columns,
                                            condensed_start_row,
                                            condensed_start_col);
+
     //cout << sub_matrix << endl;
 
     return CondensedMatrix(num_rows,
                            num_col,
                            m_condense_factor,
                            sub_position(condensed_rows, condensed_columns, condensed_start_row, condensed_start_col),
+                           std::move(sub_matrix));*/
+    Matrix sub_matrix = Matrix::sub_matrix(num_rows,
+                                           num_col,
+                                           start_row,
+                                           start_col);
+
+    //cout << sub_matrix << endl;
+
+    return CondensedMatrix(num_rows * m_condense_factor,
+                           num_col * m_condense_factor,
+                           m_condense_factor,
+                           sub_position(num_rows, num_col, start_row, start_col),
                            std::move(sub_matrix));
+
 }
 
 void CondensedMatrix::condense(double matrix_value, int condense_factor, int i, int j) {
@@ -118,13 +135,11 @@ bool CondensedMatrix::is_contained(int i, int j) {
 }
 
 void CondensedMatrix::set_positions() {
-    int position_index = 0;
     for (int i = 0; i < m_row_dim; ++i) {
         for (int j = 0; j < m_col_dim; ++j) {
             int real_i = i * m_condense_factor;
             int real_j = j * m_condense_factor;
-            m_positions[position_index] = real_i * m_containing_m * real_j;
-            position_index++;
+            m_positions[i * m_stride + j] = real_i * m_containing_m  + real_j;
         }
     }
 }
@@ -188,13 +203,14 @@ void CondensedMatrix::merge(CondensedMatrix& mat) {
     m_stride = m_col_dim;
 }
 
+/*
 int CondensedMatrix::get_row_dimension() const {
-    return m_containing_n;
+    return m_containing_n ;
 }
 
 int CondensedMatrix::get_col_dimension() const {
     return m_containing_m;
-}
+}*/
 
 int CondensedMatrix::position_len() const {
     return num_elements();

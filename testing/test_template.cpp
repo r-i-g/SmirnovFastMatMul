@@ -30,7 +30,7 @@ using SmirnovFastMul::Computation::SmirnovAlgorithm_633;
 using SmirnovFastMul::Computation::MultiplyMatrices;
 
 /******/
-
+/*
 void test_template_algorithm() {
     SmirnovAlgorithm_336<Matrix> sac;
     Matrix matrix(6);
@@ -74,9 +74,9 @@ void test_template_sub_matrices() {
         cout << sub_matrices[i] << endl;
     }
     // Excpetion because of a copy constructor
-    /*for(auto matrix: sub_matrices) {
+    for(auto matrix: sub_matrices) {
         cout << matrix << endl;
-    }*/
+    }
 }
 
 void test_submatrix() {
@@ -89,7 +89,7 @@ void test_submatrix() {
     CondensedMatrix cm2 = cm.sub_matrix(2,2,0,0);
     cout << cm << endl;
     cout << cm2 << endl;
-}
+}*/
 
 void test_template_algorithm_condensed() {
     // Creating a condensed matrix
@@ -100,7 +100,7 @@ void test_template_algorithm_condensed() {
     CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
 
     SmirnovAlgorithm_336<Matrix> sa1;
-    auto alpha1 = sa1.calculate_alpha(matrix);
+    /*auto alpha1 = sa1.calculate_alpha(matrix);
     for (int i = 0; i < 3; ++i) {
         cout << alpha1[i] << endl;
     }
@@ -111,9 +111,29 @@ void test_template_algorithm_condensed() {
     auto alpha2 = sa2.calculate_alpha(cm);
     for (int i = 0; i < 3; ++i) {
         cout << alpha2[i] << endl;
+    }*/
+
+    Matrix matrix2(12);
+    matrix2.init_range();
+
+    auto alpha2 = sa1.calculate_alpha(matrix2);
+    for (int i = 0; i < 3; ++i) {
+        cout << alpha2[i] << endl;
+    }
+    cout << "test relative positions" << endl;
+    DistributionHandler dh2(0,4,4);
+    CondensedMatrix cm2 = dh2.condensed_distributed_matrix(matrix2,1);
+    cout << cm2 << endl;
+    SmirnovAlgorithm_336<CondensedMatrix> sa3;
+
+    cout << __LINE__ << endl;
+    auto&& alpha3 = sa3.calculate_alpha(cm2);
+    for (int i = 0; i < 3; ++i) {
+        cout << alpha3[i] << endl;
     }
 }
 
+/*
 void test_template_multiplication() {
 
     Matrix a(54);
@@ -151,8 +171,8 @@ void test_template_multiplication() {
         cout << "error with dfs" << endl;
     } else {
         cout << "success with dfs" << endl;
-    }*/
-}
+    }
+}*/
 
 int main()
 {

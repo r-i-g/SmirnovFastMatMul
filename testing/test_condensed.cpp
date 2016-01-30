@@ -100,6 +100,10 @@ void test_condensed_sub_matrix() {
     //CondensedMatrix cm3 = cm3.sub_matrix();
 }
 
+
+void test_move_ctor() {
+    vec
+}
 /*
 void test_changes_to_inner_algorithm() {
     Matrix matrix(12);

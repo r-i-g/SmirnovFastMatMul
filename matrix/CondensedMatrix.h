@@ -30,12 +30,13 @@ namespace SmirnovFastMul {
 
             CondensedMatrix(const CondensedMatrix& that) {
                 // TODO implement
-                cout << "in  copy ctor" << endl;
+                //cout << "in  copy ctor" << endl;
             }
 
             // move constructor
             CondensedMatrix(CondensedMatrix&& that);
             CondensedMatrix& operator=(CondensedMatrix&& that) {
+                cout << "In assignment operator in condensed matrix" << endl;
                 swap(*this, that);
                 return *this;
             }
@@ -50,8 +51,8 @@ namespace SmirnovFastMul {
 
             /**
              * Creates a condensed sub matrix representation of the specified sub matrix
-             * @num_rows - Of the contained matrix
-             * @num_col - Of the contained matrix
+             * @num_rows - Of the actual elements in the matrix
+             * @num_col - Of the actual elements in the matrix
              * @start_row - ""
              * @start_col - ""
              */
@@ -66,10 +67,10 @@ namespace SmirnovFastMul {
             void merge(CondensedMatrix& mat);
 
             // Gets the contained matrix row dimension
-            int get_row_dimension() const;
+            //int get_row_dimension() const;
 
             // Gets the contained matrix column dimension
-            int get_col_dimension() const;
+            //int get_col_dimension() const;
 
             // Returns the linear positions of the inserted values. The representation is row major.
             int* get_positions() const;
@@ -103,8 +104,10 @@ namespace SmirnovFastMul {
             }
 
             friend void swap(CondensedMatrix& first, CondensedMatrix& second) {
+                // cout << "In swap freind function in condensed matrix" << endl;
                 using std::swap;
                 swap(static_cast<Matrix&>(first), static_cast<Matrix&>(second));
+                swap(first.m_condense_factor, second.m_condense_factor);
                 swap(first.m_containing_n, second.m_containing_n);
                 swap(first.m_containing_m, second.m_containing_m);
                 swap(first.m_positions, second.m_positions);
