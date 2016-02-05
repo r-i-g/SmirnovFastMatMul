@@ -34,7 +34,7 @@ namespace SmirnovFastMul {
             { }
 
 			virtual ~CommunicationHandler() {
-
+                MPI_Finalize();
             }
 
             void send_matrix(const Matrix& matrix, int node) {
@@ -84,20 +84,20 @@ namespace SmirnovFastMul {
              *  @target_processor
              *  @process_sub_problem_start
              */
-            void send_receive(const vector<MatrixType>& sub_matrices_to_send, vector<MatrixType>& sub_matrices,
-                              int num_sub_problems, int target_processor, int process_sub_problem_start) {
+            void send_receive(vector<MatrixType>& temp_matrices, const vector<MatrixType>& sub_matrices,
+                              int send_index, int num_sub_problems, int target_processor) {
 
-
+                // Creating a temp matrix to store the resutls
+                MatrixType temp_matrix = temp_matrices[0].empty_clone();
                 for (int i = 0; i < num_sub_problems; ++i) {
 
                     // We remove deadlocks buy deciding which action we will perform first
                     if ( target_processor > m_rank) {
-                        send(sub_matrices_to_send, target_processor, i);
-                        receive(sub_matrices, target_processor, i, process_sub_problem_start);
-
+                        send(sub_matrices, target_processor, i, send_index, num_sub_problems);
+                        receive(temp_matrices, target_processor, i, temp_matrix);
                     } else {
-                        receive(sub_matrices, target_processor, i, process_sub_problem_start);
-                        send(sub_matrices_to_send, target_processor, i);
+                        receive(temp_matrices, target_processor, i, temp_matrix);
+                        send(sub_matrices, target_processor, i, send_index, num_sub_problems);
                     }
 
                 }
@@ -111,18 +111,21 @@ namespace SmirnovFastMul {
                 return m_rank;
             }
 
-		protected:
-
-            void send(const vector<MatrixType>& sub_matrices, int target_processor, int sub_problem_index) {
-                send_matrix(sub_matrices[sub_problem_index], target_processor);
+            void barrier() {
+                MPI_Barrier(MPI_COMM_WORLD);
             }
 
-            void receive(vector<MatrixType>& sub_matrices, int target_processor, int sub_problem_index,
-                         int process_sub_problem_start) {
-                MatrixType matrix = MatrixType::create_sub_matrix();
-                int receive_to = process_sub_problem_start + sub_problem_index;
-                receive_matrix(matrix, target_processor);
-                sub_matrices[receive_to] += matrix;
+		protected:
+
+            void send(const vector<MatrixType>& sub_matrices, int target_processor, int sub_problem_index,
+                      int send_index, int num_sub_problems) {
+                send_matrix(sub_matrices[send_index * num_sub_problems + sub_problem_index], target_processor);
+            }
+
+            void receive(vector<MatrixType>& temp_matrices, int target_processor, int sub_problem_index,
+                         MatrixType& temp_matrix) {
+                receive_matrix(temp_matrix, target_processor);
+                temp_matrices[sub_problem_index] += temp_matrix;
             }
 
 			int m_num_nodes;

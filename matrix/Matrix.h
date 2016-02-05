@@ -132,7 +132,10 @@ namespace SmirnovFastMul {
 			//friend Matrix operator- ();
             virtual int num_elements() const;
 
-		protected:
+            // Creating a version of matrix without the data, just the allocated space
+            Matrix empty_clone() const;
+
+        protected:
 
 
 			// The data structure decided upon is a continuous block of memory, rows concatenated.

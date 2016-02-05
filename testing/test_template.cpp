@@ -174,7 +174,42 @@ void test_template_multiplication() {
     }
 }*/
 
-void test_bfs() {
+void test_template_sending() {
+    Matrix matrix(6);
+    matrix.init_range();
+    SmirnovAlgorithm_336<CondensedMatrix> alg;
+    CommunicationHandler<CondensedMatrix> comm_handler;
+
+    if( comm_handler.get_rank() == 0) {
+        SmirnovAlgorithm_336<Matrix> alg2;
+        cout << alg2.calculate_alpha(matrix)[1] << endl;
+
+        DistributionHandler dh1(0, 4, 4);
+        CondensedMatrix a1 = dh1.condensed_distributed_matrix(matrix, 1);
+        vector <CondensedMatrix> alpha1 = alg.calculate_alpha(a1);
+        cout << alpha1[1] << endl;
+        vector <CondensedMatrix> temp1;
+        temp1.push_back(alpha1[1]);
+        cout << temp1[0] << endl;
+        comm_handler.send_receive(temp1, alpha1, 1, 1, 1);
+        cout << temp1[0] << endl;
+    } else {
+        DistributionHandler dh2(1, 4, 4);
+        CondensedMatrix a2 = dh2.condensed_distributed_matrix(matrix, 1);
+        vector <CondensedMatrix> alpha2 = alg.calculate_alpha(a2);
+        cout << alpha2[1] << endl;
+        vector <CondensedMatrix> temp2;
+        temp2.push_back(alpha2[1]);
+        //cout << temp2[0] << endl;
+        comm_handler.send_receive(temp2, alpha2, 1, 1, 0);
+        cout << "from process 1 "<< temp2[0] << endl;
+    }
+
+    comm_handler.barrier();
+
+}
+
+/*void test_bfs() {
     Matrix a(54);
     Matrix b(54);
     Matrix c(54);
@@ -188,7 +223,7 @@ void test_bfs() {
     MultiplyMatrices<Matrix> alg;
     alg.bfs(a,b,c,2,1);
     //CommunicationHandler<Matrix> ch;
-}
+}*/
 
 int main()
 {
@@ -200,6 +235,7 @@ int main()
     //test_template_algorithm_condensed();
     //test_submatrix();
     //test_template_sub_matrices();
-    test_bfs();
+    test_template_sending();
+    //test_bfs();
     return 0;
 }

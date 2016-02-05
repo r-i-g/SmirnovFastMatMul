@@ -166,3 +166,7 @@ void Matrix::init_range() {
 int Matrix::num_elements() const{
     return m_row_dim * m_col_dim;
 }
+
+Matrix Matrix::empty_clone() const {
+    return Matrix(m_row_dim, m_col_dim);
+}

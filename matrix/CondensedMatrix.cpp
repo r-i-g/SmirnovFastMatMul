@@ -32,6 +32,18 @@ CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int condens
     init_positions(0);
 }
 
+CondensedMatrix::CondensedMatrix(const CondensedMatrix& that) :
+    Matrix(that),
+    m_containing_n(that.m_containing_n), m_containing_m(that.m_containing_m), m_condense_factor(that.m_condense_factor)
+{
+    int n = m_containing_n/m_condense_factor, m = m_containing_m/m_condense_factor;
+
+    m_positions = new int[n*m];
+    for (int i = 0; i < n*m; ++i) {
+        m_positions[i] = that.get_positions(i);
+    }
+}
+
 CondensedMatrix::CondensedMatrix(CondensedMatrix&& that) :
     CondensedMatrix(that.m_containing_n, that.m_containing_n, that.m_condense_factor, that.get_positions(), std::move(that))
 {
@@ -148,7 +160,7 @@ int CondensedMatrix::get_condense_factor() {
     return m_condense_factor;
 }
 
-void CondensedMatrix::merge(CondensedMatrix& mat) {
+void CondensedMatrix::merge(const CondensedMatrix& mat) {
     int current_index = 0;
 
     int our_index = 0;
@@ -240,6 +252,14 @@ void CondensedMatrix::init_positions(int value) {
     }
 }
 
+int CondensedMatrix::get_positions(int i) const {
+    return m_positions[i];
+}
+
 int* CondensedMatrix::get_positions(int i, int j) const {
     return m_positions + i * m_stride + j;
+}
+
+CondensedMatrix CondensedMatrix::empty_clone() const {
+    return CondensedMatrix(m_containing_n, m_containing_m, m_condense_factor);
 }

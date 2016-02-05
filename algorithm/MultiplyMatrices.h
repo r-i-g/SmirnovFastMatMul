@@ -102,8 +102,8 @@ namespace SmirnovFastMul{
                 int sub_problem_start = m_distribution_handler.sub_problem_start(k, num_sub_problems);
                 int sub_problem_end = m_distribution_handler.sub_problem_end(k, num_sub_problems);
 
-                vector<MatrixType> alpha_to_send = matrices_to_send(alpha, sub_problem_start, num_sub_problems);
-                vector<MatrixType> beta_to_send = matrices_to_send(beta, sub_problem_start, num_sub_problems);
+                vector<MatrixType> temp_alphas = temp_matrices(alpha, sub_problem_start, num_sub_problems);
+                vector<MatrixType> temp_betas = temp_matrices(beta, sub_problem_start, num_sub_problems);
                 // Sending to targets and receiving from targets
                 for (int i = 0; i < SMIRNOV_SUB_PROBLEMS / num_sub_problems ; ++i) {
 
@@ -116,8 +116,14 @@ namespace SmirnovFastMul{
 
                     // TODO is there a better way to represent and copy the matrices?
                     // i is the group of sub_problems we send
-                    m_comm_handler.send_receive(alpha_to_send, alpha, num_sub_problems, target_processor, sub_problem_start);
-                    m_comm_handler.send_receive(beta_to_send, beta, num_sub_problems, target_processor, sub_problem_start);
+                    m_comm_handler.send_receive(temp_alphas, alpha, i, num_sub_problems, target_processor);
+                    m_comm_handler.send_receive(temp_betas, beta, i, num_sub_problems, target_processor);
+                }
+
+                // Merging our part of the received matrices
+                for (int i = 0; i < num_sub_problems; ++i) {
+                    alpha[sub_problem_start + i] = temp_alphas[i];
+                    beta[sub_problem_start + i] = temp_alphas[i];
                 }
 
                 int sub_matrix_row_dim = A.get_row_dimension() / alg->get_a_base_row_dim();
@@ -151,13 +157,12 @@ namespace SmirnovFastMul{
 
         protected:
 
-            vector<MatrixType> matrices_to_send(vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems) {
-                // TODO copy the matrices to the matrices vector
+            vector<MatrixType> temp_matrices(const vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems) {
+
                 vector<MatrixType> matrices;
                 matrices.reserve(num_sub_problems);
-
                 for (int i = 0; i < num_sub_problems; ++i) {
-                    matrices.push_back(sub_matrices[i + sub_problem_start]);
+                    matrices.push_back(sub_matrices[sub_problem_start + i]);
                 }
 
                 return matrices;

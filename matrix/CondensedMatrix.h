@@ -28,15 +28,13 @@ namespace SmirnovFastMul {
             //CondensedMatrix(int containing_n, int containing_m, int n=0);
             CondensedMatrix(int containing_n, int containing_m, int condense_factor);
 
-            CondensedMatrix(const CondensedMatrix& that) {
-                // TODO implement
-                //cout << "in  copy ctor" << endl;
-            }
+            // c-tor does deep copy
+            CondensedMatrix(const CondensedMatrix& that);
 
             // move constructor
             CondensedMatrix(CondensedMatrix&& that);
             CondensedMatrix& operator=(CondensedMatrix&& that) {
-                cout << "In assignment operator in condensed matrix" << endl;
+                //cout << "In assignment operator in condensed matrix" << endl;
                 swap(*this, that);
                 return *this;
             }
@@ -64,7 +62,7 @@ namespace SmirnovFastMul {
              * Merging two matrices together while keeping the sparse representation.
              * The order of the merge is determined by the inserted positions in the matrices
              */
-            void merge(CondensedMatrix& mat);
+            void merge(const CondensedMatrix& mat);
 
             // Gets the contained matrix row dimension
             //int get_row_dimension() const;
@@ -75,6 +73,8 @@ namespace SmirnovFastMul {
             // Returns the linear positions of the inserted values. The representation is row major.
             int* get_positions() const;
 
+            int get_positions(int i) const;
+
             int* get_positions(int i, int j) const;
 
             int position_len() const;
@@ -83,6 +83,8 @@ namespace SmirnovFastMul {
             void set_positions();
 
             int get_condense_factor();
+
+            CondensedMatrix empty_clone() const;
 
             // The indices are 0 based
             // This function is used as a view to the elements represnted
@@ -111,6 +113,12 @@ namespace SmirnovFastMul {
                 swap(first.m_containing_n, second.m_containing_n);
                 swap(first.m_containing_m, second.m_containing_m);
                 swap(first.m_positions, second.m_positions);
+            }
+
+            friend CondensedMatrix& operator+= (CondensedMatrix& first, const CondensedMatrix& second) {
+
+                first.merge(second);
+                return first;
             }
 
         protected:
