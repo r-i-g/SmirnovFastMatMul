@@ -13,37 +13,68 @@ using std::vector;
 namespace SmirnovFastMul {
 	namespace Communication {
 
+        template <typename MatrixType>
 		class CommunicationHandler {
 
 		public:
 
-			CommunicationHandler();
+			CommunicationHandler(): m_num_nodes(0), m_rank(-1) {
+
+                // Initializing MPI communication
+                // TODO add a check using mpi_initialized
+                MPI_Init(NULL, NULL);
+                MPI_Comm_size(MPI_COMM_WORLD, &m_num_nodes);
+                MPI_Comm_rank(MPI_COMM_WORLD, &m_rank);
+                // TODO Add a check that the number of processes is a power of 40
+            }
 
             // c-tor
-            CommunicationHandler(const CommunicationHandler& comm_handler);
+            CommunicationHandler(const CommunicationHandler<MatrixType>& comm_handler) :
+                    m_num_nodes(comm_handler.m_num_nodes), m_rank(comm_handler.m_rank)
+            { }
 
-			virtual ~CommunicationHandler();
+			virtual ~CommunicationHandler() {
+
+            }
+
+            void send_matrix(const Matrix& matrix, int node) {
+                // Sending the matrix to node
+                MPI_Request request;
+                // IMPORTAT: Sending the entire matrix and not just the subset of the matrix
+                MPI_Isend(matrix.get_data(), matrix.get_row_dimension() * matrix.get_col_dimension() , MPI_DOUBLE, node, 11, MPI_COMM_WORLD, &request);
+                //MPI_Send(matrix.get_data(), 1, matrix.get_mpi_interpretation().get_type(), node, 11, MPI_COMM_WORLD);
+                MPI_Wait(&request, MPI_STATUS_IGNORE);
+                //std::cout <<"sending"<<std::endl;
+            }
+
+            void receive_matrix(Matrix& matrix, int from_node) {
+
+                MPI_Status status;
+                //MPI_Recv(mat.get_data(), row_dim * col_dim, MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                MPI_Recv(matrix.get_data(),matrix.get_row_dimension() * matrix.get_col_dimension(), MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, &status);
+
+            }
 
 
-            void send_matrix(const Matrix& matrix, int node);
+            void send_matrix(const CondensedMatrix& matrix, int node) {
+                // Sending the position array
+                MPI_Send(matrix.get_positions(), matrix.position_len() , MPI_INT, node, 11, MPI_COMM_WORLD);
 
-            Matrix receive_matrix(int row_dim, int col_dim, int from_node);
+                // Sending the data array
+                MPI_Send(matrix.get_data(), matrix.num_elements() , MPI_DOUBLE, node, 11, MPI_COMM_WORLD);
+            }
 
+            void receive_matrix(CondensedMatrix& matrix, int from_node) {
 
-            void send_matrix(const CondensedMatrix& matrix, int node);
+                MPI_Status status;
+                // Receiving the positions
+                MPI_Recv(matrix.get_positions(), matrix.position_len() , MPI_INT, from_node, 11, MPI_COMM_WORLD, &status);
 
-            CondensedMatrix receive_matrix(int containing_row_dim, int containing_col_dim,
-                                           int row_dim, int col_dim, int from_node);
+                // Receiving the data
+                MPI_Recv(matrix.get_data(), matrix.num_elements() , MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, &status);
 
+            }
 
-            void scatter_sub_matrices(const vector<Matrix>& sub_matrices, const vector<int>& nodes);
-
-            void scatter_matrix(const Matrix& matrix, const vector<int>& nodes);
-
-
-            // The vector already consists of constructed matrices
-            // Additionally, creating the vector to be of size 40
-            vector<Matrix> receive_sub_matrices(int row_dim, int col_dim, const vector<int>& nodes);
 
             /**
              *  Sending num_sub_problems starting at sub_problem to target_processor
@@ -53,28 +84,46 @@ namespace SmirnovFastMul {
              *  @target_processor
              *  @process_sub_problem_start
              */
-            void send_receive(vector<Matrix>& sub_matrices, int sub_problem, int num_sub_problems,
-                              int target_processor, int process_sub_problem_start);
+            void send_receive(const vector<MatrixType>& sub_matrices_to_send, vector<MatrixType>& sub_matrices,
+                              int num_sub_problems, int target_processor, int process_sub_problem_start) {
 
-            void send_receive(vector<CondensedMatrix>& sub_matrices, int sub_problem, int num_sub_problems,
-                              int target_processor, int process_sub_problem_start);
 
-            void send_receive_to(vector<Matrix>& gamma, int sub_problem_start, int num_sub_problems,
-                                 int target_processor, int receive_sub_problem);
+                for (int i = 0; i < num_sub_problems; ++i) {
 
-            int get_num_nodes();
-            int get_rank();
-			// TODO implement send
-			// TODO implement Isend
-			// TODO implement receive
-			// TODO implement receiveI
+                    // We remove deadlocks buy deciding which action we will perform first
+                    if ( target_processor > m_rank) {
+                        send(sub_matrices_to_send, target_processor, i);
+                        receive(sub_matrices, target_processor, i, process_sub_problem_start);
+
+                    } else {
+                        receive(sub_matrices, target_processor, i, process_sub_problem_start);
+                        send(sub_matrices_to_send, target_processor, i);
+                    }
+
+                }
+            }
+
+            int get_num_nodes() {
+                return m_num_nodes;
+            }
+
+            int get_rank() {
+                return m_rank;
+            }
 
 		protected:
 
-            void send(vector<Matrix>& sub_matrices, int target_processor, int sub_problem_index, int sub_problem_group, int num_sub_problems);
+            void send(const vector<MatrixType>& sub_matrices, int target_processor, int sub_problem_index) {
+                send_matrix(sub_matrices[sub_problem_index], target_processor);
+            }
 
-            void receive(vector<Matrix>& sub_matrices, int target_processor, int sub_problem_index, int sub_problem_group, int num_sub_problems,
-                         int process_sub_problem_start);
+            void receive(vector<MatrixType>& sub_matrices, int target_processor, int sub_problem_index,
+                         int process_sub_problem_start) {
+                MatrixType matrix = MatrixType::create_sub_matrix();
+                int receive_to = process_sub_problem_start + sub_problem_index;
+                receive_matrix(matrix, target_processor);
+                sub_matrices[receive_to] += matrix;
+            }
 
 			int m_num_nodes;
 			int m_rank;

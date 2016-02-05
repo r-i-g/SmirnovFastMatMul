@@ -77,11 +77,11 @@ namespace SmirnovFastMul{
                 alg->calculate_c(sub_matrices,C);
             }
 
-            /*
+
             // Should receive the matrices condesned or regular
             void bfs(MatrixType &A, MatrixType& B, MatrixType& C, int k, int num_sub_problems=1) {
 
-                bfs_aux(dist_A, dist_B, C, k, 0, num_sub_problems);
+                bfs_aux(A, B, C, k, 0, num_sub_problems);
             }
 
             void bfs_aux(MatrixType &A, MatrixType& B, MatrixType& C, int k, int alg_index, int num_sub_problems=1) {
@@ -102,6 +102,8 @@ namespace SmirnovFastMul{
                 int sub_problem_start = m_distribution_handler.sub_problem_start(k, num_sub_problems);
                 int sub_problem_end = m_distribution_handler.sub_problem_end(k, num_sub_problems);
 
+                vector<MatrixType> alpha_to_send = matrices_to_send(alpha, sub_problem_start, num_sub_problems);
+                vector<MatrixType> beta_to_send = matrices_to_send(beta, sub_problem_start, num_sub_problems);
                 // Sending to targets and receiving from targets
                 for (int i = 0; i < SMIRNOV_SUB_PROBLEMS / num_sub_problems ; ++i) {
 
@@ -114,17 +116,17 @@ namespace SmirnovFastMul{
 
                     // TODO is there a better way to represent and copy the matrices?
                     // i is the group of sub_problems we send
-                    m_comm_handler.send_receive(alpha, i, num_sub_problems, target_processor, sub_problem_start);
-                    m_comm_handler.send_receive(beta, i, num_sub_problems, target_processor, sub_problem_start);
+                    m_comm_handler.send_receive(alpha_to_send, alpha, num_sub_problems, target_processor, sub_problem_start);
+                    m_comm_handler.send_receive(beta_to_send, beta, num_sub_problems, target_processor, sub_problem_start);
                 }
 
                 int sub_matrix_row_dim = A.get_row_dimension() / alg->get_a_base_row_dim();
                 int sub_matrix_col_dim = B.get_col_dimension() / alg->get_b_base_col_dim();
 
-                for (int i = sub_problem_start; i <= sub_problem_end; ++i) {
+                /*for (int i = sub_problem_start; i <= sub_problem_end; ++i) {
 
                     // Creating an empty matrix as sub_problem[i]
-                    sub_problems[i] = std::move(Matrix(sub_matrix_row_dim, sub_matrix_col_dim));
+                    sub_problems[i] = std::move(MatrixType(sub_matrix_row_dim, sub_matrix_col_dim));
 
                     bfs_aux(alpha[i], beta[i], sub_problems[i], k-1, advance_algorithm(alg_index), num_sub_problems);
                 }
@@ -144,10 +146,22 @@ namespace SmirnovFastMul{
 
 
                 // Locally computing C from gammas
-                alg->calculate_c(sub_problems, C);
-            }*/
+                alg->calculate_c(sub_problems, C);*/
+            }
 
         protected:
+
+            vector<MatrixType> matrices_to_send(vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems) {
+                // TODO copy the matrices to the matrices vector
+                vector<MatrixType> matrices;
+                matrices.reserve(num_sub_problems);
+
+                for (int i = 0; i < num_sub_problems; ++i) {
+                    matrices.push_back(sub_matrices[i + sub_problem_start]);
+                }
+
+                return matrices;
+            }
 
             void local_multiplication(Matrix&A, Matrix& B, Matrix& C) {
 
@@ -179,7 +193,7 @@ namespace SmirnovFastMul{
             int get_sub_problem(int start_processor, int end_processor);
 
             // The communication handler to be used throughout the multiplication algorithm
-            CommunicationHandler m_comm_handler;
+            CommunicationHandler<MatrixType> m_comm_handler;
 
             DistributionHandler m_distribution_handler;
 

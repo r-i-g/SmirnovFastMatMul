@@ -89,7 +89,7 @@ void test_submatrix() {
     CondensedMatrix cm2 = cm.sub_matrix(2,2,0,0);
     cout << cm << endl;
     cout << cm2 << endl;
-}*/
+}
 
 void test_template_algorithm_condensed() {
     // Creating a condensed matrix
@@ -100,7 +100,7 @@ void test_template_algorithm_condensed() {
     CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
 
     SmirnovAlgorithm_336<Matrix> sa1;
-    /*auto alpha1 = sa1.calculate_alpha(matrix);
+    auto alpha1 = sa1.calculate_alpha(matrix);
     for (int i = 0; i < 3; ++i) {
         cout << alpha1[i] << endl;
     }
@@ -111,7 +111,7 @@ void test_template_algorithm_condensed() {
     auto alpha2 = sa2.calculate_alpha(cm);
     for (int i = 0; i < 3; ++i) {
         cout << alpha2[i] << endl;
-    }*/
+    }
 
     Matrix matrix2(12);
     matrix2.init_range();
@@ -133,7 +133,7 @@ void test_template_algorithm_condensed() {
     }
 }
 
-/*
+
 void test_template_multiplication() {
 
     Matrix a(54);
@@ -158,7 +158,7 @@ void test_template_multiplication() {
 
     cout << "test condensed" << endl;
     // TODO solve the issue with condensedmatrix in dfs
-    /*MultiplyMatrices<CondensedMatrix> alg2;
+    MultiplyMatrices<CondensedMatrix> alg2;
     CondensedMatrix a2(54,54,1);
     CondensedMatrix b2(54,54,1);
     CondensedMatrix c2(54,54,1);
@@ -174,6 +174,22 @@ void test_template_multiplication() {
     }
 }*/
 
+void test_bfs() {
+    Matrix a(54);
+    Matrix b(54);
+    Matrix c(54);
+    Matrix test_result(54);
+
+    // Initializing the matrices
+    a.init(2);
+    b.init(3);
+    test_result.init(324);
+
+    MultiplyMatrices<Matrix> alg;
+    alg.bfs(a,b,c,2,1);
+    //CommunicationHandler<Matrix> ch;
+}
+
 int main()
 {
     //SmirnovAlgorithm_336<CondensedMatrix> sac;
@@ -181,8 +197,9 @@ int main()
 
     //test_template_algorithm();
     //test_template_multiplication();
-    test_template_algorithm_condensed();
+    //test_template_algorithm_condensed();
     //test_submatrix();
     //test_template_sub_matrices();
+    test_bfs();
     return 0;
 }

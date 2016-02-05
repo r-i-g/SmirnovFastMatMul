@@ -155,7 +155,7 @@ namespace SmirnovFastMul {
                     // TODO change back to alg_row_dim and alg_col_dim
                     //cout << "In implememt in condense. alg_row_dim: " << alg_row_dim << " alg_col_dim:" << alg_col_dim << " condense factor:"  << condense_factor << endl;
                     CondensedMatrix output(alg_row_dim * condense_factor, alg_col_dim * condense_factor, condense_factor);
-                    //cout << output << endl;
+                    //cout << output << endl
 
                     (*alg_entrance)(sub_matrices, output);
                     //cout << output << endl;
@@ -174,6 +174,9 @@ namespace SmirnovFastMul {
                     (*alg_entrance)(sub_matrices, out[i]);
                 }
             }
+
+            //Matrix sub_matrix_creation();
+            //CondensedMatrix sub_matrix_creation();
 
         private:
 
