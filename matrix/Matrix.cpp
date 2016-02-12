@@ -32,7 +32,7 @@ Matrix::Matrix(int n) : Matrix(n,n) {}
 
 
 Matrix::Matrix(const Matrix& that) : Matrix(that.get_data(), that.get_mpi_interpretation(), that.get_row_dimension(),
-                                            that.get_col_dimension(), that.get_stride(), false) {
+                                            that.get_col_dimension(), that.get_col_dimension(), false) {
 
     //std::cout << "in copy constructror" << std::endl;
 
@@ -45,7 +45,7 @@ Matrix::Matrix(const Matrix& that) : Matrix(that.get_data(), that.get_mpi_interp
 	{
 		for (int j = 0; j < m_col_dim; j++)
 		{
-			m_data[i*m_stride + j] = that_data[i*m_stride + j];
+			m_data[i*m_stride + j] = that(i,j);
 		}
 	}
 

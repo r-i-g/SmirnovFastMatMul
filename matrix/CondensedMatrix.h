@@ -26,7 +26,7 @@ namespace SmirnovFastMul {
             CondensedMatrix(int containing_n, int containing_m, int n, int m);
             // deprecated
             //CondensedMatrix(int containing_n, int containing_m, int n=0);
-            CondensedMatrix(int containing_n, int containing_m, int condense_factor);
+            CondensedMatrix(int containing_n, int containing_m, int condense_factor=1);
 
             // c-tor does deep copy
             CondensedMatrix(const CondensedMatrix& that);
@@ -56,8 +56,6 @@ namespace SmirnovFastMul {
              */
             CondensedMatrix sub_matrix(int num_rows, int num_col, int start_row, int start_col);
 
-            bool is_contained(int i, int j);
-
             /**
              * Merging two matrices together while keeping the sparse representation.
              * The order of the merge is determined by the inserted positions in the matrices
@@ -82,7 +80,7 @@ namespace SmirnovFastMul {
             // Sets the position array containing the elements represented by the class
             void set_positions();
 
-            int get_condense_factor();
+            int get_condense_factor() const;
 
             CondensedMatrix empty_clone() const;
 
@@ -93,13 +91,16 @@ namespace SmirnovFastMul {
             //double& operator()(int i, int j);
 
             friend std::ostream& operator<<(std::ostream& os, const CondensedMatrix& mat) {
-                const Matrix& matrix = dynamic_cast<const Matrix&>(mat);
-                for (int i = 0; i < matrix.get_row_dimension(); ++i) {
-                    for (int j = 0; j < matrix.get_col_dimension(); ++j) {
-                        os << *(mat.get_positions(i, j)) << " ";
+                // TODO need to fix the position print to print a matrix instead of a row
+                if (mat.get_condense_factor() != 1) {
+                    const Matrix &matrix = dynamic_cast<const Matrix &>(mat);
+                    for (int i = 0; i < matrix.get_row_dimension(); ++i) {
+                        for (int j = 0; j < matrix.get_col_dimension(); ++j) {
+                            os << *(mat.get_positions(i, j)) << " ";
+                        }
                     }
+                    os << endl;
                 }
-                os << endl;
 
                 os << dynamic_cast<const Matrix&>(mat) << endl;
 

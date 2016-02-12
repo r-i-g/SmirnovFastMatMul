@@ -24,8 +24,13 @@ CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int n, int 
 
 CondensedMatrix::CondensedMatrix(int containing_n, int containing_m, int condense_factor):
         Matrix(containing_n/condense_factor, containing_m/condense_factor),
-        m_containing_n(containing_n), m_containing_m(containing_m), m_condense_factor(condense_factor)
+        m_containing_n(containing_n), m_containing_m(containing_m), m_condense_factor(condense_factor),
+        m_positions(nullptr)
 {
+    if (m_condense_factor == 1) {
+        return;
+    }
+
     int n = containing_n/condense_factor, m = containing_m/condense_factor;
 
     m_positions = new int[n*m];
@@ -36,6 +41,11 @@ CondensedMatrix::CondensedMatrix(const CondensedMatrix& that) :
     Matrix(that),
     m_containing_n(that.m_containing_n), m_containing_m(that.m_containing_m), m_condense_factor(that.m_condense_factor)
 {
+
+    if (m_condense_factor == 1) {
+        return;
+    }
+    //cout << " in copy constructor in condensematrix" << endl;
     int n = m_containing_n/m_condense_factor, m = m_containing_m/m_condense_factor;
 
     m_positions = new int[n*m];
@@ -59,6 +69,10 @@ CondensedMatrix::~CondensedMatrix() {
 
 // The parameters are in the condensed matrix scale
 int* CondensedMatrix::sub_position(int num_rows, int num_col, int start_row, int start_col) {
+
+    if(m_positions == nullptr)
+        return nullptr;
+
     int num_elements = num_rows * num_col;
 
     int sub_position_start = start_row * m_stride + start_col;
@@ -142,10 +156,6 @@ int col_amount(int* positions, int len, int num_columns) {
     }
 }
 
-bool CondensedMatrix::is_contained(int i, int j) {
-
-}
-
 void CondensedMatrix::set_positions() {
     for (int i = 0; i < m_row_dim; ++i) {
         for (int j = 0; j < m_col_dim; ++j) {
@@ -156,7 +166,7 @@ void CondensedMatrix::set_positions() {
     }
 }
 
-int CondensedMatrix::get_condense_factor() {
+int CondensedMatrix::get_condense_factor() const {
     return m_condense_factor;
 }
 

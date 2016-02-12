@@ -146,11 +146,12 @@ namespace SmirnovFastMul {
                 alg_results_matrices.reserve(algorithm.size());
                 // Setting the condense facot
                 int condense_factor = sub_matrices[0].get_condense_factor();
+
                 for(const auto& alg_entrance : algorithm) {
                     // TODO change back to alg_row_dim and alg_col_dim
                     //cout << "In implememt in condense. alg_row_dim: " << alg_row_dim << " alg_col_dim:" << alg_col_dim << " condense factor:"  << condense_factor << endl;
                     CondensedMatrix output(const_cast<CondensedMatrix&>(sub_matrices[0]));
-                    //cout << output << endl
+                    //cout << output << endl;
 
                     (*alg_entrance)(sub_matrices, output);
                     //cout << output << endl;
