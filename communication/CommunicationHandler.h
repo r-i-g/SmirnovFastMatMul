@@ -22,7 +22,11 @@ namespace SmirnovFastMul {
 
                 // Initializing MPI communication
                 // TODO add a check using mpi_initialized
-                MPI_Init(NULL, NULL);
+                int is_initialized;
+                MPI_Initialized(&is_initialized);
+                if(!is_initialized) {
+                    MPI_Init(NULL, NULL);
+                }
                 MPI_Comm_size(MPI_COMM_WORLD, &m_num_nodes);
                 MPI_Comm_rank(MPI_COMM_WORLD, &m_rank);
                 // TODO Add a check that the number of processes is a power of 40
@@ -34,7 +38,11 @@ namespace SmirnovFastMul {
             { }
 
 			virtual ~CommunicationHandler() {
-                MPI_Finalize();
+                int is_finalized;
+                MPI_Finalized(&is_finalized);
+                if(!is_finalized) {
+                    MPI_Finalize();
+                }
             }
 
             void send_matrix(const Matrix& matrix, int node) {

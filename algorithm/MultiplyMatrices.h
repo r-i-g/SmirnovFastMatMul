@@ -96,7 +96,7 @@ namespace SmirnovFastMul{
 
                 vector<MatrixType> alpha = alg->calculate_alpha(A);
                 vector<MatrixType> beta = alg->calculate_beta(B);
-                vector<MatrixType> sub_problems(SMIRNOV_SUB_PROBLEMS);
+                vector<MatrixType> sub_problems;
                 sub_problems.reserve(SMIRNOV_SUB_PROBLEMS);
 
                 int sub_problem_start = m_distribution_handler.sub_problem_start(k, num_sub_problems);
@@ -123,7 +123,7 @@ namespace SmirnovFastMul{
                 // Merging our part of the received matrices
                 for (int i = 0; i < num_sub_problems; ++i) {
                     alpha[sub_problem_start + i] = temp_alphas[i];
-                    beta[sub_problem_start + i] = temp_alphas[i];
+                    beta[sub_problem_start + i] = temp_betas[i];
                 }
 
                 int sub_matrix_row_dim = A.get_row_dimension() / alg->get_a_base_row_dim();
@@ -155,8 +155,81 @@ namespace SmirnovFastMul{
                 alg->calculate_c(sub_problems, C);*/
             }
 
-        protected:
 
+            vector<MatrixType> test_distribution_alpha(MatrixType &A, int k, int alg_index, int num_sub_problems) {
+
+                // Locally computing alphas and betas from A and B
+                auto alg = m_algorithms[alg_index];
+
+                vector<MatrixType> alpha = alg->calculate_alpha(A);
+                vector<MatrixType> sub_problems;
+                sub_problems.reserve(SMIRNOV_SUB_PROBLEMS);
+
+                int sub_problem_start = m_distribution_handler.sub_problem_start(k, num_sub_problems);
+                int sub_problem_end = m_distribution_handler.sub_problem_end(k, num_sub_problems);
+
+                vector<MatrixType> temp_alphas = temp_matrices(alpha, sub_problem_start, num_sub_problems);
+                // Sending to targets and receiving from targets
+                for (int i = 0; i < SMIRNOV_SUB_PROBLEMS / num_sub_problems ; ++i) {
+
+                    int target_processor = m_distribution_handler.target_processor(i, k);
+
+                    // There's no need to send ourselves the data
+                    if (target_processor == m_comm_handler.get_rank()) {
+                        continue;
+                    }
+
+                    // TODO is there a better way to represent and copy the matrices?
+                    // i is the group of sub_problems we send
+                    cout << "form rank " << m_comm_handler.get_rank() << " sending to target " << target_processor << endl;
+                    m_comm_handler.send_receive(temp_alphas, alpha, i, num_sub_problems, target_processor);
+                }
+
+                // Merging our part of the received matrices
+                for (int i = 0; i < num_sub_problems; ++i) {
+                    alpha[sub_problem_start + i] = std::move(temp_alphas[i]);
+                }
+
+                return alpha;
+            }
+
+            vector<MatrixType> test_distribution_beta(MatrixType& B, int k, int alg_index, int num_sub_problems=1) {
+
+                // Locally computing alphas and betas from A and B
+                auto alg = m_algorithms[alg_index];
+
+                vector<MatrixType> beta = alg->calculate_beta(B);
+                vector<MatrixType> sub_problems(SMIRNOV_SUB_PROBLEMS);
+                sub_problems.reserve(SMIRNOV_SUB_PROBLEMS);
+
+                int sub_problem_start = m_distribution_handler.sub_problem_start(k, num_sub_problems);
+                int sub_problem_end = m_distribution_handler.sub_problem_end(k, num_sub_problems);
+
+                vector<MatrixType> temp_betas = temp_matrices(beta, sub_problem_start, num_sub_problems);
+                // Sending to targets and receiving from targets
+                for (int i = 0; i < SMIRNOV_SUB_PROBLEMS / num_sub_problems ; ++i) {
+
+                    int target_processor = m_distribution_handler.target_processor(i, k);
+
+                    // There's no need to send ourselves the data
+                    if (target_processor == m_comm_handler.get_rank()) {
+                        continue;
+                    }
+
+                    // TODO is there a better way to represent and copy the matrices?
+                    // i is the group of sub_problems we send
+                    m_comm_handler.send_receive(temp_betas, beta, i, num_sub_problems, target_processor);
+                }
+
+                // Merging our part of the received matrices
+                for (int i = 0; i < num_sub_problems; ++i) {
+                    beta[sub_problem_start + i] = std::move(temp_betas[i]);
+                }
+
+                return beta;
+            }
+
+        protected:
             vector<MatrixType> temp_matrices(const vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems) {
 
                 vector<MatrixType> matrices;

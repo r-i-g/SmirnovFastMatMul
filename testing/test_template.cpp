@@ -213,7 +213,7 @@ void test_bfs() {
     MultiplyMatrices<Matrix> alg;
     alg.bfs(a,b,c,2,1);
     //CommunicationHandler<Matrix> ch;
-}*/
+}
 
 void test_template_multiplication() {
 
@@ -229,7 +229,7 @@ void test_template_multiplication() {
 
 
 
-    /*MultiplyMatrices<Matrix> alg;
+    MultiplyMatrices<Matrix> alg;
     alg.dfs(a,b,c,2,0);
 
     cout << "test matrix" << endl;
@@ -237,7 +237,7 @@ void test_template_multiplication() {
         cout << "error with dfs" << endl;
     } else {
         cout << "success with dfs" << endl;
-    }*/
+    }
 
     cout << "test condensed" << endl;
     // TODO solve the issue with condensedmatrix in dfs
@@ -256,6 +256,37 @@ void test_template_multiplication() {
     } else {
         cout << "success with dfs" << endl;
     }
+}*/
+
+void test_distribution() {
+
+    CommunicationHandler<CondensedMatrix> comm_handler;
+    DistributionHandler dh(comm_handler.get_rank(), 4, 2);
+    MultiplyMatrices<CondensedMatrix> alg(dh);
+
+    Matrix mat(6);
+    mat.init_range();
+    if(comm_handler.get_rank() == 0) {
+        cout << mat << endl;
+    }
+
+    CondensedMatrix a = dh.condensed_distributed_matrix(mat,1);
+    vector<CondensedMatrix> alpha = alg.test_distribution_alpha(a,2,0,20);
+    int start_index = dh.sub_problem_start(2,20);
+
+
+    if(comm_handler.get_rank() == 1) {
+        SmirnovAlgorithm_336<Matrix> alg2;
+        vector<Matrix> alpha2 = alg2.calculate_alpha(mat);
+        for(int i = start_index, j=0; i < start_index + 3; j++, i++) {
+            cout << "Printing the matrix" << endl;
+            cout << alpha2[i] << endl;
+
+            cout << "Printing the condensed matrix" << endl;
+            cout <<  alpha[j] << endl;
+        }
+    }
+
 }
 
 int main()
@@ -264,12 +295,13 @@ int main()
     //SmirnovAlgorithm<CondensedMatrix>& sa = sac;
 
     //test_template_algorithm();
-    test_template_multiplication();
+    //test_template_multiplication();
     //test_template_algorithm_condensed();
     //test_submatrix();
     //test_template_sub_matrices();
     //test_template_sending();
     //test_bfs();
     //test_template_sub_matrices();
+    test_distribution();
     return 0;
 }
