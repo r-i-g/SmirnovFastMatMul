@@ -256,7 +256,7 @@ void test_template_multiplication() {
     } else {
         cout << "success with dfs" << endl;
     }
-}*/
+}
 
 void test_distribution() {
 
@@ -287,6 +287,44 @@ void test_distribution() {
         }
     }
 
+}*/
+void test_bfs_minimized() {
+    CommunicationHandler<CondensedMatrix> comm_handler;
+    DistributionHandler dh(comm_handler.get_rank(), 4, 2);
+    MultiplyMatrices<CondensedMatrix> alg(dh);
+
+    Matrix mat_a(6);
+    mat_a.init(2);
+    Matrix mat_b(6,12);
+    mat_b.init(3);
+    if(comm_handler.get_rank() == 0) {
+        cout << mat_a << endl;
+        cout << mat_b << endl;
+    }
+
+    CondensedMatrix c(6,12);
+    CondensedMatrix a = dh.condensed_distributed_matrix(mat_a,1);
+    CondensedMatrix b = dh.condensed_distributed_matrix(mat_b,1);
+
+    if( comm_handler.get_rank() == 0) {
+        cout << "a matrix " << endl;
+        cout << a << endl;
+        cout << "b matrix " << endl;
+        cout << b << endl;
+    }
+
+    alg.bfs(a,b,c,1,20);
+    if( comm_handler.get_rank() == 0) {
+        MultiplyMatrices<Matrix> alg2;
+        Matrix c2(6,12);
+        alg2.dfs(mat_a,mat_b,c2,1,0);
+
+        cout << "Regular multiplication is"<< endl;
+        cout << c2 << endl;
+
+        cout << "CAPS multiplication is" << endl;
+        cout << c << endl;
+    }
 }
 
 int main()
@@ -302,6 +340,7 @@ int main()
     //test_template_sending();
     //test_bfs();
     //test_template_sub_matrices();
-    test_distribution();
+    //test_distribution();
+    test_bfs_minimized();
     return 0;
 }

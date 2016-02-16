@@ -111,6 +111,23 @@ namespace SmirnovFastMul {
                 }
             }
 
+            void send_receive_to(vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems,
+                                 int target_processor, int receive_sub_problem) {
+
+                for (int i = 0; i < num_sub_problems; ++i) {
+                    int send_index = i + sub_problem_start;
+
+                    send_matrix(sub_matrices[send_index], target_processor);
+
+                    MatrixType temp_matrix = sub_matrices[sub_problem_start].empty_clone();
+
+                    int receive_to = receive_sub_problem * num_sub_problems + i;
+
+                    receive_matrix(temp_matrix, target_processor);
+                    sub_matrices[receive_to] = std::move(temp_matrix);
+                }
+            }
+
             int get_num_nodes() {
                 return m_num_nodes;
             }

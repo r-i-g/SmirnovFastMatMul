@@ -122,14 +122,14 @@ namespace SmirnovFastMul{
 
                 // Merging our part of the received matrices
                 for (int i = 0; i < num_sub_problems; ++i) {
-                    alpha[sub_problem_start + i] = temp_alphas[i];
-                    beta[sub_problem_start + i] = temp_betas[i];
+                    alpha[sub_problem_start + i] = std::move(temp_alphas[i]);
+                    beta[sub_problem_start + i] = std::move(temp_betas[i]);
                 }
 
                 int sub_matrix_row_dim = A.get_row_dimension() / alg->get_a_base_row_dim();
                 int sub_matrix_col_dim = B.get_col_dimension() / alg->get_b_base_col_dim();
 
-                /*for (int i = sub_problem_start; i <= sub_problem_end; ++i) {
+                for (int i = sub_problem_start; i <= sub_problem_end; ++i) {
 
                     // Creating an empty matrix as sub_problem[i]
                     sub_problems[i] = std::move(MatrixType(sub_matrix_row_dim, sub_matrix_col_dim));
@@ -147,12 +147,13 @@ namespace SmirnovFastMul{
                         continue;
                     }
 
+                    cout << "from rank " << m_comm_handler.get_rank() << " sending to target " << target_processor << endl;
                     m_comm_handler.send_receive_to(sub_problems, sub_problem_start, num_sub_problems, target_processor, i);
                 }
 
 
                 // Locally computing C from gammas
-                alg->calculate_c(sub_problems, C);*/
+                alg->calculate_c(sub_problems, C);
             }
 
 
