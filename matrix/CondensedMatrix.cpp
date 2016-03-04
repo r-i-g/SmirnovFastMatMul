@@ -55,7 +55,7 @@ CondensedMatrix::CondensedMatrix(const CondensedMatrix& that) :
 }
 
 CondensedMatrix::CondensedMatrix(CondensedMatrix&& that) :
-    CondensedMatrix(that.m_containing_n, that.m_containing_n, that.m_condense_factor, that.get_positions(), std::move(that))
+    CondensedMatrix(that.m_containing_n, that.m_containing_m, that.m_condense_factor, that.get_positions(), std::move(that))
 {
     //cout << "in move ctor" << endl;
     that.m_positions = nullptr;
@@ -64,7 +64,9 @@ CondensedMatrix::CondensedMatrix(CondensedMatrix&& that) :
 CondensedMatrix::~CondensedMatrix() {
     // We always own the data
     //cout << "in condense d-tor" << endl;
-    delete [] m_positions;
+    if (m_positions != nullptr) {
+        delete [] m_positions;
+    }
 }
 
 // The parameters are in the condensed matrix scale
@@ -213,8 +215,9 @@ void CondensedMatrix::merge(const CondensedMatrix& mat) {
     }
 
     // Cleaning our data and assigning the new merged data and positions
-    delete [] m_data;
+    //delete [] m_data;
     m_data = merged_data;
+    m_is_view = false;
 
     delete [] m_positions;
     m_positions = merged_position;
@@ -235,7 +238,8 @@ int CondensedMatrix::get_col_dimension() const {
 }*/
 
 int CondensedMatrix::position_len() const {
-    return num_elements();
+    //return num_elements();
+    return m_row_dim * m_col_dim;
 }
 
 int* CondensedMatrix::get_positions() const {
@@ -267,7 +271,7 @@ int CondensedMatrix::get_positions(int i) const {
 }
 
 int* CondensedMatrix::get_positions(int i, int j) const {
-    return m_positions + i * m_stride + j;
+    return m_positions + i * m_col_dim + j;
 }
 
 CondensedMatrix CondensedMatrix::empty_clone() const {

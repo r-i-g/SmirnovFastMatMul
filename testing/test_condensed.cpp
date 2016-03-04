@@ -86,7 +86,7 @@ void test_condensed_sub_matrix() {
     Matrix matrix(4);
     matrix.init_range();
 
-    CommunicationHandler ch;
+    CommunicationHandler<CondensedMatrix> ch;
     int rank = ch.get_rank();
 
     DistributionHandler dh(0,4,4);
@@ -96,14 +96,12 @@ void test_condensed_sub_matrix() {
 
     CondensedMatrix cm2 = cm.sub_matrix(3,1,0,0);
     cout << cm2 << endl;
+    cout << cm2.position_len() << endl;
 
     //CondensedMatrix cm3 = cm3.sub_matrix();
 }
 
 
-void test_move_ctor() {
-    vec
-}
 /*
 void test_changes_to_inner_algorithm() {
     Matrix matrix(12);

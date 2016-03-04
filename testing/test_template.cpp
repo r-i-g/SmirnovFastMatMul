@@ -288,23 +288,66 @@ void test_distribution() {
     }
 
 }*/
+
+void test_bfs() {
+    CommunicationHandler<CondensedMatrix> comm_handler;
+    DistributionHandler dh(comm_handler.get_rank(), 4, 2);
+    MultiplyMatrices<CondensedMatrix> alg(dh);
+
+    Matrix mat_a(18,36);
+    mat_a.init_range();
+    Matrix mat_b(36);
+    mat_b.init_range();
+
+    Matrix mat_c(18,36);
+    CondensedMatrix a = dh.condensed_distributed_matrix(mat_a,1);
+    CondensedMatrix b = dh.condensed_distributed_matrix(mat_b,1);
+    CondensedMatrix c = dh.condensed_distributed_matrix(mat_c,1);
+
+    if( comm_handler.get_rank() == 1) {
+        cout << "a matrix " << endl;
+        cout << a << endl;
+        cout << "b matrix " << endl;
+        cout << b << endl;
+    }
+
+    alg.bfs(a,b,c,2,20);
+    if( comm_handler.get_rank() == 0) {
+        //MultiplyMatrices<Matrix> alg2;
+        //Matrix c2(18,36);
+        //alg2.dfs(mat_a,mat_b,c2,2,0);
+
+        //cout << "Regular multiplication is"<< endl;
+        //cout <<std::fixed << c2 << endl;
+
+        cout << "CAPS multiplication is" << endl;
+        cout <<std::fixed << c << endl;
+    }
+    else if (comm_handler.get_rank() == 1) {
+        cout << "CAPS multiplication is from rank 1" << endl;
+        cout <<std::fixed << c << endl;
+    }
+    else if (comm_handler.get_rank() == 2) {
+        cout << "CAPS multiplication is from rank 2" << endl;
+        cout <<std::fixed << c << endl;
+    }
+}
+
+ /*
 void test_bfs_minimized() {
     CommunicationHandler<CondensedMatrix> comm_handler;
     DistributionHandler dh(comm_handler.get_rank(), 4, 2);
     MultiplyMatrices<CondensedMatrix> alg(dh);
 
     Matrix mat_a(6);
-    mat_a.init(2);
+    mat_a.init_range();
     Matrix mat_b(6,12);
-    mat_b.init(3);
-    if(comm_handler.get_rank() == 0) {
-        cout << mat_a << endl;
-        cout << mat_b << endl;
-    }
+    mat_b.init_range();
 
-    CondensedMatrix c(6,12);
+    Matrix mat_c(6,12);
     CondensedMatrix a = dh.condensed_distributed_matrix(mat_a,1);
     CondensedMatrix b = dh.condensed_distributed_matrix(mat_b,1);
+    CondensedMatrix c = dh.condensed_distributed_matrix(mat_c,1);
 
     if( comm_handler.get_rank() == 0) {
         cout << "a matrix " << endl;
@@ -315,17 +358,68 @@ void test_bfs_minimized() {
 
     alg.bfs(a,b,c,1,20);
     if( comm_handler.get_rank() == 0) {
-        MultiplyMatrices<Matrix> alg2;
-        Matrix c2(6,12);
-        alg2.dfs(mat_a,mat_b,c2,1,0);
+        //MultiplyMatrices<Matrix> alg2;
+        //Matrix c2(18,36);
+        //alg2.dfs(mat_a,mat_b,c2,2,0);
 
-        cout << "Regular multiplication is"<< endl;
-        cout << c2 << endl;
+        //cout << "Regular multiplication is"<< endl;
+        //cout <<std::fixed << c2 << endl;
 
         cout << "CAPS multiplication is" << endl;
-        cout << c << endl;
+        cout <<std::fixed << c << endl;
+    }
+    else if (comm_handler.get_rank() == 1) {
+        cout << "CAPS multiplication is from rank 1" << endl;
+        cout <<std::fixed << c << endl;
     }
 }
+
+ /*
+void test_alpha() {
+    CommunicationHandler<CondensedMatrix> comm_handler;
+    DistributionHandler dh(comm_handler.get_rank(), 4, 2);
+    SmirnovAlgorithm_336<CondensedMatrix> alg;
+
+    Matrix mat_a(18,36);
+    mat_a.init(2);
+    Matrix mat_b(36);
+    mat_b.init(3);
+
+    //Matrix mat_c(18,36);
+    CondensedMatrix a = dh.condensed_distributed_matrix(mat_a,1);
+    CondensedMatrix b = dh.condensed_distributed_matrix(mat_b,1);
+
+    auto sub_a = alg.create_sub_matrices(3,3,a);
+    cout << a << endl;
+    for (int i = 0; i < 5; ++i) {
+        cout << sub_a[i] << endl;
+    }
+
+    //CondensedMatrix c = dh.condensed_distributed_matrix(mat_c,1);
+    vector<CondensedMatrix> alpha = alg.calculate_alpha(a);
+    vector<CondensedMatrix> beta = alg.calculate_beta(b);
+    for (int i = 0; i < 5; ++i) {
+        cout << alpha[i] << endl;
+        cout << beta[i] << endl;
+    }
+}
+
+void test_dfs() {
+    MultiplyMatrices<Matrix> alg2;
+    Matrix mat_a(9,18);
+    mat_a.init_range();
+    Matrix mat_b(18);
+    mat_b.init_range();
+
+    Matrix mat_c(9,18);
+    //alg2.dfs(mat_a,mat_b,c2,2,0);
+    //cout << c2 << endl;
+    alg2.local_multiplication(mat_a,mat_b,mat_c);
+    cout << std::fixed << mat_c << endl;
+    alg2.dfs(mat_a, mat_b,mat_c,2,0);
+    cout << std::fixed << mat_c << endl;
+
+}*/
 
 int main()
 {
@@ -338,9 +432,11 @@ int main()
     //test_submatrix();
     //test_template_sub_matrices();
     //test_template_sending();
-    //test_bfs();
     //test_template_sub_matrices();
     //test_distribution();
-    test_bfs_minimized();
+    //test_bfs_minimized();
+    //test_alpha();
+    //test_dfs();
+    test_bfs();
     return 0;
 }

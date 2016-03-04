@@ -65,8 +65,12 @@ namespace SmirnovFastMul {
 
 
             void send_matrix(const CondensedMatrix& matrix, int node) {
+
                 // Sending the position array
-                MPI_Send(matrix.get_positions(), matrix.position_len() , MPI_INT, node, 11, MPI_COMM_WORLD);
+                //cout << "from rank " << m_rank << " sending position lne " << matrix.position_len() << " to " << node  << endl;
+                if (matrix.get_condense_factor() != 1) {
+                    MPI_Send(matrix.get_positions(), matrix.position_len() , MPI_INT, node, 11, MPI_COMM_WORLD);
+                }
 
                 // Sending the data array
                 MPI_Send(matrix.get_data(), matrix.num_elements() , MPI_DOUBLE, node, 11, MPI_COMM_WORLD);
@@ -75,8 +79,12 @@ namespace SmirnovFastMul {
             void receive_matrix(CondensedMatrix& matrix, int from_node) {
 
                 MPI_Status status;
+                //cout << "from rank " << m_rank << " receiving position lne " << matrix.position_len() << " from " << from_node  << endl;
                 // Receiving the positions
-                MPI_Recv(matrix.get_positions(), matrix.position_len() , MPI_INT, from_node, 11, MPI_COMM_WORLD, &status);
+                if (matrix.get_condense_factor() != 1) {
+                    MPI_Recv(matrix.get_positions(), matrix.position_len(), MPI_INT, from_node, 11, MPI_COMM_WORLD,
+                             &status);
+                }
 
                 // Receiving the data
                 MPI_Recv(matrix.get_data(), matrix.num_elements() , MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, &status);
@@ -111,22 +119,46 @@ namespace SmirnovFastMul {
                 }
             }
 
+            void send_receive_parts(const vector<MatrixType>& send_parts, int num_sub_problems, int target_processor,
+                                    vector<MatrixType>& sub_problems, int receive_sub_problem) {
+                for (int i = 0; i < num_sub_problems; ++i) {
+                    MatrixType temp_matrix = send_parts[0].empty_clone();
+                    int receive_to = receive_sub_problem * num_sub_problems + i;
+                    sub_problems[receive_to] = std::move(temp_matrix);
+
+                    if ( target_processor > m_rank) {
+                        send_matrix(send_parts[i], target_processor);
+                        receive_matrix(sub_problems[receive_to], target_processor);
+                    } else {
+                        receive_matrix(sub_problems[receive_to], target_processor);
+                        send_matrix(send_parts[i], target_processor);
+                    }
+                }
+            }
+
+            /*
             void send_receive_to(vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems,
                                  int target_processor, int receive_sub_problem) {
 
                 for (int i = 0; i < num_sub_problems; ++i) {
                     int send_index = i + sub_problem_start;
 
-                    send_matrix(sub_matrices[send_index], target_processor);
-
-                    MatrixType temp_matrix = sub_matrices[sub_problem_start].empty_clone();
+                    sub_matrices[sub_problem_start].
+                    //MatrixType temp_matrix = sub_matrices[sub_problem_start].empty_clone();
 
                     int receive_to = receive_sub_problem * num_sub_problems + i;
 
-                    receive_matrix(temp_matrix, target_processor);
-                    sub_matrices[receive_to] = std::move(temp_matrix);
+                    if ( target_processor > m_rank) {
+                        send_matrix(sub_matrices[send_index], target_processor);
+                        receive_matrix(temp_matrix, target_processor);
+                        sub_matrices[receive_to] = std::move(temp_matrix);
+                    } else {
+                        receive_matrix(temp_matrix, target_processor);
+                        sub_matrices[receive_to] = std::move(temp_matrix);
+                        send_matrix(sub_matrices[send_index], target_processor);
+                    }
                 }
-            }
+            }*/
 
             int get_num_nodes() {
                 return m_num_nodes;

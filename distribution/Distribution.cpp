@@ -44,7 +44,7 @@ void Distribution::distribute_matrix(const Matrix& matrix, int block_size) {
 int DistributionHandler::sub_problem_start(int recursion_level, int num_sub_problems) {
     int rank = m_rank;
 
-    // Viewing the process rank as a number in 40 base
+    // Viewing the process rank as a number in m_processor_grid_base base
     char conversion[32] = {0};
     for (int i = 0; rank != 0; ++i) {
         conversion[i] = rank % m_processor_grid_base;
@@ -61,7 +61,7 @@ int DistributionHandler::sub_problem_end(int recursion_level, int num_sub_proble
 int DistributionHandler::target_processor(int sub_problem_index, int recursion_level) {
     int rank = m_rank;
 
-    // Viewing the process rank as a number in 40 base
+    // Viewing the process rank as a number in m_processor_grid_base base
     char conversion[32] = {0};
     for (int i = 0; rank != 0; ++i) {
         conversion[i] = rank % m_processor_grid_base;
@@ -93,6 +93,26 @@ bool DistributionHandler::are_coordinates_contained(int i, int j, int block_size
     int relative_j = j_in_block_size % processor_matrix_dimension;
 
     return (relative_i * processor_matrix_dimension + relative_j) == our_rank;
+}
+
+int DistributionHandler::get_neighbor_distance(int k) {
+    // Calculating the step needed to take in k recursion level
+    char conversion[32] = {0};
+
+    conversion[k-1] = 1;
+
+    int step = 0;
+    int exp = 1;
+    for(int i=0; i<32; i++) {
+        step += conversion[i] * exp;
+        exp = exp * m_processor_grid_base;
+    }
+
+    return step;
+}
+
+int DistributionHandler::get_grid_base() {
+    return m_processor_grid_base;
 }
 
 Matrix DistributionHandler::distribute_matrix(const Matrix& matrix, int block_size) {

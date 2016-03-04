@@ -96,11 +96,13 @@ namespace SmirnovFastMul{
 
                 vector<MatrixType> alpha = alg->calculate_alpha(A);
                 vector<MatrixType> beta = alg->calculate_beta(B);
-                vector<MatrixType> sub_problems;
+                vector<MatrixType> sub_problems(SMIRNOV_SUB_PROBLEMS);
                 sub_problems.reserve(SMIRNOV_SUB_PROBLEMS);
 
                 int sub_problem_start = m_distribution_handler.sub_problem_start(k, num_sub_problems);
                 int sub_problem_end = m_distribution_handler.sub_problem_end(k, num_sub_problems);
+                //cout << "from recucsion level " << k << " from rank " << m_comm_handler.get_rank() << " start problem is " << sub_problem_start << endl;
+
 
                 vector<MatrixType> temp_alphas = temp_matrices(alpha, sub_problem_start, num_sub_problems);
                 vector<MatrixType> temp_betas = temp_matrices(beta, sub_problem_start, num_sub_problems);
@@ -132,25 +134,42 @@ namespace SmirnovFastMul{
                 for (int i = sub_problem_start; i <= sub_problem_end; ++i) {
 
                     // Creating an empty matrix as sub_problem[i]
-                    sub_problems[i] = std::move(MatrixType(sub_matrix_row_dim, sub_matrix_col_dim));
+                    //sub_problems[i] = std::move(C.sub_matrix(sub_matrix_row_dim,sub_matrix_col_dim,0,0).empty_clone());
+                    sub_problems[i] = std::move(create_sub_matrix(C, k, alg_index, num_sub_problems));
+                    //sub_problems[i] = std::move(MatrixType(sub_matrix_row_dim, sub_matrix_col_dim));
 
                     bfs_aux(alpha[i], beta[i], sub_problems[i], k-1, advance_algorithm(alg_index), num_sub_problems);
                 }
 
                 // Distributing our calculated sub problem
+                int our_part;
                 for (int i = 0; i < SMIRNOV_SUB_PROBLEMS / num_sub_problems; ++i) {
 
                     int target_processor = m_distribution_handler.target_processor(i, k);
 
                     // There's no need to send ourselves the data
                     if (target_processor == m_comm_handler.get_rank()) {
+                        our_part = i;
                         continue;
                     }
 
-                    cout << "from rank " << m_comm_handler.get_rank() << " sending to target " << target_processor << endl;
-                    m_comm_handler.send_receive_to(sub_problems, sub_problem_start, num_sub_problems, target_processor, i);
+                    // Sending i'th part of sub_problems to target_processor
+                    vector<MatrixType> send_parts = get_parts(sub_problems, sub_problem_start, num_sub_problems, k, i);
+                    m_comm_handler.send_receive_parts(send_parts, num_sub_problems, target_processor, sub_problems, i);
                 }
 
+                //cout << "Getting our part" << endl;
+                vector<MatrixType> our_parts = get_parts(sub_problems, sub_problem_start, num_sub_problems, k, our_part);
+
+                // Removing the access information
+                sub_problems.erase(sub_problems.begin() + sub_problem_start,
+                                   sub_problems.begin() + sub_problem_start + num_sub_problems);
+
+                // Inserting our_parts instead of the removed ones
+                for (int i = 0; i < num_sub_problems; ++i) {
+                    sub_problems.insert(sub_problems.begin() + sub_problem_start + i,
+                                        std::move(our_parts[i]));
+                }
 
                 // Locally computing C from gammas
                 alg->calculate_c(sub_problems, C);
@@ -230,19 +249,7 @@ namespace SmirnovFastMul{
                 return beta;
             }
 
-        protected:
-            vector<MatrixType> temp_matrices(const vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems) {
-
-                vector<MatrixType> matrices;
-                matrices.reserve(num_sub_problems);
-                for (int i = 0; i < num_sub_problems; ++i) {
-                    matrices.push_back(sub_matrices[sub_problem_start + i]);
-                }
-
-                return matrices;
-            }
-
-            void local_multiplication(Matrix&A, Matrix& B, Matrix& C) {
+            void local_multiplication(MatrixType&A, MatrixType& B, MatrixType& C) {
 
                 double* c_data = C.get_data();
                 int c_stride = C.get_stride();
@@ -256,8 +263,80 @@ namespace SmirnovFastMul{
                 }
             }
 
+        protected:
+
+            vector<MatrixType> temp_matrices(const vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems) {
+
+                vector<MatrixType> matrices;
+                matrices.reserve(num_sub_problems);
+                for (int i = 0; i < num_sub_problems; ++i) {
+                    matrices.push_back(sub_matrices[sub_problem_start + i]);
+                }
+
+                return matrices;
+            }
+
+            MatrixType get_part(const vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems,
+                                int index, int k, int part) {
+
+                int row_dim = sub_matrices[sub_problem_start + index].get_row_dimension();
+                int col_dim = sub_matrices[sub_problem_start + index].get_col_dimension();
+
+                bool fix_row = false;
+                if ( m_distribution_handler.get_neighbor_distance(k) >= m_distribution_handler.get_grid_base()) {
+                    row_dim /= (SMIRNOV_SUB_PROBLEMS / num_sub_problems);
+                    fix_row = true;
+                } else {
+                    col_dim /= (SMIRNOV_SUB_PROBLEMS / num_sub_problems);
+                }
+
+                MatrixType mat(row_dim,col_dim);
+
+                for (int i = 0; i < row_dim; ++i) {
+                    for (int j = 0; j < col_dim; ++j) {
+                        int row = fix_row ? i * (SMIRNOV_SUB_PROBLEMS / num_sub_problems) + part: i;
+                        int col = fix_row ? j : j * (SMIRNOV_SUB_PROBLEMS / num_sub_problems) + part;
+                        mat(i,j) = sub_matrices[sub_problem_start + index](row, col);
+                    }
+                }
+
+                return mat;
+            }
+
+            vector<MatrixType> get_parts(const vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems, int k, int part) {
+
+                vector<MatrixType> send_matrices;
+                send_matrices.reserve(num_sub_problems);
+                for (int l = 0; l < num_sub_problems; ++l) {
+
+                    send_matrices.push_back(std::move(get_part(sub_matrices, sub_problem_start, num_sub_problems, l, k, part)));
+                }
+
+                return send_matrices;
+            }
+
             int advance_algorithm(int alg_index) {
                 return (alg_index +1)%3;
+            }
+
+            MatrixType create_sub_matrix(const MatrixType& C, int k, int alg_index, int num_sub_problems) {
+
+                auto alg = m_algorithms[alg_index];
+
+                int containing_row = C.get_row_dimension() / alg->get_a_base_row_dim();
+                int containing_column = C.get_col_dimension() / alg->get_b_base_col_dim();
+
+                // Checking where the neighbors are located
+                if ( m_distribution_handler.get_neighbor_distance(k) >= m_distribution_handler.get_grid_base()) {
+                    // We should send data to neighbors located vertically
+                    containing_row *= (SMIRNOV_SUB_PROBLEMS / num_sub_problems);
+                } else {
+                    // We should send data to neighbors located horizontally
+                    containing_column *= (SMIRNOV_SUB_PROBLEMS / num_sub_problems);
+                }
+
+                return MatrixType(containing_row, containing_column);
+
             }
 
         private:

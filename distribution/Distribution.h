@@ -39,6 +39,9 @@ namespace SmirnovFastMul {
 
             int sub_problem_end(int recursion_level, int num_sub_problems=1);
 
+            int get_neighbor_distance(int k);
+
+            int get_grid_base();
             /**
              * Treats the number of processors as an array base SMIRNOV_SUB_PROBLEMS
              * @sub_problem_index the sub problem group we are currently working on

@@ -130,7 +130,7 @@ namespace SmirnovFastMul {
 			// Generate a matrix with random uniform entries on [0, 1]
 			
 			//friend Matrix operator- ();
-            virtual int num_elements() const;
+            int num_elements() const;
 
             // Creating a version of matrix without the data, just the allocated space
             Matrix empty_clone() const;

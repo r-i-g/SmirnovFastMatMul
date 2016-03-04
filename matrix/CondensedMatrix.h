@@ -27,6 +27,7 @@ namespace SmirnovFastMul {
             // deprecated
             //CondensedMatrix(int containing_n, int containing_m, int n=0);
             CondensedMatrix(int containing_n, int containing_m, int condense_factor=1);
+            CondensedMatrix() : CondensedMatrix(0,0,1){}
 
             // c-tor does deep copy
             CondensedMatrix(const CondensedMatrix& that);
@@ -81,6 +82,14 @@ namespace SmirnovFastMul {
             void set_positions();
 
             int get_condense_factor() const;
+
+            int get_containing_row() const {
+                return m_containing_n;
+            }
+
+            int get_containing_column() const {
+                return m_containing_m;
+            }
 
             CondensedMatrix empty_clone() const;
 
