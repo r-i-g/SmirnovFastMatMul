@@ -23,4 +23,4 @@ test_cond:
 	mpic++ -std=c++11 -g ./testing/test_condensed.cpp ./common/*.cpp ./communication/*.cpp ./distribution/*.cpp ./matrix/*.cpp 2> compile.out.txt
 
 test_temp:
-	mpic++ -std=c++11 -g ./testing/test_template.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp 2> compile.out.txt
+	time mpic++ -std=c++11 -g ./testing/test_template.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp 2> compile.out.txt
