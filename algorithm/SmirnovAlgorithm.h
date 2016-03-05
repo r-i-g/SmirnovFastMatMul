@@ -6,7 +6,7 @@
 #define FASTMATMUL_SMIRNOVALGORITHM_H
 
 #include "../matrix/Matrix.h"
-#include "../matrix/CondensedMatrix.h"
+#include "../matrix/PositionalMatrix.h"
 #include <vector>
 #include <memory>
 #include <functional>
@@ -14,7 +14,7 @@
 
 using std::vector;
 using SmirnovFastMul::Computation::Matrix;
-using SmirnovFastMul::Computation::CondensedMatrix;
+using SmirnovFastMul::Computation::PositionalMatrix;
 
 using std::cout;
 using std::endl;
@@ -128,9 +128,6 @@ namespace SmirnovFastMul {
                 for(auto alg_entrance : algorithm) {
                     Matrix output(alg_row_dim, alg_col_dim);
 
-                    //std::cout << "in alg imp " << std::endl;
-                    //std::cout << "iteration " << i++ << std::endl;
-                    //std::cout << &sub_matrices << std::endl;
                     (*alg_entrance)(sub_matrices, output);
                     alg_results_matrices.push_back(std::move(output));
                 }
@@ -138,19 +135,17 @@ namespace SmirnovFastMul {
                 return alg_results_matrices;
             }
 
-            vector<CondensedMatrix> implement_algorithm(int alg_row_dim, int alg_col_dim, vector<CondensedMatrix>& sub_matrices,
-                                                        const vector<std::shared_ptr<AlgorithmEntrance<CondensedMatrix>>>& algorithm) {
+            vector<PositionalMatrix> implement_algorithm(int alg_row_dim, int alg_col_dim, vector<PositionalMatrix>& sub_matrices,
+                                                        const vector<std::shared_ptr<AlgorithmEntrance<PositionalMatrix>>>& algorithm) {
                 // Iterating over the algorithms we need to apply
-                vector<CondensedMatrix> alg_results_matrices;
+                vector<PositionalMatrix> alg_results_matrices;
                 // So c-tor want be called when resizing the vector in push_back
                 alg_results_matrices.reserve(algorithm.size());
-                // Setting the condense facot
-                int condense_factor = sub_matrices[0].get_condense_factor();
 
                 for(const auto& alg_entrance : algorithm) {
                     // TODO change back to alg_row_dim and alg_col_dim
                     //cout << "In implememt in condense. alg_row_dim: " << alg_row_dim << " alg_col_dim:" << alg_col_dim << " condense factor:"  << condense_factor << endl;
-                    CondensedMatrix output(const_cast<CondensedMatrix&>(sub_matrices[0]));
+                    PositionalMatrix output(const_cast<PositionalMatrix&>(sub_matrices[0]));
                     //cout << output << endl;
 
                     (*alg_entrance)(sub_matrices, output);
@@ -172,7 +167,7 @@ namespace SmirnovFastMul {
             }
 
             //Matrix sub_matrix_creation();
-            //CondensedMatrix sub_matrix_creation();
+            //PositionalMatrix sub_matrix_creation();
 
         private:
 

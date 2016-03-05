@@ -6,7 +6,7 @@
 #define FASTMATMUL_MULTIPLYMATRICES_H
 
 #include "../matrix/Matrix.h"
-#include "../matrix/CondensedMatrix.h"
+#include "../matrix/PositionalMatrix.h"
 #include "SmirnovAlgorithm.h"
 #include "../communication/CommunicationHandler.h"
 #include "../distribution/Distribution.h"
@@ -14,7 +14,7 @@
 #include <memory>
 
 using SmirnovFastMul::Computation::Matrix;
-using SmirnovFastMul::Computation::CondensedMatrix;
+using SmirnovFastMul::Computation::PositionalMatrix;
 using SmirnovFastMul::Computation::SmirnovAlgorithm;
 using SmirnovFastMul::Communication::CommunicationHandler;
 using SmirnovFastMul::Distribution::DistributionHandler;
@@ -68,7 +68,6 @@ namespace SmirnovFastMul{
 
 
                 for (int i = 0; i < SMIRNOV_SUB_PROBLEMS; ++i) {
-                    // TODO maybe change to something else to support CondenseMatrix
                     MatrixType sub(sub_matrix_row_dim, sub_matrix_col_dim);
                     dfs(alpha[i], beta[i], sub, l-1, advance_algorithm(alg_index));
                     sub_matrices.push_back(std::move(sub));

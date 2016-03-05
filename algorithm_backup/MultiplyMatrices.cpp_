@@ -204,9 +204,9 @@ void MultiplyMatrices::bfs(Matrix &A, Matrix& B, Matrix& C, int k, int num_sub_p
     bfs_aux(dist_A, dist_B, C, k, 0, num_sub_problems);
 }
 
-void MultiplyMatrices::bfs(CondensedMatrix& A, CondensedMatrix& B, CondensedMatrix& C, int k, int num_sub_problems) {
-    CondensedMatrix dist_A = m_distribution_handler.condensed_distributed_matrix(A,1);
-    CondensedMatrix dist_B = m_distribution_handler.condensed_distributed_matrix(B,1);
+void MultiplyMatrices::bfs(PositionalMatrix& A, PositionalMatrix& B, PositionalMatrix& C, int k, int num_sub_problems) {
+    PositionalMatrix dist_A = m_distribution_handler.condensed_distributed_matrix(A,1);
+    PositionalMatrix dist_B = m_distribution_handler.condensed_distributed_matrix(B,1);
     MPI_Barrier(MPI_COMM_WORLD);
 
     bfs_aux(dist_A, dist_B, C, k, 0, num_sub_problems);

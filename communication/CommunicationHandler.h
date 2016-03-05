@@ -3,11 +3,11 @@
 
 #include <mpi.h>
 #include "../matrix/Matrix.h"
-#include "../matrix/CondensedMatrix.h"
+#include "../matrix/PositionalMatrix.h"
 #include <vector>
 
 using SmirnovFastMul::Computation::Matrix;
-using SmirnovFastMul::Computation::CondensedMatrix;
+using SmirnovFastMul::Computation::PositionalMatrix;
 using std::vector;
 
 namespace SmirnovFastMul {
@@ -21,7 +21,6 @@ namespace SmirnovFastMul {
 			CommunicationHandler(): m_num_nodes(0), m_rank(-1) {
 
                 // Initializing MPI communication
-                // TODO add a check using mpi_initialized
                 int is_initialized;
                 MPI_Initialized(&is_initialized);
                 if(!is_initialized) {
@@ -64,7 +63,7 @@ namespace SmirnovFastMul {
             }
 
 
-            void send_matrix(const CondensedMatrix& matrix, int node) {
+            void send_matrix(const PositionalMatrix& matrix, int node) {
 
                 // Sending the position array
                 //cout << "from rank " << m_rank << " sending position lne " << matrix.position_len() << " to " << node  << endl;
@@ -76,7 +75,7 @@ namespace SmirnovFastMul {
                 MPI_Send(matrix.get_data(), matrix.num_elements() , MPI_DOUBLE, node, 11, MPI_COMM_WORLD);
             }
 
-            void receive_matrix(CondensedMatrix& matrix, int from_node) {
+            void receive_matrix(PositionalMatrix& matrix, int from_node) {
 
                 MPI_Status status;
                 //cout << "from rank " << m_rank << " receiving position lne " << matrix.position_len() << " from " << from_node  << endl;
@@ -136,29 +135,6 @@ namespace SmirnovFastMul {
                 }
             }
 
-            /*
-            void send_receive_to(vector<MatrixType>& sub_matrices, int sub_problem_start, int num_sub_problems,
-                                 int target_processor, int receive_sub_problem) {
-
-                for (int i = 0; i < num_sub_problems; ++i) {
-                    int send_index = i + sub_problem_start;
-
-                    sub_matrices[sub_problem_start].
-                    //MatrixType temp_matrix = sub_matrices[sub_problem_start].empty_clone();
-
-                    int receive_to = receive_sub_problem * num_sub_problems + i;
-
-                    if ( target_processor > m_rank) {
-                        send_matrix(sub_matrices[send_index], target_processor);
-                        receive_matrix(temp_matrix, target_processor);
-                        sub_matrices[receive_to] = std::move(temp_matrix);
-                    } else {
-                        receive_matrix(temp_matrix, target_processor);
-                        sub_matrices[receive_to] = std::move(temp_matrix);
-                        send_matrix(sub_matrices[send_index], target_processor);
-                    }
-                }
-            }*/
 
             int get_num_nodes() {
                 return m_num_nodes;

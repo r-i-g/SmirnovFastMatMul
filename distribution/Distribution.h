@@ -6,11 +6,11 @@
 #define FASTMATMUL_DISTRIBUTION_H
 
 #include "../matrix/Matrix.h"
-#include "../matrix/CondensedMatrix.h"
+#include "../matrix/PositionalMatrix.h"
 #include "../common/common.h"
 
 using SmirnovFastMul::Computation::Matrix;
-using SmirnovFastMul::Computation::CondensedMatrix;
+using SmirnovFastMul::Computation::PositionalMatrix;
 
 namespace SmirnovFastMul {
     namespace Distribution {
@@ -55,7 +55,7 @@ namespace SmirnovFastMul {
 
             // Similar to distribute_matrix, only that the data kept is condensed, i.e. only the data obtained will be
             // contained in the matrix
-            CondensedMatrix condensed_distributed_matrix(const Matrix& matrix, int block_size);
+            PositionalMatrix condensed_distributed_matrix(const Matrix& matrix, int block_size);
 
         private:
             int m_rank;

@@ -4,23 +4,17 @@
 #include <iostream>
 
 using SmirnovFastMul::Computation::Matrix;
-using SmirnovFastMul::ArrayType;
 
 using std::cout;
 using std::endl;
-//#define ITERATE_MATRIX()
 
-Matrix::Matrix(double* data, ArrayType array_type, int n, int m, int stride, bool is_view):
-m_data(data), m_multiplier(1) ,m_array_type(array_type), m_row_dim(n), m_col_dim(m), m_stride(stride), m_is_view(is_view) {
+Matrix::Matrix(double* data, int n, int m, int stride, bool is_view):
+m_data(data), m_multiplier(1) ,m_row_dim(n), m_col_dim(m), m_stride(stride), m_is_view(is_view) {
 }
 
-Matrix::Matrix(double* data, int n, int m) : m_data(data), m_multiplier(1), m_array_type(), m_row_dim(n), m_col_dim(m), m_stride(m), m_is_view(false) {}
+Matrix::Matrix(double* data, int n, int m) : m_data(data), m_multiplier(1), m_row_dim(n), m_col_dim(m), m_stride(m), m_is_view(false) {}
 
-Matrix::Matrix(int n, int m) : m_data(NULL), m_multiplier(1), m_array_type(), m_row_dim(n), m_col_dim(m), m_stride(m), m_is_view(false) {
-
-	m_array_type.set_array_size(n, m);
-    m_array_type.set_sub_matrix_size(n, m);
-    m_array_type.set_sub_matrix_location(0, 0);
+Matrix::Matrix(int n, int m) : m_data(NULL), m_multiplier(1),  m_row_dim(n), m_col_dim(m), m_stride(m), m_is_view(false) {
 
 	// Allocating n*m double array
 	m_data = new double[n*m];
@@ -31,7 +25,7 @@ Matrix::Matrix(int n, int m) : m_data(NULL), m_multiplier(1), m_array_type(), m_
 Matrix::Matrix(int n) : Matrix(n,n) {}
 
 
-Matrix::Matrix(const Matrix& that) : Matrix(that.get_data(), that.get_mpi_interpretation(), that.get_row_dimension(),
+Matrix::Matrix(const Matrix& that) : Matrix(that.get_data(), that.get_row_dimension(),
                                             that.get_col_dimension(), that.get_col_dimension(), false) {
 
     //std::cout << "in copy constructror" << std::endl;
@@ -54,7 +48,7 @@ Matrix::Matrix(const Matrix& that) : Matrix(that.get_data(), that.get_mpi_interp
 }
 
 
-Matrix::Matrix(Matrix&& that) : Matrix(that.get_data(), that.get_mpi_interpretation(), that.get_row_dimension(),
+Matrix::Matrix(Matrix&& that) : Matrix(that.get_data(), that.get_row_dimension(),
                                        that.get_col_dimension(), that.get_stride(), that.get_is_view()) {
     //std::cout << "view " << that.m_is_view << std::endl;
     //std::cout << that.m_data << std::endl;
@@ -62,11 +56,6 @@ Matrix::Matrix(Matrix&& that) : Matrix(that.get_data(), that.get_mpi_interpretat
     that.m_data = nullptr;
     that.m_is_view = true;
 
-}
-
-ArrayType Matrix::get_mpi_interpretation() const
-{
-	return m_array_type;
 }
 
 double* Matrix::get_data() const
@@ -117,24 +106,9 @@ Matrix::~Matrix() {
 }
 
 Matrix Matrix::sub_matrix(int num_rows, int num_col, int start_row, int start_col) {
-	m_array_type.set_sub_matrix_size(num_rows, num_col);
-	m_array_type.set_sub_matrix_location(start_row, start_col);
 	// Advancing the data ptr to be at the start of the block
-	return Matrix(get_data(start_row, start_col), m_array_type, num_rows, num_col, m_stride, true);
+	return Matrix(get_data(start_row, start_col), num_rows, num_col, m_stride, true);
 }
-
-/*
-std::ostream& operator<<(std::ostream& os, const Matrix& mat)
-{
-	for (int i = 0; i < mat.get_row_dimension(); ++i) {
-		for (int j = 0; j < mat.get_col_dimension(); ++j) {
-			os << mat(i, j) << " ";
-		}
-		os << std::endl;
-	}
-	return os;
-
-}*/
 
 void Matrix::merge(Matrix& to_add, int insertion_offset) {
     int new_array_size = m_row_dim * m_col_dim + to_add.m_row_dim * to_add.m_col_dim;

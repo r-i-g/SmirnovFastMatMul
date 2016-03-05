@@ -20,27 +20,6 @@ DistributionHandler::DistributionHandler(const DistributionHandler& dh) :
         DistributionHandler(dh.m_rank, dh.m_num_nodes, dh.m_processor_grid_base)
 { }
 
-
-/*
-void Distribution::distribute_matrix(const Matrix& matrix, int block_size) {
-    // The initial distribution of the matrix among the processors
-
-    // Creating the data we want to distribute
-    for (int k = 0; k < m_comm.get_num_nodes(); ++k) {
-
-    }
-
-
-    for (int i = 0; i < matrix.get_row_dimension(); ++i) {
-        for (int j = 0; j < matrix.get_col_dimension(); ++j) {
-
-        }
-    }
-
-    // Distributing the data to the processes
-
-}*/
-
 int DistributionHandler::sub_problem_start(int recursion_level, int num_sub_problems) {
     int rank = m_rank;
 
@@ -134,7 +113,7 @@ Matrix DistributionHandler::distribute_matrix(const Matrix& matrix, int block_si
 }
 
 
-CondensedMatrix DistributionHandler::condensed_distributed_matrix(const Matrix& matrix, int block_size) {
+PositionalMatrix DistributionHandler::condensed_distributed_matrix(const Matrix& matrix, int block_size) {
 
     int processor_matrix_dimension = (int)sqrt(m_num_nodes);
     int matrix_dimension = matrix.get_row_dimension() / processor_matrix_dimension;
@@ -144,7 +123,7 @@ CondensedMatrix DistributionHandler::condensed_distributed_matrix(const Matrix& 
     int condensed_row_dimension = matrix_row_dimension / processor_matrix_dimension;
     int condensed_col_dimension = matrix_col_dimension / processor_matrix_dimension;
 
-    CondensedMatrix condensed_matrix(matrix_row_dimension, matrix_col_dimension,
+    PositionalMatrix condensed_matrix(matrix_row_dimension, matrix_col_dimension,
                                      condensed_row_dimension, condensed_col_dimension);
 
     for (int i = 0; i < matrix.get_row_dimension(); ++i) {

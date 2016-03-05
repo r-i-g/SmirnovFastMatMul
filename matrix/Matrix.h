@@ -2,7 +2,6 @@
 #define _MATRIX_
 
 #include "../common/common.h"
-#include "../communication/MpiArray.h"
 #include <mpi.h>
 #include <memory>
 #include <algorithm>
@@ -16,7 +15,7 @@
 /************************************************************************/
 
 namespace SmirnovFastMul {
-	using Communication::ArrayType;
+
 	namespace Computation
 	{
 		/*
@@ -26,7 +25,7 @@ namespace SmirnovFastMul {
 		class Matrix {
 		public:
 
-			Matrix(double* data, const ArrayType matrix_type, int n, int m, int stride, bool is_view);
+			Matrix(double* data, int n, int m, int stride, bool is_view);
             Matrix(double* data, int n, int m);
 			Matrix(int n, int m);
 			Matrix(int n=0);
@@ -44,7 +43,6 @@ namespace SmirnovFastMul {
 			virtual ~Matrix();
 	
 			Matrix sub_matrix(int num_rows, int num_col, int start_row, int start_col);
-			ArrayType get_mpi_interpretation() const;
 	
 			// The indices are 0 based
 			const double& operator()(int i, int j) const { return m_data[i * m_stride + j]; }
@@ -96,7 +94,6 @@ namespace SmirnovFastMul {
                 using std::swap;
                 swap(first.m_data, second.m_data);
                 swap(first.m_multiplier, second.m_multiplier);
-                swap(first.m_array_type, second.m_array_type);
                 swap(first.m_row_dim, second.m_row_dim);
                 swap(first.m_col_dim, second.m_col_dim);
                 swap(first.m_stride, second.m_stride);
@@ -141,7 +138,6 @@ namespace SmirnovFastMul {
 			// The data structure decided upon is a continuous block of memory, rows concatenated.
 			double* m_data;
 			double m_multiplier;
-			ArrayType m_array_type;
 	
 			int m_row_dim;
 			int m_col_dim;
@@ -151,9 +147,6 @@ namespace SmirnovFastMul {
 			// Indicates that this matrix is a view to some other allocated internal data
 			bool m_is_view;
 		};
-
-        // When we want to create submatrices an transfer them thorough functions
-        typedef std::unique_ptr<Matrix> MatrixPtr;
 
     } // Computation namespace
 } // SmirnovFastMul namespace

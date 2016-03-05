@@ -4,11 +4,11 @@
 
 #include "SmirnovAlgorithm.h"
 #include "../common/common.h"
-#include "../matrix/CondensedMatrix.h"
+#include "PositionalMatrix.h"
 #include <iostream>
 
 using SmirnovFastMul::Computation::Matrix;
-using SmirnovFastMul::Computation::CondensedMatrix;
+using SmirnovFastMul::Computation::PositionalMatrix;
 using SmirnovFastMulBU::Computation::SmirnovAlgorithm;
 using SmirnovFastMulBU::Computation::AlgorithmEntrance;
 

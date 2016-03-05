@@ -3,7 +3,7 @@
 //
 
 #include "../matrix/Matrix.h"
-#include "../matrix/CondensedMatrix.h"
+#include "../matrix/PositionalMatrix.h"
 #include "../distribution/Distribution.h"
 //#include "../communication/CommunicationHandler.h"
 #include <iostream>
@@ -20,7 +20,7 @@
 #include "../algorithm_backup/SmirnovAlgorithm_363.h"
 
 using SmirnovFastMul::Computation::Matrix;
-using SmirnovFastMul::Computation::CondensedMatrix;
+using SmirnovFastMul::Computation::PositionalMatrix;
 using SmirnovFastMul::Distribution::DistributionHandler;
 using SmirnovFastMul::Communication::CommunicationHandler;
 using SmirnovFastMul::Computation::SmirnovAlgorithm;
@@ -38,9 +38,9 @@ void test_template_sub_matrices() {
     matrix.init_range();
 
     DistributionHandler dh(0,4,4);
-    CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
+    PositionalMatrix cm = dh.condensed_distributed_matrix(matrix,1);
     cout << cm << endl;
-    SmirnovAlgorithm_336<CondensedMatrix> sa1;
+    SmirnovAlgorithm_336<PositionalMatrix> sa1;
     auto sub_matrices = sa1.create_sub_matrices(3,3,cm);
     for (int i = 0; i < 3; ++i) {
         cout << sub_matrices[i] << endl;
@@ -56,9 +56,9 @@ void test_submatrix() {
     matrix.init_range();
 
     DistributionHandler dh(0,4,4);
-    CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
+    PositionalMatrix cm = dh.condensed_distributed_matrix(matrix,1);
 
-    CondensedMatrix cm2 = cm.sub_matrix(2,2,0,0);
+    PositionalMatrix cm2 = cm.sub_matrix(2,2,0,0);
     cout << cm << endl;
     cout << cm2 << endl;
 }
@@ -69,7 +69,7 @@ void test_template_algorithm_condensed() {
     matrix.init_range();
 
     DistributionHandler dh(0,4,4);
-    CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
+    PositionalMatrix cm = dh.condensed_distributed_matrix(matrix,1);
 
     SmirnovAlgorithm_336<Matrix> sa1;
     auto alpha1 = sa1.calculate_alpha(matrix);
@@ -79,7 +79,7 @@ void test_template_algorithm_condensed() {
 
     cout << "condensed alphas" << endl;
     cout << "the condensed matrix" << cm << endl;
-    SmirnovAlgorithm_336<CondensedMatrix> sa2;
+    SmirnovAlgorithm_336<PositionalMatrix> sa2;
     auto alpha2 = sa2.calculate_alpha(cm);
     for (int i = 0; i < 3; ++i) {
         cout << alpha2[i] << endl;
@@ -94,9 +94,9 @@ void test_template_algorithm_condensed() {
     }
     cout << "test relative positions" << endl;
     DistributionHandler dh2(0,4,4);
-    CondensedMatrix cm2 = dh2.condensed_distributed_matrix(matrix2,1);
+    PositionalMatrix cm2 = dh2.condensed_distributed_matrix(matrix2,1);
     cout << cm2 << endl;
-    SmirnovAlgorithm_336<CondensedMatrix> sa3;
+    SmirnovAlgorithm_336<PositionalMatrix> sa3;
 
     cout << __LINE__ << endl;
     auto&& alpha3 = sa3.calculate_alpha(cm2);
@@ -139,9 +139,9 @@ void test_template_algorithm() {
     matrix.init_range();
 
     DistributionHandler dh(0,4,4);
-    CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
+    PositionalMatrix cm = dh.condensed_distributed_matrix(matrix,1);
     cout << cm << endl;
-    SmirnovAlgorithm_336<CondensedMatrix> sa1;
+    SmirnovAlgorithm_336<PositionalMatrix> sa1;
     auto sub_matrices = sa1.calculate_alpha(cm);
     for(const auto& sub_matrix: sub_matrices) {
         cout << sub_matrix << endl;
@@ -153,9 +153,9 @@ void test_template_sub_matrices() {
     matrix.init_range();
 
     DistributionHandler dh(0,4,4);
-    CondensedMatrix cm = dh.condensed_distributed_matrix(matrix,1);
+    PositionalMatrix cm = dh.condensed_distributed_matrix(matrix,1);
     cout << cm << endl;
-    SmirnovAlgorithm_336<CondensedMatrix> sa1;
+    SmirnovAlgorithm_336<PositionalMatrix> sa1;
     auto sub_matrices = sa1.create_sub_matrices(3,3,cm);
 
     // Excpetion because of a copy constructor
@@ -167,28 +167,28 @@ void test_template_sub_matrices() {
 void test_template_sending() {
     Matrix matrix(6);
     matrix.init_range();
-    SmirnovAlgorithm_336<CondensedMatrix> alg;
-    CommunicationHandler<CondensedMatrix> comm_handler;
+    SmirnovAlgorithm_336<PositionalMatrix> alg;
+    CommunicationHandler<PositionalMatrix> comm_handler;
 
     if( comm_handler.get_rank() == 0) {
         SmirnovAlgorithm_336<Matrix> alg2;
         cout << alg2.calculate_alpha(matrix)[1] << endl;
 
         DistributionHandler dh1(0, 4, 4);
-        CondensedMatrix a1 = dh1.condensed_distributed_matrix(matrix, 1);
-        vector <CondensedMatrix> alpha1 = alg.calculate_alpha(a1);
+        PositionalMatrix a1 = dh1.condensed_distributed_matrix(matrix, 1);
+        vector <PositionalMatrix> alpha1 = alg.calculate_alpha(a1);
         cout << alpha1[1] << endl;
-        vector <CondensedMatrix> temp1;
+        vector <PositionalMatrix> temp1;
         temp1.push_back(alpha1[1]);
         cout << temp1[0] << endl;
         comm_handler.send_receive(temp1, alpha1, 1, 1, 3);
         cout << temp1[0] << endl;
     } else if (comm_handler.get_rank() == 3){
         DistributionHandler dh2(3, 4, 4);
-        CondensedMatrix a2 = dh2.condensed_distributed_matrix(matrix, 1);
-        vector <CondensedMatrix> alpha2 = alg.calculate_alpha(a2);
+        PositionalMatrix a2 = dh2.condensed_distributed_matrix(matrix, 1);
+        vector <PositionalMatrix> alpha2 = alg.calculate_alpha(a2);
         cout << alpha2[1] << endl;
-        vector <CondensedMatrix> temp2;
+        vector <PositionalMatrix> temp2;
         temp2.push_back(alpha2[1]);
         //cout << temp2[0] << endl;
         comm_handler.send_receive(temp2, alpha2, 1, 1, 0);
@@ -240,11 +240,11 @@ void test_template_multiplication() {
     }
 
     cout << "test condensed" << endl;
-    // TODO solve the issue with condensedmatrix in dfs
-    MultiplyMatrices<CondensedMatrix> alg2;
-    CondensedMatrix a2(54,54);
-    CondensedMatrix b2(54,54);
-    CondensedMatrix c2(54,54);
+    // TODO solve the issue with PositionalMatrix in dfs
+    MultiplyMatrices<PositionalMatrix> alg2;
+    PositionalMatrix a2(54,54);
+    PositionalMatrix b2(54,54);
+    PositionalMatrix c2(54,54);
 
     a2.init(2);
     b2.init(3);
@@ -260,9 +260,9 @@ void test_template_multiplication() {
 
 void test_distribution() {
 
-    CommunicationHandler<CondensedMatrix> comm_handler;
+    CommunicationHandler<PositionalMatrix> comm_handler;
     DistributionHandler dh(comm_handler.get_rank(), 4, 2);
-    MultiplyMatrices<CondensedMatrix> alg(dh);
+    MultiplyMatrices<PositionalMatrix> alg(dh);
 
     Matrix mat(6);
     mat.init_range();
@@ -270,8 +270,8 @@ void test_distribution() {
         cout << mat << endl;
     }
 
-    CondensedMatrix a = dh.condensed_distributed_matrix(mat,1);
-    vector<CondensedMatrix> alpha = alg.test_distribution_alpha(a,2,0,20);
+    PositionalMatrix a = dh.condensed_distributed_matrix(mat,1);
+    vector<PositionalMatrix> alpha = alg.test_distribution_alpha(a,2,0,20);
     int start_index = dh.sub_problem_start(2,20);
 
 
@@ -290,9 +290,9 @@ void test_distribution() {
 }*/
 
 void test_bfs() {
-    CommunicationHandler<CondensedMatrix> comm_handler;
+    CommunicationHandler<PositionalMatrix> comm_handler;
     DistributionHandler dh(comm_handler.get_rank(), 4, 2);
-    MultiplyMatrices<CondensedMatrix> alg(dh);
+    MultiplyMatrices<PositionalMatrix> alg(dh);
 
     Matrix mat_a(18,36);
     mat_a.init_range();
@@ -300,9 +300,9 @@ void test_bfs() {
     mat_b.init_range();
 
     Matrix mat_c(18,36);
-    CondensedMatrix a = dh.condensed_distributed_matrix(mat_a,1);
-    CondensedMatrix b = dh.condensed_distributed_matrix(mat_b,1);
-    CondensedMatrix c = dh.condensed_distributed_matrix(mat_c,1);
+    PositionalMatrix a = dh.condensed_distributed_matrix(mat_a,1);
+    PositionalMatrix b = dh.condensed_distributed_matrix(mat_b,1);
+    PositionalMatrix c = dh.condensed_distributed_matrix(mat_c,1);
 
     if( comm_handler.get_rank() == 1) {
         cout << "a matrix " << endl;
@@ -335,9 +335,9 @@ void test_bfs() {
 
  /*
 void test_bfs_minimized() {
-    CommunicationHandler<CondensedMatrix> comm_handler;
+    CommunicationHandler<PositionalMatrix> comm_handler;
     DistributionHandler dh(comm_handler.get_rank(), 4, 2);
-    MultiplyMatrices<CondensedMatrix> alg(dh);
+    MultiplyMatrices<PositionalMatrix> alg(dh);
 
     Matrix mat_a(6);
     mat_a.init_range();
@@ -345,9 +345,9 @@ void test_bfs_minimized() {
     mat_b.init_range();
 
     Matrix mat_c(6,12);
-    CondensedMatrix a = dh.condensed_distributed_matrix(mat_a,1);
-    CondensedMatrix b = dh.condensed_distributed_matrix(mat_b,1);
-    CondensedMatrix c = dh.condensed_distributed_matrix(mat_c,1);
+    PositionalMatrix a = dh.condensed_distributed_matrix(mat_a,1);
+    PositionalMatrix b = dh.condensed_distributed_matrix(mat_b,1);
+    PositionalMatrix c = dh.condensed_distributed_matrix(mat_c,1);
 
     if( comm_handler.get_rank() == 0) {
         cout << "a matrix " << endl;
@@ -376,9 +376,9 @@ void test_bfs_minimized() {
 
  /*
 void test_alpha() {
-    CommunicationHandler<CondensedMatrix> comm_handler;
+    CommunicationHandler<PositionalMatrix> comm_handler;
     DistributionHandler dh(comm_handler.get_rank(), 4, 2);
-    SmirnovAlgorithm_336<CondensedMatrix> alg;
+    SmirnovAlgorithm_336<PositionalMatrix> alg;
 
     Matrix mat_a(18,36);
     mat_a.init(2);
@@ -386,8 +386,8 @@ void test_alpha() {
     mat_b.init(3);
 
     //Matrix mat_c(18,36);
-    CondensedMatrix a = dh.condensed_distributed_matrix(mat_a,1);
-    CondensedMatrix b = dh.condensed_distributed_matrix(mat_b,1);
+    PositionalMatrix a = dh.condensed_distributed_matrix(mat_a,1);
+    PositionalMatrix b = dh.condensed_distributed_matrix(mat_b,1);
 
     auto sub_a = alg.create_sub_matrices(3,3,a);
     cout << a << endl;
@@ -395,9 +395,9 @@ void test_alpha() {
         cout << sub_a[i] << endl;
     }
 
-    //CondensedMatrix c = dh.condensed_distributed_matrix(mat_c,1);
-    vector<CondensedMatrix> alpha = alg.calculate_alpha(a);
-    vector<CondensedMatrix> beta = alg.calculate_beta(b);
+    //PositionalMatrix c = dh.condensed_distributed_matrix(mat_c,1);
+    vector<PositionalMatrix> alpha = alg.calculate_alpha(a);
+    vector<PositionalMatrix> beta = alg.calculate_beta(b);
     for (int i = 0; i < 5; ++i) {
         cout << alpha[i] << endl;
         cout << beta[i] << endl;
@@ -423,8 +423,8 @@ void test_dfs() {
 
 int main()
 {
-    //SmirnovAlgorithm_336<CondensedMatrix> sac;
-    //SmirnovAlgorithm<CondensedMatrix>& sa = sac;
+    //SmirnovAlgorithm_336<PositionalMatrix> sac;
+    //SmirnovAlgorithm<PositionalMatrix>& sa = sac;
 
     //test_template_algorithm();
     //test_template_multiplication();
