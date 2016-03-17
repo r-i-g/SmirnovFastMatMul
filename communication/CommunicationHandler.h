@@ -1,5 +1,5 @@
 #ifndef _COMMUNICATION_HANDLER_
-#define _COMMUNICATION_HANDLER
+#define _COMMUNICATION_HANDLER_
 
 #include <mpi.h>
 #include "../matrix/Matrix.h"
@@ -61,7 +61,6 @@ namespace SmirnovFastMul {
                 MPI_Recv(matrix.get_data(),matrix.get_row_dimension() * matrix.get_col_dimension(), MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, &status);
 
             }
-
 
             void send_matrix(const PositionalMatrix& matrix, int node) {
 
@@ -136,6 +135,32 @@ namespace SmirnovFastMul {
             }
 
 
+            void broad_cast(int& value) {
+                MPI_Bcast(&value, 1, MPI_INT, 0, MPI_COMM_WORLD);
+            }
+
+            void collect_to(Matrix& dst_matrix, MatrixType& C) {
+
+
+                for (int i = 0; i < m_num_nodes; ++i) {
+                    if(i == m_rank) {
+                        dst_matrix.insert_data(C.get_data(), C.get_positions(), C.position_len());
+                        continue;
+                    }
+
+                    MatrixType temp_matrix = C.empty_clone();
+                    receive_matrix(temp_matrix, i);
+                    dst_matrix.insert_data(temp_matrix.get_data(), temp_matrix.get_positions(), temp_matrix.position_len());
+                }
+            }
+
+            /**
+             * Sends matrix to all of the other processes
+             */
+            void broad_cast(Matrix& matrix) {
+                MPI_Bcast(matrix.get_data(), matrix.num_elements(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+            }
+
             int get_num_nodes() {
                 return m_num_nodes;
             }
@@ -147,6 +172,8 @@ namespace SmirnovFastMul {
             void barrier() {
                 MPI_Barrier(MPI_COMM_WORLD);
             }
+
+
 
 		protected:
 

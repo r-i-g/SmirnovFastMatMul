@@ -110,6 +110,17 @@ Matrix Matrix::sub_matrix(int num_rows, int num_col, int start_row, int start_co
 	return Matrix(get_data(start_row, start_col), num_rows, num_col, m_stride, true);
 }
 
+void Matrix::clear_matrix() {
+    delete [] m_data;
+    m_data = nullptr;
+}
+
+void Matrix::insert_data(double const data[], int const at_positions[], int len) {
+    for (int i = 0; i < len; ++i) {
+        m_data[at_positions[i]] = data[i];
+    }
+}
+
 void Matrix::merge(Matrix& to_add, int insertion_offset) {
     int new_array_size = m_row_dim * m_col_dim + to_add.m_row_dim * to_add.m_col_dim;
 

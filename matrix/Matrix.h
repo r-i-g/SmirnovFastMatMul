@@ -43,6 +43,8 @@ namespace SmirnovFastMul {
 			virtual ~Matrix();
 	
 			Matrix sub_matrix(int num_rows, int num_col, int start_row, int start_col);
+			// Removes the content of the matrix
+			virtual void clear_matrix();
 	
 			// The indices are 0 based
 			const double& operator()(int i, int j) const { return m_data[i * m_stride + j]; }
@@ -108,6 +110,8 @@ namespace SmirnovFastMul {
                 }
                 return first;
             }
+
+            void insert_data(double const data[], int const at_positions[], int len);
 
             // The offset relative to the first cell where we shall merge the data
             void merge(Matrix& to_add, int insertion_offset);

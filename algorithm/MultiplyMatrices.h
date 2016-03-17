@@ -10,6 +10,9 @@
 #include "SmirnovAlgorithm.h"
 #include "../communication/CommunicationHandler.h"
 #include "../distribution/Distribution.h"
+#include "SmirnovAlgorithm_336.h"
+#include "SmirnovAlgorithm_363.h"
+#include "SmirnovAlgorithm_633.h"
 #include <vector>
 #include <memory>
 
