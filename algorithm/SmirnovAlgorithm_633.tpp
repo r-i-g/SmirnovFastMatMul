@@ -1,7 +1,6 @@
 #ifdef FASTMATMUL_SMIRNOVALGORITHM_633_H
-
-template <typename MatrixType> struct alpha_add0_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add0_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -29,8 +28,8 @@ template <typename MatrixType> struct alpha_add0_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add1_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add1_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -58,8 +57,8 @@ template <typename MatrixType> struct alpha_add1_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add2_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add2_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -87,8 +86,8 @@ template <typename MatrixType> struct alpha_add2_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add3_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add3_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -116,8 +115,8 @@ template <typename MatrixType> struct alpha_add3_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add4_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add4_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -145,8 +144,8 @@ template <typename MatrixType> struct alpha_add4_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add5_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add5_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -174,8 +173,8 @@ template <typename MatrixType> struct alpha_add5_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add6_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add6_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -203,8 +202,8 @@ template <typename MatrixType> struct alpha_add6_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add7_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add7_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -232,8 +231,8 @@ template <typename MatrixType> struct alpha_add7_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add8_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add8_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -261,8 +260,8 @@ template <typename MatrixType> struct alpha_add8_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add9_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add9_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -290,8 +289,8 @@ template <typename MatrixType> struct alpha_add9_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct alpha_add10_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add10_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -319,8 +318,8 @@ template <typename MatrixType> struct alpha_add10_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add11_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add11_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -348,8 +347,8 @@ template <typename MatrixType> struct alpha_add11_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add12_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add12_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -377,8 +376,8 @@ template <typename MatrixType> struct alpha_add12_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add13_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add13_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -406,8 +405,8 @@ template <typename MatrixType> struct alpha_add13_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add14_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add14_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -435,8 +434,8 @@ template <typename MatrixType> struct alpha_add14_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add15_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add15_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -464,8 +463,8 @@ template <typename MatrixType> struct alpha_add15_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add16_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add16_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -495,8 +494,8 @@ template <typename MatrixType> struct alpha_add16_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add17_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add17_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -526,8 +525,8 @@ template <typename MatrixType> struct alpha_add17_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add18_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add18_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -557,8 +556,8 @@ template <typename MatrixType> struct alpha_add18_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add19_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add19_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -588,8 +587,8 @@ template <typename MatrixType> struct alpha_add19_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add20_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add20_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -619,8 +618,8 @@ template <typename MatrixType> struct alpha_add20_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add21_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add21_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -650,8 +649,8 @@ template <typename MatrixType> struct alpha_add21_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add22_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add22_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -681,8 +680,8 @@ template <typename MatrixType> struct alpha_add22_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add23_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add23_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -712,8 +711,8 @@ template <typename MatrixType> struct alpha_add23_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add24_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add24_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -743,8 +742,8 @@ template <typename MatrixType> struct alpha_add24_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add25_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add25_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -774,8 +773,8 @@ template <typename MatrixType> struct alpha_add25_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add26_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add26_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -805,8 +804,8 @@ template <typename MatrixType> struct alpha_add26_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add27_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add27_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -836,8 +835,8 @@ template <typename MatrixType> struct alpha_add27_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add28_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add28_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -867,8 +866,8 @@ template <typename MatrixType> struct alpha_add28_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add29_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add29_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -898,8 +897,8 @@ template <typename MatrixType> struct alpha_add29_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add30_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add30_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -929,8 +928,8 @@ template <typename MatrixType> struct alpha_add30_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add31_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add31_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -960,8 +959,8 @@ template <typename MatrixType> struct alpha_add31_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add32_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add32_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -991,8 +990,8 @@ template <typename MatrixType> struct alpha_add32_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add33_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add33_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1022,8 +1021,8 @@ template <typename MatrixType> struct alpha_add33_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add34_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add34_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1053,8 +1052,8 @@ template <typename MatrixType> struct alpha_add34_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add35_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add35_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1084,8 +1083,8 @@ template <typename MatrixType> struct alpha_add35_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add36_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add36_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1115,8 +1114,8 @@ template <typename MatrixType> struct alpha_add36_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add37_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add37_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1146,8 +1145,8 @@ template <typename MatrixType> struct alpha_add37_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add38_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add38_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1177,8 +1176,8 @@ template <typename MatrixType> struct alpha_add38_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct alpha_add39_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct alpha_add39_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1208,8 +1207,8 @@ template <typename MatrixType> struct alpha_add39_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct beta_add0_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add0_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1231,8 +1230,8 @@ template <typename MatrixType> struct beta_add0_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add1_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add1_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1254,8 +1253,8 @@ template <typename MatrixType> struct beta_add1_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add2_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add2_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1277,8 +1276,8 @@ template <typename MatrixType> struct beta_add2_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add3_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add3_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1300,8 +1299,8 @@ template <typename MatrixType> struct beta_add3_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add4_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add4_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1323,8 +1322,8 @@ template <typename MatrixType> struct beta_add4_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add5_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add5_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1346,8 +1345,8 @@ template <typename MatrixType> struct beta_add5_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add6_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add6_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1369,8 +1368,8 @@ template <typename MatrixType> struct beta_add6_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add7_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add7_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1392,8 +1391,8 @@ template <typename MatrixType> struct beta_add7_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add8_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add8_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1415,8 +1414,8 @@ template <typename MatrixType> struct beta_add8_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add9_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add9_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1438,8 +1437,8 @@ template <typename MatrixType> struct beta_add9_633 : public AlgorithmEntrance<M
         }
     }
 };
-template <typename MatrixType> struct beta_add10_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add10_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1461,8 +1460,8 @@ template <typename MatrixType> struct beta_add10_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add11_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add11_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1484,8 +1483,8 @@ template <typename MatrixType> struct beta_add11_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add12_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add12_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1507,8 +1506,8 @@ template <typename MatrixType> struct beta_add12_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add13_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add13_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1530,8 +1529,8 @@ template <typename MatrixType> struct beta_add13_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add14_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add14_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1553,8 +1552,8 @@ template <typename MatrixType> struct beta_add14_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add15_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add15_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1576,8 +1575,8 @@ template <typename MatrixType> struct beta_add15_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add16_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add16_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride3 = sub_matrices.at(3).get_stride();
         const double* data3 = sub_matrices.at(3).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -1595,8 +1594,8 @@ template <typename MatrixType> struct beta_add16_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add17_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add17_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1614,8 +1613,8 @@ template <typename MatrixType> struct beta_add17_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add18_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add18_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride3 = sub_matrices.at(3).get_stride();
         const double* data3 = sub_matrices.at(3).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -1633,8 +1632,8 @@ template <typename MatrixType> struct beta_add18_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add19_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add19_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1652,8 +1651,8 @@ template <typename MatrixType> struct beta_add19_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add20_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add20_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1671,8 +1670,8 @@ template <typename MatrixType> struct beta_add20_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add21_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add21_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1690,8 +1689,8 @@ template <typename MatrixType> struct beta_add21_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add22_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add22_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride4 = sub_matrices.at(4).get_stride();
         const double* data4 = sub_matrices.at(4).get_data();
         const int stride5 = sub_matrices.at(5).get_stride();
@@ -1709,8 +1708,8 @@ template <typename MatrixType> struct beta_add22_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add23_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add23_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride4 = sub_matrices.at(4).get_stride();
         const double* data4 = sub_matrices.at(4).get_data();
         const int stride5 = sub_matrices.at(5).get_stride();
@@ -1728,8 +1727,8 @@ template <typename MatrixType> struct beta_add23_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add24_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add24_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1747,8 +1746,8 @@ template <typename MatrixType> struct beta_add24_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add25_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add25_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1766,8 +1765,8 @@ template <typename MatrixType> struct beta_add25_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add26_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add26_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1785,8 +1784,8 @@ template <typename MatrixType> struct beta_add26_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add27_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add27_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1804,8 +1803,8 @@ template <typename MatrixType> struct beta_add27_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add28_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add28_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1823,8 +1822,8 @@ template <typename MatrixType> struct beta_add28_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add29_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add29_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride4 = sub_matrices.at(4).get_stride();
         const double* data4 = sub_matrices.at(4).get_data();
         const int stride5 = sub_matrices.at(5).get_stride();
@@ -1842,8 +1841,8 @@ template <typename MatrixType> struct beta_add29_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add30_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add30_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride4 = sub_matrices.at(4).get_stride();
         const double* data4 = sub_matrices.at(4).get_data();
         const int stride5 = sub_matrices.at(5).get_stride();
@@ -1861,8 +1860,8 @@ template <typename MatrixType> struct beta_add30_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add31_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add31_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1880,8 +1879,8 @@ template <typename MatrixType> struct beta_add31_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add32_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add32_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1899,8 +1898,8 @@ template <typename MatrixType> struct beta_add32_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add33_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add33_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1918,8 +1917,8 @@ template <typename MatrixType> struct beta_add33_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add34_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add34_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -1937,8 +1936,8 @@ template <typename MatrixType> struct beta_add34_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add35_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add35_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -1956,8 +1955,8 @@ template <typename MatrixType> struct beta_add35_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add36_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add36_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride3 = sub_matrices.at(3).get_stride();
         const double* data3 = sub_matrices.at(3).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -1975,8 +1974,8 @@ template <typename MatrixType> struct beta_add36_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add37_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add37_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride3 = sub_matrices.at(3).get_stride();
         const double* data3 = sub_matrices.at(3).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -1994,8 +1993,8 @@ template <typename MatrixType> struct beta_add37_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add38_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add38_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -2013,8 +2012,8 @@ template <typename MatrixType> struct beta_add38_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct beta_add39_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct beta_add39_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -2032,8 +2031,8 @@ template <typename MatrixType> struct beta_add39_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add0_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add0_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride5 = sub_matrices.at(5).get_stride();
@@ -2091,8 +2090,8 @@ template <typename MatrixType> struct gamma_add0_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add1_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add1_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride5 = sub_matrices.at(5).get_stride();
@@ -2150,8 +2149,8 @@ template <typename MatrixType> struct gamma_add1_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add2_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add2_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -2193,8 +2192,8 @@ template <typename MatrixType> struct gamma_add2_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add3_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add3_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -2236,8 +2235,8 @@ template <typename MatrixType> struct gamma_add3_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add4_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add4_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -2295,8 +2294,8 @@ template <typename MatrixType> struct gamma_add4_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add5_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add5_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -2354,8 +2353,8 @@ template <typename MatrixType> struct gamma_add5_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add6_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add6_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -2397,8 +2396,8 @@ template <typename MatrixType> struct gamma_add6_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add7_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add7_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -2456,8 +2455,8 @@ template <typename MatrixType> struct gamma_add7_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add8_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add8_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride3 = sub_matrices.at(3).get_stride();
@@ -2515,8 +2514,8 @@ template <typename MatrixType> struct gamma_add8_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add9_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add9_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -2574,8 +2573,8 @@ template <typename MatrixType> struct gamma_add9_633 : public AlgorithmEntrance<
         }
     }
 };
-template <typename MatrixType> struct gamma_add10_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add10_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -2617,8 +2616,8 @@ template <typename MatrixType> struct gamma_add10_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct gamma_add11_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add11_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -2676,8 +2675,8 @@ template <typename MatrixType> struct gamma_add11_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct gamma_add12_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add12_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -2735,8 +2734,8 @@ template <typename MatrixType> struct gamma_add12_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct gamma_add13_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add13_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride1 = sub_matrices.at(1).get_stride();
@@ -2794,8 +2793,8 @@ template <typename MatrixType> struct gamma_add13_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct gamma_add14_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add14_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride2 = sub_matrices.at(2).get_stride();
         const double* data2 = sub_matrices.at(2).get_data();
         const int stride5 = sub_matrices.at(5).get_stride();
@@ -2837,8 +2836,8 @@ template <typename MatrixType> struct gamma_add14_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct gamma_add15_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add15_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -2896,8 +2895,8 @@ template <typename MatrixType> struct gamma_add15_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct gamma_add16_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add16_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride1 = sub_matrices.at(1).get_stride();
         const double* data1 = sub_matrices.at(1).get_data();
         const int stride4 = sub_matrices.at(4).get_stride();
@@ -2939,8 +2938,8 @@ template <typename MatrixType> struct gamma_add16_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> struct gamma_add17_633 : public AlgorithmEntrance<MatrixType> {
-    void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) {
+struct gamma_add17_633 : public AlgorithmEntrance {
+    void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {
         const int stride0 = sub_matrices.at(0).get_stride();
         const double* data0 = sub_matrices.at(0).get_data();
         const int stride2 = sub_matrices.at(2).get_stride();
@@ -2998,115 +2997,116 @@ template <typename MatrixType> struct gamma_add17_633 : public AlgorithmEntrance
         }
     }
 };
-template <typename MatrixType> vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> SmirnovAlgorithm_633<MatrixType>::get_alpha_alg() {
-    vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> alpha_algorithm;
-    alpha_algorithm.push_back(std::make_shared<alpha_add0_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add1_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add2_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add3_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add4_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add5_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add6_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add7_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add8_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add9_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add10_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add11_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add12_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add13_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add14_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add15_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add16_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add17_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add18_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add19_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add20_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add21_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add22_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add23_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add24_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add25_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add26_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add27_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add28_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add29_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add30_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add31_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add32_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add33_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add34_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add35_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add36_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add37_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add38_633<MatrixType>>() );
-    alpha_algorithm.push_back(std::make_shared<alpha_add39_633<MatrixType>>() );
+vector<std::shared_ptr<AlgorithmEntrance>> SmirnovAlgorithm_633::get_alpha_alg() {
+    vector<std::shared_ptr<AlgorithmEntrance>> alpha_algorithm;
+    alpha_algorithm.push_back(std::make_shared<alpha_add0_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add1_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add2_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add3_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add4_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add5_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add6_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add7_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add8_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add9_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add10_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add11_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add12_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add13_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add14_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add15_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add16_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add17_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add18_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add19_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add20_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add21_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add22_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add23_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add24_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add25_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add26_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add27_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add28_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add29_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add30_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add31_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add32_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add33_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add34_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add35_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add36_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add37_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add38_633>() );
+    alpha_algorithm.push_back(std::make_shared<alpha_add39_633>() );
     return alpha_algorithm;
 }
-template <typename MatrixType> vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> SmirnovAlgorithm_633<MatrixType>::get_beta_alg() {
-    vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> beta_algorithm;
-    beta_algorithm.push_back(std::make_shared<beta_add0_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add1_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add2_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add3_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add4_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add5_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add6_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add7_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add8_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add9_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add10_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add11_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add12_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add13_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add14_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add15_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add16_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add17_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add18_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add19_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add20_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add21_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add22_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add23_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add24_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add25_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add26_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add27_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add28_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add29_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add30_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add31_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add32_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add33_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add34_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add35_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add36_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add37_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add38_633<MatrixType>>() );
-    beta_algorithm.push_back(std::make_shared<beta_add39_633<MatrixType>>() );
+vector<std::shared_ptr<AlgorithmEntrance>> SmirnovAlgorithm_633::get_beta_alg() {
+    vector<std::shared_ptr<AlgorithmEntrance>> beta_algorithm;
+    beta_algorithm.push_back(std::make_shared<beta_add0_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add1_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add2_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add3_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add4_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add5_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add6_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add7_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add8_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add9_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add10_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add11_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add12_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add13_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add14_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add15_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add16_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add17_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add18_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add19_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add20_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add21_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add22_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add23_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add24_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add25_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add26_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add27_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add28_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add29_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add30_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add31_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add32_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add33_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add34_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add35_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add36_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add37_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add38_633>() );
+    beta_algorithm.push_back(std::make_shared<beta_add39_633>() );
     return beta_algorithm;
 }
-template <typename MatrixType> vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> SmirnovAlgorithm_633<MatrixType>::get_gamma_alg() {
-    vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> gamma_algorithm;
-    gamma_algorithm.push_back(std::make_shared<gamma_add0_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add1_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add2_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add3_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add4_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add5_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add6_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add7_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add8_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add9_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add10_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add11_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add12_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add13_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add14_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add15_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add16_633<MatrixType>>() );
-    gamma_algorithm.push_back(std::make_shared<gamma_add17_633<MatrixType>>() );
+vector<std::shared_ptr<AlgorithmEntrance>> SmirnovAlgorithm_633::get_gamma_alg() {
+    vector<std::shared_ptr<AlgorithmEntrance>> gamma_algorithm;
+    gamma_algorithm.push_back(std::make_shared<gamma_add0_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add1_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add2_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add3_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add4_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add5_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add6_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add7_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add8_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add9_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add10_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add11_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add12_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add13_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add14_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add15_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add16_633>() );
+    gamma_algorithm.push_back(std::make_shared<gamma_add17_633>() );
     return gamma_algorithm;
 }
+
 
 #endif //FASTMATMUL_SMIRNOVALGORITHM_633_H

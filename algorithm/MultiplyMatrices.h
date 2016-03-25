@@ -35,9 +35,9 @@ namespace SmirnovFastMul{
                                  m_distribution_handler(m_comm_handler.get_rank(),
                                                         m_comm_handler.get_num_nodes())
             {
-                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_336<MatrixType>>());
-                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_363<MatrixType>>());
-                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_633<MatrixType>>());
+                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_336>());
+                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_363>());
+                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_633>());
             }
 
             MultiplyMatrices(const DistributionHandler& dh) : m_comm_handler(),
@@ -45,9 +45,9 @@ namespace SmirnovFastMul{
                                                               m_distribution_handler(dh)
             {
 
-                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_336<MatrixType>>());
-                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_363<MatrixType>>());
-                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_633<MatrixType>>());
+                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_336>());
+                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_363>());
+                m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_633>());
             }
 
 
@@ -344,7 +344,7 @@ namespace SmirnovFastMul{
         private:
 
             // The different smirnov algorithm to achieve 54X54
-            vector<std::shared_ptr<SmirnovAlgorithm<MatrixType>>> m_algorithms;
+            vector<std::shared_ptr<SmirnovAlgorithm>> m_algorithms;
 
             // Generated a list of sub_matrices
             vector<MatrixType> generate_sub_matrices(int row_dim, int col_dim);

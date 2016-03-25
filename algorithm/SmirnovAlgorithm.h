@@ -22,20 +22,13 @@ using std::endl;
 namespace SmirnovFastMul {
     namespace Computation {
 
-        template <typename MatrixType> class AlgorithmEntrance {
+        class AlgorithmEntrance {
         public:
-            virtual void operator()(vector<MatrixType>& sub_matrices, MatrixType& out) = 0;
+            virtual void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) = 0;
         };
 
-        /*class AlgorithmEntrance {
-        public:
-            virtual void alg_entrance(vector<Matrix>& sub_matrices, Matrix& out) = 0;
-            typedef std::unique_ptr<AlgorithmEntrance> AlgorithmEntrancePtr;
 
-        };*/
-        //typedef void (*AlgorithmEntrance)(vector<Matrix>& sub_matrices, Matrix& calculated_matrix);
-
-        template <typename MatrixType> class SmirnovAlgorithm {
+        class SmirnovAlgorithm {
         public:
 
             SmirnovAlgorithm(int A_base_row_dim, int A_base_col_dim, int B_base_col_dim) :
@@ -52,16 +45,16 @@ namespace SmirnovFastMul {
                 return m_B_base_col_dim;
             }
 
-            vector<MatrixType> create_sub_matrices(int alg_base_row_dim,
-                                                  int alg_base_col_dim,
-                                                  MatrixType &src) {
+            vector<PositionalMatrix> create_sub_matrices(int alg_base_row_dim,
+                                                         int alg_base_col_dim,
+                                                         PositionalMatrix &src) {
                 int src_row_dim = src.get_row_dimension();
                 int src_col_dim = src.get_col_dimension();
 
                 int sub_block_row_dim = src_row_dim / alg_base_row_dim;
                 int sub_block_col_dim = src_col_dim / alg_base_col_dim;
 
-                vector<MatrixType> sub_matrices;
+                vector<PositionalMatrix> sub_matrices;
                 // So c-tor want be called when resizing the vector in push_back
                 sub_matrices.reserve(alg_base_row_dim * alg_base_col_dim);
                 // Calculating the sub_matrices used for the algorithm
@@ -79,39 +72,39 @@ namespace SmirnovFastMul {
                 return sub_matrices;
             }
 
-            vector<MatrixType> calculate_alpha(MatrixType& A) {
+            vector<PositionalMatrix> calculate_alpha(PositionalMatrix& A) {
                 int src_row_dim = A.get_row_dimension();
                 int src_col_dim = A.get_col_dimension();
 
                 int alg_row_dim = src_row_dim / m_A_base_row_dim;
                 int alg_col_dim = src_col_dim / m_A_base_col_dim;
 
-                vector<MatrixType> sub_matrices = create_sub_matrices(m_A_base_row_dim, m_A_base_col_dim, A);
+                vector<PositionalMatrix> sub_matrices = create_sub_matrices(m_A_base_row_dim, m_A_base_col_dim, A);
                 return implement_algorithm(alg_row_dim, alg_col_dim, sub_matrices, get_alpha_alg());
             }
 
-            vector<MatrixType> calculate_beta(MatrixType& B) {
+            vector<PositionalMatrix> calculate_beta(PositionalMatrix& B) {
                 int src_row_dim = B.get_row_dimension();
                 int src_col_dim = B.get_col_dimension();
 
                 int alg_row_dim = src_row_dim / m_A_base_col_dim;
                 int alg_col_dim = src_col_dim / m_B_base_col_dim;
 
-                vector<MatrixType> sub_matrices = create_sub_matrices(m_A_base_col_dim, m_B_base_col_dim, B);
+                vector<PositionalMatrix> sub_matrices = create_sub_matrices(m_A_base_col_dim, m_B_base_col_dim, B);
                 return implement_algorithm(alg_row_dim, alg_col_dim, sub_matrices, get_beta_alg());
             }
 
-            void calculate_c(vector<MatrixType>& sub_matrices, MatrixType& C) {
+            void calculate_c(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& C) {
                 int alg_row_dim = C.get_row_dimension() / m_A_base_row_dim;
                 int alg_col_dim = C.get_col_dimension() / m_B_base_col_dim;
 
-                vector<MatrixType> c_sub_matrices = create_sub_matrices(m_A_base_row_dim, m_B_base_col_dim, C);
+                vector<PositionalMatrix> c_sub_matrices = create_sub_matrices(m_A_base_row_dim, m_B_base_col_dim, C);
                 implement_algorithm(alg_row_dim, alg_col_dim, sub_matrices, get_gamma_alg(), c_sub_matrices);
             }
 
-            virtual vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> get_alpha_alg() = 0;
-            virtual vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> get_beta_alg() = 0;
-            virtual vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> get_gamma_alg() = 0;
+            virtual vector<std::shared_ptr<AlgorithmEntrance>> get_alpha_alg() = 0;
+            virtual vector<std::shared_ptr<AlgorithmEntrance>> get_beta_alg() = 0;
+            virtual vector<std::shared_ptr<AlgorithmEntrance>> get_gamma_alg() = 0;
 
         protected:
 
@@ -119,24 +112,8 @@ namespace SmirnovFastMul {
             int m_A_base_col_dim;
             int m_B_base_col_dim;
 
-            vector<Matrix> implement_algorithm(int alg_row_dim, int alg_col_dim, vector<Matrix>& sub_matrices,
-                                               const vector<std::shared_ptr<AlgorithmEntrance<Matrix>>>& algorithm) {
-                // Iterating over the algorithms we need to apply
-                vector<Matrix> alg_results_matrices;
-                // So c-tor want be called when resizing the vector in push_back
-                alg_results_matrices.reserve(algorithm.size());
-                for(auto alg_entrance : algorithm) {
-                    Matrix output(alg_row_dim, alg_col_dim);
-
-                    (*alg_entrance)(sub_matrices, output);
-                    alg_results_matrices.push_back(std::move(output));
-                }
-
-                return alg_results_matrices;
-            }
-
             vector<PositionalMatrix> implement_algorithm(int alg_row_dim, int alg_col_dim, vector<PositionalMatrix>& sub_matrices,
-                                                        const vector<std::shared_ptr<AlgorithmEntrance<PositionalMatrix>>>& algorithm) {
+                                                        const vector<std::shared_ptr<AlgorithmEntrance>>& algorithm) {
                 // Iterating over the algorithms we need to apply
                 vector<PositionalMatrix> alg_results_matrices;
                 // So c-tor want be called when resizing the vector in push_back
@@ -158,20 +135,16 @@ namespace SmirnovFastMul {
                 return alg_results_matrices;
             }
 
-            void implement_algorithm(int alg_row_dim, int alg_col_dim, vector<MatrixType>& sub_matrices,
-                                     const vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>>& algorithm, vector<MatrixType>& out) {
+            void implement_algorithm(int alg_row_dim, int alg_col_dim,
+                                     vector<PositionalMatrix>& sub_matrices,
+                                     const vector<std::shared_ptr<AlgorithmEntrance>>& algorithm,
+                                     vector<PositionalMatrix>& out) {
+
                 for (int i = 0; i < algorithm.size(); ++i) {
                     auto alg_entrance = algorithm[i];
                     (*alg_entrance)(sub_matrices, out[i]);
                 }
             }
-
-            //Matrix sub_matrix_creation();
-            //PositionalMatrix sub_matrix_creation();
-
-        private:
-
-
 
         };
     }

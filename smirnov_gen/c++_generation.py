@@ -1,3 +1,4 @@
+#!/usr/bin/python
 __author__ = 'rong'
 
 '''
@@ -212,6 +213,60 @@ class AlgGen():
         self.write_algorithms()
         self.write_simple_constructor()
 
+class PositionalMatrixGen(AlgGen):
+
+    def __init__(self, alg_tuple):
+        AlgGen.__init__(self, alg_tuple)
+
+    def _create_simple_function_defnition(self, type, index):
+        self.write_line("void operator()(vector<PositionalMatrix>& sub_matrices, PositionalMatrix& out) {")
+        self._indent_base += 1
+
+    def _write_class_definition(self, type, index):
+        self.write_line("struct {type}_add{index}_{alg_tuple} : "
+                   "public AlgorithmEntrance {{".format(type=type,
+                                                       index=index,
+                                                       alg_tuple=self._alg_tuple_as_string),0)
+
+    def _end_class_definition(self):
+        self.write_line("};",0)
+
+    def _write_algorithm_entrance(self, type, entrance, entrance_alg):
+        self._write_class_definition(type, entrance)
+        #self._indent_base = 1
+        AlgGen._write_algorithm_entrance(self, type, entrance, entrance_alg)
+        self._indent_base = 0
+        self._end_class_definition()
+
+    def _write_virtual_algorithm(self, type):
+        self.write_line("vector<std::shared_ptr<AlgorithmEntrance>> "
+                        "SmirnovAlgorithm_{alg_tuple}::get_{type}_alg() {{".format(type=type,
+                                                                                               alg_tuple=self._alg_tuple_as_string),0)
+        self.write_line("vector<std::shared_ptr<AlgorithmEntrance>> {type}_algorithm;".format(type=type))
+        insertion = "{type}_algorithm.push_back(std::make_shared<{type}_add{index}_{alg_tuple}>() );"
+        if type == 'gamma':
+            for i in range(self._a_row_dim * self._b_col_dim):
+               self.write_line(insertion.format(type=type,
+                                                index=i,
+                                                alg_tuple=self._alg_tuple_as_string))
+        else:
+            for i in range(40):
+               self.write_line(insertion.format(type=type,
+                                                index=i,
+                                                alg_tuple=self._alg_tuple_as_string))
+
+        self.write_line("return {type}_algorithm;".format(type=type))
+        self._end_function_definiton()
+
+    def write_virtual_algorithms(self):
+        self._write_virtual_algorithm("alpha")
+        self._write_virtual_algorithm("beta")
+        self._write_virtual_algorithm("gamma")
+
+    def create_simple_scripts(self):
+        self.write_algorithms()
+        self.write_virtual_algorithms()
+
 class TemplateAlgorithmEntrance(AlgGen):
 
     def __init__(self, alg_tuple):
@@ -272,9 +327,11 @@ if __name__ == '__main__':
     ALG_ROW_DIM = sys.argv[2]
     ALG_COL_DIM = sys.argv[3]'''
     print "creating scripts"
-    gen_3_3_6 = TemplateAlgorithmEntrance((3,3,6))
+    gen_6_3_3 = PositionalMatrixGen((6,3,3))
+    gen_6_3_3.create_simple_scripts()
+    '''gen_3_3_6 = TemplateAlgorithmEntrance((3,3,6))
     gen_3_3_6.create_simple_scripts()
-    '''gen_3_3_6 = AlgGen((3,6,3))
+    gen_3_3_6 = AlgGen((3,6,3))
     gen_3_3_6.create_simple_scripts()
     gen_3_3_6 = AlgGen((6,3,3))
     gen_3_3_6.create_simple_scripts()'''

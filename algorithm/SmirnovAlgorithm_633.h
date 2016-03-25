@@ -10,17 +10,16 @@
 namespace SmirnovFastMul {
     namespace Computation {
 
-        template <typename MatrixType>
-        class SmirnovAlgorithm_633 : public SmirnovAlgorithm<MatrixType>{
+        class SmirnovAlgorithm_633 : public SmirnovAlgorithm{
 
         public:
-            SmirnovAlgorithm_633() : SmirnovAlgorithm<MatrixType>(6,3,3) {}
+            SmirnovAlgorithm_633() : SmirnovAlgorithm(6,3,3) {}
 
-            virtual vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> get_alpha_alg();
+            virtual vector<std::shared_ptr<AlgorithmEntrance>> get_alpha_alg();
 
-            virtual vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> get_beta_alg();
+            virtual vector<std::shared_ptr<AlgorithmEntrance>> get_beta_alg();
 
-            virtual vector<std::shared_ptr<AlgorithmEntrance<MatrixType>>> get_gamma_alg();
+            virtual vector<std::shared_ptr<AlgorithmEntrance>> get_gamma_alg();
         };
 
         #include "SmirnovAlgorithm_633.tpp"
