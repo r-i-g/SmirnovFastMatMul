@@ -1,0 +1,1 @@
+mpirun -np 25 ./fromfile1 -i cases/45_90_90_8.in -c cases/45_90_90_8.correct -s 8
