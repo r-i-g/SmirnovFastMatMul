@@ -17,7 +17,8 @@ namespace SmirnovFastMul{
             COMM_SUMMA,
             ADD,
             MUL,
-            REARRANGE
+            REARRANGE,
+            TIME
         };
 
         /**
@@ -45,6 +46,8 @@ namespace SmirnovFastMul{
 
             void printTimers();
 
+            void printTimer(TimerType type);
+
             void printStatistics();
         private:
 
@@ -52,7 +55,7 @@ namespace SmirnovFastMul{
 
             double readTimer();
 
-            double m_timers[5] = {0};
+            double m_timers[6] = {0};
 
             long long m_additions = 0;
             long long m_multiplications = 0;

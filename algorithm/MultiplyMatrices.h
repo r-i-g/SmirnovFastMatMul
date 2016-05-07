@@ -105,7 +105,7 @@ namespace SmirnovFastMul{
                 int sub_problem_end = m_distribution_handler.sub_problem_end(k, num_sub_problems);
                 //cout << "from recucsion level " << k << " from rank " << m_comm_handler.get_rank() << " start problem is " << sub_problem_start << endl;
 
-
+                // the temp matrices are for receiving parts of matrices from collaborating processes
                 vector<MatrixType> temp_alphas = temp_matrices(alpha, sub_problem_start, num_sub_problems);
                 vector<MatrixType> temp_betas = temp_matrices(beta, sub_problem_start, num_sub_problems);
                 // Sending to targets and receiving from targets
@@ -155,8 +155,9 @@ namespace SmirnovFastMul{
                         continue;
                     }
 
-                    // Sending i'th part of sub_problems to target_processor
+                    // send_parts are the matrices we want to share and send
                     vector<MatrixType> send_parts = get_parts(sub_problems, sub_problem_start, num_sub_problems, k, i);
+                    // Sending i'th part of sub_problems to target_processor and receiving parts into sub_problems
                     m_comm_handler.send_receive_parts(send_parts, num_sub_problems, target_processor, sub_problems, i);
                 }
 

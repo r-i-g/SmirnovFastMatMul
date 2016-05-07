@@ -40,7 +40,11 @@ void Measurements::printTimers() {
            m_timers[ADD],
            m_timers[MUL],
            m_timers[REARRANGE],
-           m_timers[COMM] + m_timers[ADD] + m_timers[MUL] + m_timers[REARRANGE]);
+           m_timers[COMM] + m_timers[COMM_SUMMA] + m_timers[ADD] + m_timers[MUL] + m_timers[REARRANGE]);
+}
+
+void Measurements::printTimer(TimerType type) {
+    printf("Elapsed time for timer is %f\n", m_timers[type]);
 }
 
 void Measurements::printStatistics() {

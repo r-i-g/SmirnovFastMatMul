@@ -11,7 +11,10 @@
 #include "../../matrix/PositionalMatrix.h"
 #include "../../communication/CommunicationHandler.h"
 #include "../../distribution/Distribution.h"
+#include "../../measurement/Measurements.h"
 #include "../../algorithm/MultiplyMatrices.h"
+
+#define FOR_RANK_0() if (our_rank == 0)
 
 using std::cout;
 using std::endl;
@@ -22,6 +25,8 @@ using SmirnovFastMul::Computation::Matrix;
 using SmirnovFastMul::Computation::PositionalMatrix;
 using SmirnovFastMul::Distribution::DistributionHandler;
 using SmirnovFastMul::Computation::MultiplyMatrices;
+using SmirnovFastMul::Computation::Measurements;
+using SmirnovFastMul::Computation::TimerType;
 
 int main(int argc, char* argv[]) {
 
@@ -29,10 +34,7 @@ int main(int argc, char* argv[]) {
     string in_file = read_string( argc, argv, "-i", NULL );
     string compare_file = read_string( argc, argv, "-c", NULL );
     int sub_problems = read_int(argc, argv, "-s", SMIRNOV_SUB_PROBLEMS);
-
-    cout << "got the following in file " << in_file << endl;
-    cout << "got the following compare file " << compare_file << endl;
-    cout << "got the following number of sub problems " << sub_problems << endl;
+    int recursion_level = read_int(argc, argv, "-r", -1);
 
     ifstream file (in_file);
     ifstream to_compare_file (compare_file);
@@ -44,7 +46,11 @@ int main(int argc, char* argv[]) {
     int our_rank = matrix_comm_handler.get_rank();
     int num_processes = matrix_comm_handler.get_num_nodes();
 
-    if ( our_rank == 0) {
+    if (our_rank == 0) {
+
+        cout << "got the following in file " << in_file << endl;
+        cout << "got the following compare file " << compare_file << endl;
+        cout << "got the following number of sub problems " << sub_problems << endl;
 
         A_dim = MatrixDimensions(file);
         B_dim = MatrixDimensions(file);
@@ -75,11 +81,17 @@ int main(int argc, char* argv[]) {
     // Distributing the matrices
     matrix_comm_handler.broad_cast(complete_A);
     matrix_comm_handler.broad_cast(complete_B);
+    if (our_rank == 0) {
+        cout << "Distributed the matrices" << endl;
+    }
 
 
     // Taking our part from the matrix
     int grid_base = SMIRNOV_SUB_PROBLEMS/sub_problems;
     DistributionHandler dh(matrix_comm_handler.get_rank(), matrix_comm_handler.get_num_nodes(), grid_base);
+    if (our_rank == 0) {
+        cout << "Distribution grid is " << grid_base << endl;
+    };
     PositionalMatrix A = dh.condensed_distributed_matrix(complete_A, 1);
     PositionalMatrix B = dh.condensed_distributed_matrix(complete_B, 1);
     PositionalMatrix C = dh.condensed_distributed_matrix(complete_C, 1);
@@ -93,14 +105,24 @@ int main(int argc, char* argv[]) {
 
     // Running and timing the algorithm
     MultiplyMatrices<PositionalMatrix> alg(dh);
-    //void bfs(MatrixType &A, MatrixType& B, MatrixType& C, int k, int num_sub_problems=1)
-    // for calculating log_n(x) == log(x)/log(n)
-    int recursion_level = log(num_processes) / log(grid_base);
+    // If we haven't received a recursion level we calculate it by calculating log_n(x) == log(x)/log(n)
+    recursion_level = (recursion_level != -1) ? recursion_level :log(num_processes) / log(grid_base);
+    Measurements m = Measurements::getMeasurementLogger();
+    // Since the computation is symmetrical, its timing will be calculated by process 0
+    if (our_rank == 0) {
+        cout << "Performing " << recursion_level << " recursions" << endl;
+        m.startTimer(TimerType::TIME);
+    }
+
     alg.bfs(A, B, C, recursion_level, sub_problems);
+
+    if (our_rank == 0) {
+        m.endTimer(TimerType::TIME);
+    }
 
     // Collecting the output matrices for comparison
     CommunicationHandler<PositionalMatrix> positional_comm_handler;
-    if (our_rank == 0) {
+    FOR_RANK_0() {
 
         positional_comm_handler.collect_to(complete_C, C);
 
@@ -118,8 +140,10 @@ int main(int argc, char* argv[]) {
     Matrix to_compare = matrix_reader(to_compare_file, dimensions);
     if (to_compare == complete_C) {
         cout << "Matrices are the same" << endl;
+        m.printTimer(TimerType::TIME);
     } else {
         cout << "Matrices aren't the same" << endl;
+        //cout << complete_C << endl;
     }
 
     return 0;

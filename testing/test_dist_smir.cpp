@@ -2,16 +2,16 @@
 // Created by rong on 11/13/15.
 //
 
-//#include "../communication/CommunicationHandler.h"
+#include "../communication/CommunicationHandler.h"
 #include "../distribution/Distribution.h"
 #include "../matrix/Matrix.h"
-#include "../algorithm/MultiplyMatrices.h"
+//#include "../algorithm/MultiplyMatrices.h"
 #include <iostream>
 
 using SmirnovFastMul::Communication::CommunicationHandler;
 using SmirnovFastMul::Distribution::DistributionHandler;
 using SmirnovFastMul::Computation::Matrix;
-using SmirnovFastMul::Computation::MultiplyMatrices;
+//using SmirnovFastMul::Computation::MultiplyMatrices;
 
 using std::cout;
 using std::endl;
@@ -126,6 +126,7 @@ void test_condensed_distribution() {
     cout << t << endl;
 }
 
+/*
 void test_bfs() {
     Matrix a(90);
     Matrix b(90);
@@ -155,15 +156,46 @@ void test_bfs() {
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
-}
+}*/
 
+void test_recursion_level() {
+    DistributionHandler dh(0, 64, 4);
+
+    auto f = [&dh](int k) {
+        int num_sub_problems = 10;
+        cout << "In level " << k << endl;
+
+        int sub_problem_start = dh.sub_problem_start(k, num_sub_problems);
+        int sub_problem_end = dh.sub_problem_end(k, num_sub_problems);
+        cout << "Subprblem start is " << sub_problem_start << " and subproblem end is " << sub_problem_end << endl;
+
+        for (int i = 0; i < SMIRNOV_SUB_PROBLEMS / num_sub_problems; ++i) {
+
+            int target_processor = dh.target_processor(i, k);
+
+            // There's no need to send ourselves the data
+            if (target_processor == 0) {
+                cout << "No need to send to ourself the problem " << i << endl;
+                continue;
+            }
+
+            cout << "The target processor is " << target_processor << " for problem " << i << endl;
+        }
+    };
+
+    f(3);
+    f(2);
+    f(1);
+
+}
 int main() {
 
     //test_matrix_addition();
     //test_distribution();
     //test_sub_problem_assignment();
     //test_bfs();
-    test_condensed_distribution();
+    //test_condensed_distribution();
+    test_recursion_level();
 
     return  0;
 }
