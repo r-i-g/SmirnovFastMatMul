@@ -35,7 +35,8 @@ int main(int argc, char* argv[]) {
     string in_file = read_string( argc, argv, "-i", NULL );
     string compare_file = read_string( argc, argv, "-c", NULL );
     int sub_problems = read_int(argc, argv, "-s", SMIRNOV_SUB_PROBLEMS);
-    int recursion_level = read_int(argc, argv, "-r", -1);
+    int processor_row_dim = read_int(argc, argv, "-n", -1);
+    int processor_col_dim = read_int(argc, argv, "-m", -1);
 
     ifstream file (in_file);
     ifstream to_compare_file (compare_file);
@@ -88,10 +89,10 @@ int main(int argc, char* argv[]) {
 
 
     // Taking our part from the matrix
-    int grid_base = SMIRNOV_SUB_PROBLEMS/sub_problems;
-    DistributionHandler dh(matrix_comm_handler.get_rank(), matrix_comm_handler.get_num_nodes(), grid_base);
+    int grid_base = SMIRNOV_SUB_PROBLEMS / sub_problems;
+    DistributionHandler dh(matrix_comm_handler.get_rank(), matrix_comm_handler.get_num_nodes(), processor_row_dim, processor_col_dim);
     if (our_rank == 0) {
-        cout << "Distribution grid is " << grid_base << endl;
+        cout << "Distribution grid is " << processor_row_dim << " on " << processor_col_dim << endl;
     };
     PositionalMatrix A = dh.condensed_distributed_matrix(complete_A, 1);
     PositionalMatrix B = dh.condensed_distributed_matrix(complete_B, 1);
@@ -107,7 +108,7 @@ int main(int argc, char* argv[]) {
     // Running and timing the algorithm
     MultiplyMatrices<PositionalMatrix> alg(dh);
     // If we haven't received a recursion level we calculate it by calculating log_n(x) == log(x)/log(n)
-    recursion_level = (recursion_level != -1) ? recursion_level :log(num_processes) / log(grid_base);
+    int recursion_level = log(num_processes) / log(grid_base);
     Measurements m = Measurements::getMeasurementLogger();
     // Since the computation is symmetrical, its timing will be calculated by process 0
     if (our_rank == 0) {

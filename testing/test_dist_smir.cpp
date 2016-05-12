@@ -191,6 +191,10 @@ void test_distribution() {
 
     PositionalMatrix mat = dh.condensed_distributed_matrix(src,1);
     cout << mat << endl;
+
+    DistributionHandler dh2(6,8,4,2);
+    mat = dh2.condensed_distributed_matrix(src,1);
+    cout << mat << endl;
 }
 
 int main() {
