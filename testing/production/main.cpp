@@ -13,6 +13,7 @@
 #include "../../distribution/Distribution.h"
 #include "../../measurement/Measurements.h"
 #include "../../algorithm/MultiplyMatrices.h"
+#include "../../common/common.h"
 
 #define FOR_RANK_0() if (our_rank == 0)
 
@@ -114,6 +115,7 @@ int main(int argc, char* argv[]) {
         m.startTimer(TimerType::TIME);
     }
 
+    wait_for_debugger(our_rank);
     alg.bfs(A, B, C, recursion_level, sub_problems);
 
     if (our_rank == 0) {

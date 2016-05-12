@@ -20,12 +20,12 @@ namespace SmirnovFastMul {
         class PositionalMatrix : public Matrix {
         public:
 
-            PositionalMatrix(int containing_n, int containing_m, int condense_factor, int* positions, Matrix&& matrix);
-            // deprecated
-            PositionalMatrix(int containing_n, int containing_m, int n, int m);
-            // deprecated
-            //PositionalMatrix(int containing_n, int containing_m, int n=0);
+            PositionalMatrix(int containing_n, int containing_m, int row_condense_factor, int col_condense_factor, int* positions, Matrix&& matrix);
+
+            PositionalMatrix(int containing_n, int containing_m, int row_condense_factor, int col_condense_factor);
+
             PositionalMatrix(int containing_n, int containing_m, int condense_factor=1);
+
             PositionalMatrix() : PositionalMatrix(0,0,1){}
 
             // c-tor does deep copy
@@ -45,7 +45,7 @@ namespace SmirnovFastMul {
              * Inserts the matrix_value at positions i,j of the represented matrix
              */
             // deprecated
-            void condense(double matrix_value, int condense_factor, int i, int j);
+            void condense(double matrix_value, int row_condense_factor, int col_condense_factor, int i, int j);
 
             /**
              * Creates a condensed sub matrix representation of the specified sub matrix
@@ -74,7 +74,18 @@ namespace SmirnovFastMul {
             // Sets the position array containing the elements represented by the class
             void set_positions();
 
-            int get_condense_factor() const;
+            int get_row_condense_factor() const {
+                return m_row_condense_factor;
+            }
+
+            int get_col_condense_factor() const {
+                return m_col_condense_factor;
+            }
+
+            /**
+             * @return true if the positional matrix is actually condensed
+             */
+            bool is_condensed() const;
 
             int get_containing_row() const {
                 return m_containing_n;
@@ -88,7 +99,7 @@ namespace SmirnovFastMul {
 
             friend std::ostream& operator<<(std::ostream& os, const PositionalMatrix& mat) {
                 // TODO need to fix the position print to print a matrix instead of a row
-                if (mat.get_condense_factor() != 1) {
+                if (mat.is_condensed()) {
                     const Matrix &matrix = dynamic_cast<const Matrix &>(mat);
                     for (int i = 0; i < matrix.get_row_dimension(); ++i) {
                         for (int j = 0; j < matrix.get_col_dimension(); ++j) {
@@ -106,7 +117,8 @@ namespace SmirnovFastMul {
                 // cout << "In swap freind function in condensed matrix" << endl;
                 using std::swap;
                 swap(static_cast<Matrix&>(first), static_cast<Matrix&>(second));
-                swap(first.m_condense_factor, second.m_condense_factor);
+                swap(first.m_row_condense_factor, second.m_row_condense_factor);
+                swap(first.m_col_condense_factor, second.m_col_condense_factor);
                 swap(first.m_containing_n, second.m_containing_n);
                 swap(first.m_containing_m, second.m_containing_m);
                 swap(first.m_positions, second.m_positions);
@@ -123,7 +135,8 @@ namespace SmirnovFastMul {
             void init_positions(int value);
             int* sub_position(int num_rows, int num_col, int start_row, int start_col);
 
-            int m_condense_factor;
+            int m_row_condense_factor;
+            int m_col_condense_factor;
             int m_containing_n;
             int m_containing_m;
 

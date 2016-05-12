@@ -13,40 +13,45 @@ using std::cout;
 using std::endl;
 
 
-PositionalMatrix::PositionalMatrix(int containing_n, int containing_m, int condense_factor, int* positions, Matrix&& matrix) :
+PositionalMatrix::PositionalMatrix(int containing_n, int containing_m,
+                                   int row_condense_factor, int col_condense_factor,
+                                   int* positions, Matrix&& matrix) :
         Matrix(std::move(matrix)),
-        m_containing_n(containing_n), m_containing_m(containing_m), m_condense_factor(condense_factor), m_positions(positions)
+        m_containing_n(containing_n), m_containing_m(containing_m), m_row_condense_factor(row_condense_factor),
+        m_col_condense_factor(col_condense_factor), m_positions(positions)
 { }
 
-PositionalMatrix::PositionalMatrix(int containing_n, int containing_m, int n, int m) :
-        PositionalMatrix(containing_n, containing_m, containing_n / n)
-{ }
-
-PositionalMatrix::PositionalMatrix(int containing_n, int containing_m, int condense_factor):
-        Matrix(containing_n/condense_factor, containing_m/condense_factor),
-        m_containing_n(containing_n), m_containing_m(containing_m), m_condense_factor(condense_factor),
+PositionalMatrix::PositionalMatrix(int containing_n, int containing_m, int row_condense_factor, int col_condense_factor) :
+        Matrix(containing_n/row_condense_factor, containing_m/col_condense_factor),
+        m_containing_n(containing_n), m_containing_m(containing_m),
+        m_row_condense_factor(row_condense_factor), m_col_condense_factor(col_condense_factor),
         m_positions(nullptr)
 {
-    if (m_condense_factor == 1) {
+    if (!is_condensed()) {
         return;
     }
 
-    int n = containing_n/condense_factor, m = containing_m/condense_factor;
+    int n = containing_n/m_row_condense_factor, m = containing_m/m_col_condense_factor;
 
     m_positions = new int[n*m];
     init_positions(0);
 }
 
+PositionalMatrix::PositionalMatrix(int containing_n, int containing_m, int condense_factor):
+       PositionalMatrix(containing_n, containing_m, condense_factor, condense_factor)
+{}
+
 PositionalMatrix::PositionalMatrix(const PositionalMatrix& that) :
     Matrix(that),
-    m_containing_n(that.m_containing_n), m_containing_m(that.m_containing_m), m_condense_factor(that.m_condense_factor)
+    m_containing_n(that.m_containing_n), m_containing_m(that.m_containing_m),
+    m_row_condense_factor(that.m_row_condense_factor), m_col_condense_factor(that.m_col_condense_factor)
 {
 
-    if (m_condense_factor == 1) {
+    if (!is_condensed()) {
         return;
     }
     //cout << " in copy constructor in PositionalMatrix" << endl;
-    int n = m_containing_n/m_condense_factor, m = m_containing_m/m_condense_factor;
+    int n = m_containing_n/m_row_condense_factor, m = m_containing_m/m_col_condense_factor;
 
     m_positions = new int[n*m];
     for (int i = 0; i < n*m; ++i) {
@@ -55,7 +60,8 @@ PositionalMatrix::PositionalMatrix(const PositionalMatrix& that) :
 }
 
 PositionalMatrix::PositionalMatrix(PositionalMatrix&& that) :
-    PositionalMatrix(that.m_containing_n, that.m_containing_m, that.m_condense_factor, that.get_positions(), std::move(that))
+    PositionalMatrix(that.m_containing_n, that.m_containing_m,
+                     that.m_row_condense_factor, that.m_col_condense_factor, that.get_positions(), std::move(that))
 {
     //cout << "in move ctor" << endl;
     that.m_positions = nullptr;
@@ -102,17 +108,18 @@ PositionalMatrix PositionalMatrix::sub_matrix(int num_rows, int num_col, int sta
 
     Matrix sub_matrix = Matrix::sub_matrix(num_rows, num_col, start_row, start_col);
 
-    return PositionalMatrix(num_rows * m_condense_factor,
-                           num_col * m_condense_factor,
-                           m_condense_factor,
-                           sub_position(num_rows, num_col, start_row, start_col),
-                           std::move(sub_matrix));
+    return PositionalMatrix(num_rows * m_row_condense_factor,
+                            num_col * m_col_condense_factor,
+                            m_row_condense_factor,
+                            m_col_condense_factor,
+                            sub_position(num_rows, num_col, start_row, start_col),
+                            std::move(sub_matrix));
 
 }
 
-void PositionalMatrix::condense(double matrix_value, int condense_factor, int i, int j) {
-    int condensed_i = i / condense_factor;
-    int condensed_j = j / condense_factor;
+void PositionalMatrix::condense(double matrix_value, int row_condense_factor, int col_condense_factor, int i, int j) {
+    int condensed_i = i / row_condense_factor;
+    int condensed_j = j / col_condense_factor;
 
     m_data[condensed_i * m_stride + condensed_j] = matrix_value;
 
@@ -138,15 +145,11 @@ int col_amount(int* positions, int len, int num_columns) {
 void PositionalMatrix::set_positions() {
     for (int i = 0; i < m_row_dim; ++i) {
         for (int j = 0; j < m_col_dim; ++j) {
-            int real_i = i * m_condense_factor;
-            int real_j = j * m_condense_factor;
+            int real_i = i * m_row_condense_factor;
+            int real_j = j * m_col_condense_factor;
             m_positions[i * m_stride + j] = real_i * m_containing_m  + real_j;
         }
     }
-}
-
-int PositionalMatrix::get_condense_factor() const {
-    return m_condense_factor;
 }
 
 void PositionalMatrix::merge(const PositionalMatrix& mat) {
@@ -209,6 +212,10 @@ int PositionalMatrix::position_len() const {
     return m_row_dim * m_col_dim;
 }
 
+bool PositionalMatrix::is_condensed() const {
+    return m_row_condense_factor != 1 || m_col_condense_factor != 1;
+}
+
 int* PositionalMatrix::get_positions() const {
     return m_positions;
 }
@@ -229,5 +236,5 @@ int* PositionalMatrix::get_positions(int i, int j) const {
 }
 
 PositionalMatrix PositionalMatrix::empty_clone() const {
-    return PositionalMatrix(m_containing_n, m_containing_m, m_condense_factor);
+    return PositionalMatrix(m_containing_n, m_containing_m, m_row_condense_factor, m_col_condense_factor);
 }

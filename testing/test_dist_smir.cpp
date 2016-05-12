@@ -5,12 +5,14 @@
 #include "../communication/CommunicationHandler.h"
 #include "../distribution/Distribution.h"
 #include "../matrix/Matrix.h"
+#include "../matrix/PositionalMatrix.h"
 //#include "../algorithm/MultiplyMatrices.h"
 #include <iostream>
 
 using SmirnovFastMul::Communication::CommunicationHandler;
 using SmirnovFastMul::Distribution::DistributionHandler;
 using SmirnovFastMul::Computation::Matrix;
+using SmirnovFastMul::Computation::PositionalMatrix;
 //using SmirnovFastMul::Computation::MultiplyMatrices;
 
 using std::cout;
@@ -117,14 +119,6 @@ void test_sub_problem_assignment() {
     //cout << sub_start << sub_end << endl;
 }*/
 
-void test_condensed_distribution() {
-    Matrix a(7*4);
-    a.init_range();
-
-    DistributionHandler dh(1, 49, 7);
-    Matrix t = dh.condensed_distributed_matrix(a, 1);
-    cout << t << endl;
-}
 
 /*
 void test_bfs() {
@@ -188,6 +182,17 @@ void test_recursion_level() {
     f(1);
 
 }
+
+void test_distribution() {
+    DistributionHandler dh(0,8,4,2);
+
+    Matrix src(8,8);
+    src.init_range();
+
+    PositionalMatrix mat = dh.condensed_distributed_matrix(src,1);
+    cout << mat << endl;
+}
+
 int main() {
 
     //test_matrix_addition();
@@ -195,7 +200,7 @@ int main() {
     //test_sub_problem_assignment();
     //test_bfs();
     //test_condensed_distribution();
-    test_recursion_level();
-
+    //test_recursion_level();
+    test_distribution();
     return  0;
 }

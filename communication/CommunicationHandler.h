@@ -66,7 +66,7 @@ namespace SmirnovFastMul {
 
                 // Sending the position array
                 //cout << "from rank " << m_rank << " sending position lne " << matrix.position_len() << " to " << node  << endl;
-                if (matrix.get_condense_factor() != 1) {
+                if (matrix.is_condensed()) {
                     MPI_Send(matrix.get_positions(), matrix.position_len() , MPI_INT, node, 11, MPI_COMM_WORLD);
                 }
 
@@ -79,7 +79,7 @@ namespace SmirnovFastMul {
                 MPI_Status status;
                 //cout << "from rank " << m_rank << " receiving position lne " << matrix.position_len() << " from " << from_node  << endl;
                 // Receiving the positions
-                if (matrix.get_condense_factor() != 1) {
+                if (matrix.is_condensed()) {
                     MPI_Recv(matrix.get_positions(), matrix.position_len(), MPI_INT, from_node, 11, MPI_COMM_WORLD,
                              &status);
                 }

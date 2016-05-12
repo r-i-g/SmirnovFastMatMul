@@ -19,6 +19,8 @@ namespace SmirnovFastMul {
 
             DistributionHandler(int rank, int num_nodes, int processor_grid_base = SMIRNOV_SUB_PROBLEMS);
 
+            DistributionHandler(int rank, int num_nodes, int processor_row_dim, int processor_col_dim);
+
             // c-tor
             DistributionHandler(const DistributionHandler& dh);
 
@@ -60,6 +62,8 @@ namespace SmirnovFastMul {
         private:
             int m_rank;
             int m_num_nodes;
+            int m_processor_row_dim;
+            int m_processor_col_dim;
             int m_processor_grid_base;
         };
     }

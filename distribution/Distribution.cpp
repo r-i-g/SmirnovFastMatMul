@@ -13,11 +13,17 @@ using std::cout;
 using std::endl;
 
 DistributionHandler::DistributionHandler(int rank, int num_nodes, int processor_grid_base) :
-        m_rank(rank), m_num_nodes(num_nodes), m_processor_grid_base(processor_grid_base)
+        DistributionHandler(rank, num_nodes, processor_grid_base, processor_grid_base)
 { }
 
+DistributionHandler::DistributionHandler(int rank, int num_nodes, int processor_row_dim, int processor_col_dim) :
+        m_rank(rank), m_num_nodes(num_nodes), m_processor_row_dim(processor_row_dim), m_processor_col_dim(processor_col_dim)
+{
+    m_processor_grid_base = m_processor_col_dim;
+}
+
 DistributionHandler::DistributionHandler(const DistributionHandler& dh) :
-        DistributionHandler(dh.m_rank, dh.m_num_nodes, dh.m_processor_grid_base)
+        DistributionHandler(dh.m_rank, dh.m_num_nodes, dh.m_processor_row_dim, dh.m_processor_col_dim)
 { }
 
 int DistributionHandler::sub_problem_start(int recursion_level, int num_sub_problems) {
@@ -61,17 +67,16 @@ int DistributionHandler::target_processor(int sub_problem_index, int recursion_l
 
 bool DistributionHandler::are_coordinates_contained(int i, int j, int block_size) {
     int our_rank = m_rank;
-    int processor_matrix_dimension = (int)sqrt(m_num_nodes);
 
     // Converting the coordinates to be in the scale of our block size
     int i_in_block_size = i / block_size;
     int j_in_block_size = j / block_size;
 
     // Getting the position of the block relative to the processor grid assignment
-    int relative_i = i_in_block_size % processor_matrix_dimension;
-    int relative_j = j_in_block_size % processor_matrix_dimension;
+    int relative_i = i_in_block_size % m_processor_row_dim;
+    int relative_j = j_in_block_size % m_processor_col_dim;
 
-    return (relative_i * processor_matrix_dimension + relative_j) == our_rank;
+    return (relative_i * m_processor_col_dim + relative_j) == our_rank;
 }
 
 int DistributionHandler::get_neighbor_distance(int k) {
@@ -115,22 +120,20 @@ Matrix DistributionHandler::distribute_matrix(const Matrix& matrix, int block_si
 
 PositionalMatrix DistributionHandler::condensed_distributed_matrix(const Matrix& matrix, int block_size) {
 
-    int processor_matrix_dimension = (int)sqrt(m_num_nodes);
-    int matrix_dimension = matrix.get_row_dimension() / processor_matrix_dimension;
     int matrix_row_dimension = matrix.get_row_dimension();
     int matrix_col_dimension = matrix.get_col_dimension();
 
-    int condensed_row_dimension = matrix_row_dimension / processor_matrix_dimension;
-    int condensed_col_dimension = matrix_col_dimension / processor_matrix_dimension;
+    //int condensed_row_dimension = matrix_row_dimension / m_processor_row_dim;
+    //int condensed_col_dimension = matrix_col_dimension / m_processor_col_dim;
 
     PositionalMatrix condensed_matrix(matrix_row_dimension, matrix_col_dimension,
-                                     condensed_row_dimension, condensed_col_dimension);
+                                      m_processor_row_dim, m_processor_col_dim);
 
     for (int i = 0; i < matrix.get_row_dimension(); ++i) {
         for (int j = 0; j < matrix.get_col_dimension(); ++j) {
 
             if ( are_coordinates_contained(i,j,block_size) ) {
-                condensed_matrix.condense(matrix(i,j), processor_matrix_dimension, i,j);
+                condensed_matrix.condense(matrix(i,j), m_processor_row_dim, m_processor_col_dim, i,j);
             }
 
         }
