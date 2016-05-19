@@ -22,20 +22,18 @@ def lcm(x, y):
 
    return lcm
 
-def generate_dimension(argv):
-    if len(argv) < 2:
-        print 'Usage <recursion_level> <num_sub_problems>'
-        return
+def log(to_print, debug=True):
+    if debug:
+        print to_print
 
-    recursion_level = int(argv[0])
-    num_sub_problems = int(argv[1])
+def generate_dimension(recursion_level, num_sub_problems, debug=True):
 
     processor_grid_base = 40/num_sub_problems
     processor_number = processor_grid_base**recursion_level
     processor_row_dim = processor_number / processor_grid_base
     processor_col_dim = processor_grid_base
     
-    print "Processor dim is " + str((processor_row_dim, processor_col_dim))
+    log("Processor dim is " + str((processor_row_dim, processor_col_dim)), debug)
 
     a_dimension = None
     b_dimension = None
@@ -58,8 +56,8 @@ def generate_dimension(argv):
     	a_base_dim = (a_base_dim[0]*a_row, a_base_dim[1]*a_col)
     	b_base_dim = (b_base_dim[0]*b_row, b_base_dim[1]*b_col)
 
-    print "A base dim " + str(a_base_dim)
-    print "B base dim " + str(b_base_dim)
+    log("A base dim " + str(a_base_dim), debug)
+    log("B base dim " + str(b_base_dim), debug)
 
     # In order to multiply A and B we must find the lcm of a_col_dim and b_row_dim
     a_dimension = [processor_row_dim * a_base_dim[0], processor_col_dim * a_base_dim[1]]
@@ -69,15 +67,23 @@ def generate_dimension(argv):
     b_dimension[0] = lcm_of_dim
     c_dimension = [a_dimension[0], b_dimension[1]]
 
-    print "A dim " + str(a_dimension)
-    print "B dim " + str(b_dimension)
-    print "C dim " + str(c_dimension)
+    log("A dim " + str(a_dimension), debug)
+    log("B dim " + str(b_dimension), debug)
+    log("C dim " + str(c_dimension), debug)
 
-    print "Amount of sub problems on each processor is %f" % (num_sub_problems)
+    log("Amount of sub problems on each processor is %f" % (num_sub_problems), debug)
+    
+    return a_dimension, b_dimension, processor_number, processor_row_dim, processor_col_dim
 
 
 if __name__=="__main__":
-	generate_dimension(sys.argv[1:])
+    if len(argv) < 2:
+        print 'Usage <recursion_level> <num_sub_problems>'
+        exit(0)
+        
+    recursion_level = int(argv[0])
+    num_sub_problems = int(argv[1])
+    generate_dimension(recursion_level, num_sub_problems)
 
 
 

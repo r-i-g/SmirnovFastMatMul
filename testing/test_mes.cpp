@@ -20,8 +20,25 @@ void basic_usage() {
     m.printStatistics();
 }
 
+void test_static_usage() {
+
+    Measurements &m1 = Measurements::getMeasurementLogger();
+    Measurements &m2 = Measurements::getMeasurementLogger();
+
+    m1.startTimer(TimerType::COMM);
+    usleep(3000);
+    m1.endTimer(TimerType::COMM);
+    m1.printTimers();
+
+    m2.startTimer(TimerType::COMM);
+    usleep(3000);
+    m2.endTimer(TimerType::COMM);
+    m2.printTimers();
+}
+
 int main() {
 
     basic_usage();
+    test_static_usage();
     return 0;
 }

@@ -4,10 +4,13 @@
 #include <mpi.h>
 #include "../matrix/Matrix.h"
 #include "../matrix/PositionalMatrix.h"
+#include "../measurement/Measurements.h"
 #include <vector>
 
 using SmirnovFastMul::Computation::Matrix;
 using SmirnovFastMul::Computation::PositionalMatrix;
+using SmirnovFastMul::Computation::Measurements;
+using SmirnovFastMul::Computation::TimerType;
 using std::vector;
 
 namespace SmirnovFastMul {
@@ -18,7 +21,7 @@ namespace SmirnovFastMul {
 
 		public:
 
-			CommunicationHandler(): m_num_nodes(0), m_rank(-1) {
+			CommunicationHandler(): m_num_nodes(0), m_rank(-1), m_measurements(Measurements::getMeasurementLogger()){
 
                 // Initializing MPI communication
                 int is_initialized;
@@ -29,6 +32,7 @@ namespace SmirnovFastMul {
                 MPI_Comm_size(MPI_COMM_WORLD, &m_num_nodes);
                 MPI_Comm_rank(MPI_COMM_WORLD, &m_rank);
                 // TODO Add a check that the number of processes is a power of 40
+
             }
 
             // c-tor
@@ -45,6 +49,8 @@ namespace SmirnovFastMul {
             }
 
             void send_matrix(const Matrix& matrix, int node) {
+                m_measurements.startTimer(TimerType::COMM);
+
                 // Sending the matrix to node
                 MPI_Request request;
                 // IMPORTAT: Sending the entire matrix and not just the subset of the matrix
@@ -52,17 +58,24 @@ namespace SmirnovFastMul {
                 //MPI_Send(matrix.get_data(), 1, matrix.get_mpi_interpretation().get_type(), node, 11, MPI_COMM_WORLD);
                 MPI_Wait(&request, MPI_STATUS_IGNORE);
                 //std::cout <<"sending"<<std::endl;
+
+                m_measurements.endTimer(TimerType::COMM);
             }
 
             void receive_matrix(Matrix& matrix, int from_node) {
+
+                m_measurements.startTimer(TimerType::COMM);
 
                 MPI_Status status;
                 //MPI_Recv(mat.get_data(), row_dim * col_dim, MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
                 MPI_Recv(matrix.get_data(),matrix.get_row_dimension() * matrix.get_col_dimension(), MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, &status);
 
+                m_measurements.endTimer(TimerType::COMM);
             }
 
             void send_matrix(const PositionalMatrix& matrix, int node) {
+
+                m_measurements.startTimer(TimerType::COMM);
 
                 // Sending the position array
                 //cout << "from rank " << m_rank << " sending position lne " << matrix.position_len() << " to " << node  << endl;
@@ -72,9 +85,13 @@ namespace SmirnovFastMul {
 
                 // Sending the data array
                 MPI_Send(matrix.get_data(), matrix.num_elements() , MPI_DOUBLE, node, 11, MPI_COMM_WORLD);
+
+                m_measurements.endTimer(TimerType::COMM);
             }
 
             void receive_matrix(PositionalMatrix& matrix, int from_node) {
+
+                m_measurements.startTimer(TimerType::COMM);
 
                 MPI_Status status;
                 //cout << "from rank " << m_rank << " receiving position lne " << matrix.position_len() << " from " << from_node  << endl;
@@ -86,6 +103,8 @@ namespace SmirnovFastMul {
 
                 // Receiving the data
                 MPI_Recv(matrix.get_data(), matrix.num_elements() , MPI_DOUBLE, from_node, 11, MPI_COMM_WORLD, &status);
+
+                m_measurements.endTimer(TimerType::COMM);
 
             }
 
@@ -185,11 +204,17 @@ namespace SmirnovFastMul {
             void receive(vector<MatrixType>& temp_matrices, int target_processor, int sub_problem_index,
                          MatrixType& temp_matrix) {
                 receive_matrix(temp_matrix, target_processor);
+
+                m_measurements.startTimer(TimerType::REARRANGE);
+
                 temp_matrices[sub_problem_index] += temp_matrix;
+
+                m_measurements.endTimer(TimerType::REARRANGE);
             }
 
 			int m_num_nodes;
 			int m_rank;
+            Measurements &m_measurements;
 
 			std::vector<MPI_Group> groups;
 			std::vector<MPI_Comm> communictions;
