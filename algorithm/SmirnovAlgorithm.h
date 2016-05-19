@@ -7,6 +7,7 @@
 
 #include "../matrix/Matrix.h"
 #include "../matrix/PositionalMatrix.h"
+#include "../measurement/Measurements.h"
 #include <vector>
 #include <memory>
 #include <functional>
@@ -15,6 +16,8 @@
 using std::vector;
 using SmirnovFastMul::Computation::Matrix;
 using SmirnovFastMul::Computation::PositionalMatrix;
+using SmirnovFastMul::Computation::Measurements;
+using SmirnovFastMul::Computation::TimerType;
 
 using std::cout;
 using std::endl;
@@ -32,7 +35,8 @@ namespace SmirnovFastMul {
         public:
 
             SmirnovAlgorithm(int A_base_row_dim, int A_base_col_dim, int B_base_col_dim) :
-                    m_A_base_row_dim(A_base_row_dim), m_A_base_col_dim(A_base_col_dim), m_B_base_col_dim(B_base_col_dim)
+                    m_A_base_row_dim(A_base_row_dim), m_A_base_col_dim(A_base_col_dim), m_B_base_col_dim(B_base_col_dim),
+                    m_measurements(Measurements::getMeasurementLogger())
             {}
 
             int get_a_base_row_dim() {
@@ -111,6 +115,7 @@ namespace SmirnovFastMul {
             int m_A_base_row_dim;
             int m_A_base_col_dim;
             int m_B_base_col_dim;
+            Measurements &m_measurements;
 
             vector<PositionalMatrix> implement_algorithm(int alg_row_dim, int alg_col_dim, vector<PositionalMatrix>& sub_matrices,
                                                         const vector<std::shared_ptr<AlgorithmEntrance>>& algorithm) {
@@ -118,6 +123,8 @@ namespace SmirnovFastMul {
                 vector<PositionalMatrix> alg_results_matrices;
                 // So c-tor want be called when resizing the vector in push_back
                 alg_results_matrices.reserve(algorithm.size());
+
+                m_measurements.startTimer(TimerType::ADD);
 
                 for(const auto& alg_entrance : algorithm) {
                     // TODO change back to alg_row_dim and alg_col_dim
@@ -132,6 +139,8 @@ namespace SmirnovFastMul {
                     alg_results_matrices.push_back(std::move(output));
                 }
 
+                m_measurements.endTimer(TimerType::ADD);
+
                 return alg_results_matrices;
             }
 
@@ -140,10 +149,15 @@ namespace SmirnovFastMul {
                                      const vector<std::shared_ptr<AlgorithmEntrance>>& algorithm,
                                      vector<PositionalMatrix>& out) {
 
+                m_measurements.startTimer(TimerType::ADD);
+
                 for (int i = 0; i < algorithm.size(); ++i) {
                     auto alg_entrance = algorithm[i];
                     (*alg_entrance)(sub_matrices, out[i]);
                 }
+
+                m_measurements.endTimer(TimerType::ADD);
+
             }
 
         };
