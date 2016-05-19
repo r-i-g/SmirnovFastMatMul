@@ -7,12 +7,15 @@
 
 #include "../matrix/Matrix.h"
 #include "../matrix/PositionalMatrix.h"
-#include "SmirnovAlgorithm.h"
 #include "../communication/CommunicationHandler.h"
 #include "../distribution/Distribution.h"
+#include "../measurement/Measurements.h"
+
+#include "SmirnovAlgorithm.h"
 #include "SmirnovAlgorithm_336.h"
 #include "SmirnovAlgorithm_363.h"
 #include "SmirnovAlgorithm_633.h"
+
 #include <vector>
 #include <memory>
 
@@ -21,6 +24,8 @@ using SmirnovFastMul::Computation::PositionalMatrix;
 using SmirnovFastMul::Computation::SmirnovAlgorithm;
 using SmirnovFastMul::Communication::CommunicationHandler;
 using SmirnovFastMul::Distribution::DistributionHandler;
+using SmirnovFastMul::Computation::Measurements;
+using SmirnovFastMul::Computation::TimerType;
 using std::vector;
 
 namespace SmirnovFastMul{
@@ -33,7 +38,8 @@ namespace SmirnovFastMul{
             MultiplyMatrices() : m_comm_handler(),
                                  m_internal_algorithm(0),
                                  m_distribution_handler(m_comm_handler.get_rank(),
-                                                        m_comm_handler.get_num_nodes())
+                                                        m_comm_handler.get_num_nodes()),
+                                 m_measurments(Measurements::getMeasurementLogger())
             {
                 m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_336>());
                 m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_363>());
@@ -42,7 +48,8 @@ namespace SmirnovFastMul{
 
             MultiplyMatrices(const DistributionHandler& dh) : m_comm_handler(),
                                                               m_internal_algorithm(0),
-                                                              m_distribution_handler(dh)
+                                                              m_distribution_handler(dh),
+                                                              m_measurments(Measurements::getMeasurementLogger())
             {
 
                 m_algorithms.push_back(std::make_shared<SmirnovAlgorithm_336>());
@@ -254,6 +261,8 @@ namespace SmirnovFastMul{
 
             void local_multiplication(MatrixType&A, MatrixType& B, MatrixType& C) {
 
+                m_measurments.startTimer(TimerType::MUL);
+
                 double* c_data = C.get_data();
                 int c_stride = C.get_stride();
                 for (int i = 0; i < A.get_row_dimension(); ++i) {
@@ -264,6 +273,8 @@ namespace SmirnovFastMul{
                         }
                     }
                 }
+
+                m_measurments.endTimer(TimerType::MUL);
             }
 
         protected:
@@ -361,7 +372,7 @@ namespace SmirnovFastMul{
 
             int m_internal_algorithm;
             vector<int> m_processor_rank;
-
+            Measurements& m_measurments;
         };
     }
 }
