@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
     MultiplyMatrices<PositionalMatrix> alg(dh);
     // If we haven't received a recursion level we calculate it by calculating log_n(x) == log(x)/log(n)
     int recursion_level = log(num_processes) / log(grid_base);
-    Measurements m = Measurements::getMeasurementLogger();
+    Measurements& m = Measurements::getMeasurementLogger();
     // Since the computation is symmetrical, its timing will be calculated by process 0
     if (our_rank == 0) {
         cout << "Performing " << recursion_level << " recursions" << endl;
@@ -144,6 +144,7 @@ int main(int argc, char* argv[]) {
     if (to_compare == complete_C) {
         cout << "Matrices are the same" << endl;
         m.printTimer(TimerType::TIME);
+        m.printTimers();
     } else {
         cout << "Matrices aren't the same" << endl;
         //cout << complete_C << endl;

@@ -49,6 +49,10 @@ namespace SmirnovFastMul{
             void printTimer(TimerType type);
 
             void printStatistics();
+
+            Measurements(Measurements const&) = delete;
+            void operator=(Measurements const&) = delete;
+
         private:
 
             Measurements() : m_additions(0), m_multiplications(0), m_messages(0), m_words(0) {}

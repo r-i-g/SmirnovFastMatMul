@@ -5,6 +5,7 @@
 #include "Measurements.h"
 #include <sys/time.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 using SmirnovFastMul::Computation::Measurements;
 

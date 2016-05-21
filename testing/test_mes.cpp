@@ -9,7 +9,7 @@ using SmirnovFastMul::Computation::Measurements;
 using SmirnovFastMul::Computation::TimerType;
 
 void basic_usage() {
-    Measurements m = Measurements::getMeasurementLogger();
+    Measurements &m = Measurements::getMeasurementLogger();
 
     m.startTimer(TimerType::COMM);
     usleep(3000);
