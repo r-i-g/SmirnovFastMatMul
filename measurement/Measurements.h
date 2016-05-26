@@ -7,8 +7,6 @@
 
 #include <memory>
 
-using std::shared_ptr;
-
 namespace SmirnovFastMul{
     namespace Computation {
 
