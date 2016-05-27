@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -A csc182
+#PBS -N 864_864_216_10_16_4
+#PBS -o titan_864_864_216_10_16_4.txt
+#PBS -j oe
+#PBS -l walltime=00:05:00,nodes=64
+#PBS -l gres=atlas1%atlas2
+
+cd $MEMBERWORK/csc182/FastMatMul
+date
+aprun -n 64 ./a.out -i smirnov_gen/cases/864_864_216_10_16_4.in -c smirnov_gen/cases/864_864_216_10_16_4.correct -s 10 -n 16 -m 4

@@ -1,0 +1,1 @@
+mpirun -np 512 ./a.out -i cases/3456_3456_432_5_64_8.in -c cases/3456_3456_432_5_64_8.correct -s 5 -n 64 -m 8

@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -A csc182
+#PBS -N 360_720_720_1_40_40
+#PBS -o titan_360_720_720_1_40_40.txt
+#PBS -j oe
+#PBS -l walltime=00:05:00,nodes=1600
+#PBS -l gres=atlas1%atlas2
+
+cd $MEMBERWORK/csc182/FastMatMul
+date
+aprun -n 1600 ./a.out -i smirnov_gen/cases/360_720_720_1_40_40.in -c smirnov_gen/cases/360_720_720_1_40_40.correct -s 1 -n 40 -m 40

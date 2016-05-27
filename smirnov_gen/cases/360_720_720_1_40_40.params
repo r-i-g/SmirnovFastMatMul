@@ -1,0 +1,1 @@
+mpirun -np 1600 ./a.out -i cases/360_720_720_1_40_40.in -c cases/360_720_720_1_40_40.correct -s 1 -n 40 -m 40

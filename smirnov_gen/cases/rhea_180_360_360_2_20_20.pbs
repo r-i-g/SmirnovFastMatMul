@@ -1,0 +1,10 @@
+#!/bin/bash
+#PBS -A csc182
+#PBS -N 180_360_360_2_20_20
+#PBS -o rhea_180_360_360_2_20_20.txt
+#PBS -j oe
+#PBS -l walltime=00:05:00,nodes=400
+
+cd $PBS_O_WORKDIR/FastMatMul
+date
+mpirun -np 400 ./a.out -i smirnov_gen/cases/180_360_360_2_20_20.in -c smirnov_gen/cases/180_360_360_2_20_20.correct -s 2 -n 20 -m 20
