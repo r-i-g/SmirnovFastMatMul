@@ -63,6 +63,7 @@ def generate_bar_chart(exp_src_folder, exp_type, out_plot_name):
     df=pd.DataFrame(data_frames)
     ax = df.plot(kind='bar', stacked=True, logy=True, figsize=(10,10))
     ax.set_xticklabels(xticks, rotation=90)
+    ax.set_ylabel('Time, normalized by log scaling')
     return ax
     
 if __name__ == "__main__":
