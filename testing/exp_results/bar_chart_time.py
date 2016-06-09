@@ -54,16 +54,18 @@ def generate_bar_chart(exp_src_folder, exp_type, out_plot_name):
         if fnmatch.fnmatch(file, '{exp_type}_*'.format(exp_type=exp_type)):
             print "Extracting information for " + file
             matrix_dim, dist_processors, elapsed_time, time_spent = extract_bar_chart_information(os.path.join(exp_src_folder, file))
-            print matrix_dim
             for key, value in time_spent.iteritems():
                 data_frames[key] += [value]
             xticks += ["P={proc},Dim={matrix_dim}".format(proc=dist_processors, matrix_dim=matrix_dim)]
-            
-    print data_frames
+
     df=pd.DataFrame(data_frames)
-    ax = df.plot(kind='bar', stacked=True, logy=True, figsize=(10,10))
+    
+    ax = df.plot(kind='bar', stacked=True, logy=True, figsize=(7,7))
     ax.set_xticklabels(xticks, rotation=90)
     ax.set_ylabel('Time, normalized by log scaling')
+    
+    fig = ax.get_figure()
+    fig.savefig('{out_plot_name}.png'.format(out_plot_name=out_plot_name))
     return ax
     
 if __name__ == "__main__":
