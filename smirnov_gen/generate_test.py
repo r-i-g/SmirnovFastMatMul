@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 """
-A testing generation frame work creating the following products:
-    input file containing the matrices to multiply
+A testing generation framework creating the following products:
+    input files containing the matrices to multiply
     out file containing the result of the matrices multiplied
     batch script to run on rhea server or titan server accordingly
 """

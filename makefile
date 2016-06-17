@@ -25,8 +25,15 @@ test_cond:
 test_temp:
 	mpic++ -std=c++11 -g ./testing/test_template.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp 2> compile.out.txt
 
+test_mes:
+	mpic++ -std=c++11 -g ./testing/test_mes.cpp ./common/*.cpp ./measurement/*.cpp 2> compile.out.txt
+
+test_dgemm_o:
+	mpic++ -std=c++11 -fopenmp ./testing/test_dgemm_omp.cpp -lblas 2> compile.out.txt
+
+test_dgemm_g:
+	mpic++ -std=c++11 ./testing/test_dgemm_gnu.cpp `gsl-config --cflags --libs`> compile.out.txt
+
 test_prod:
 	mpic++ -std=c++11 -g ./testing/production/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp 2> compile.out.txt
 
-test_mes:
-	mpic++ -std=c++11 -g ./testing/test_mes.cpp ./common/*.cpp ./measurement/*.cpp 2> compile.out.txt
