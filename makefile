@@ -35,5 +35,7 @@ test_dgemm_g:
 	mpic++ -std=c++11 ./testing/test_dgemm_gnu.cpp `gsl-config --cflags --libs`> compile.out.txt
 
 test_prod:
-	mpic++ -std=c++11 -g ./testing/production/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp 2> compile.out.txt
+	mpic++ -std=c++11 -g ./testing/production/main.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp 2> compile.out.txt
 
+test_prod_dgemm:
+	mpic++ -std=c++11 -g -fopenmp ./testing/production/dgemm_tester.cpp ./testing/production/utils/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp  -lblas 2> compile.out.txt
