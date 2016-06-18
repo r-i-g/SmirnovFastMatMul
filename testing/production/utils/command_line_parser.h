@@ -25,7 +25,7 @@ int read_int( int argc, char **argv, const char *option, int default_value )
     return default_value;
 }
 
-std::string read_string( int argc, char **argv, const char *option, char *default_value )
+std::string read_string( int argc, char **argv, const char *option, std::string default_value="")
 {
     int iplace = find_option( argc, argv, option );
     if( iplace >= 0 && iplace < argc-1 )

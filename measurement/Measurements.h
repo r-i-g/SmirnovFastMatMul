@@ -20,7 +20,8 @@ namespace SmirnovFastMul{
         };
 
         /**
-         * A singelton for collecting measurements
+         * A singelton for collecting measurements.
+         * Reads timing statistics to microseconds granularity
          */
         class Measurements {
         public:
@@ -55,6 +56,9 @@ namespace SmirnovFastMul{
 
             Measurements() : m_additions(0), m_multiplications(0), m_messages(0), m_words(0) {}
 
+            /*
+             * Reads the time in resolution of microseconds
+             */
             double readTimer();
 
             double m_timers[6] = {0};
