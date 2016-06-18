@@ -118,7 +118,7 @@ class TestGenerator(object):
 #PBS -N {job_name}
 #PBS -o {output_file}
 #PBS -j oe
-#PBS -l walltime=00:05:00,nodes={nproc}
+#PBS -l walltime=00:03:00,nodes={nproc}
 
 cd $PBS_O_WORKDIR/FastMatMul
 date
@@ -143,7 +143,7 @@ mpirun -np {nproc} ./a.out -i smirnov_gen/cases/{multiplication_params}.in -c sm
 #PBS -N {job_name}
 #PBS -o {output_file}
 #PBS -j oe
-#PBS -l walltime=00:05:00,nodes={nproc}
+#PBS -l walltime=00:03:00,nodes={nproc}
 #PBS -l gres=atlas1%atlas2
 
 cd $MEMBERWORK/csc182/FastMatMul
@@ -160,12 +160,59 @@ aprun -n {nproc} ./a.out -i smirnov_gen/cases/{multiplication_params}.in -c smir
         titan_job_output.write(job_content)
         titan_job_output.close()
 
+    def write_dgemm_rhea_job(self):
+        rhea_job_output_file_name = "rhea_dgemm_{multiplication_params}.pbs".format(
+            multiplication_params=self._multiplication_params)
+        rhea_job_output = self.create_file(rhea_job_output_file_name)
+        job_content = \
+'''#!/bin/bash
+#PBS -A csc182
+#PBS -N {job_name}
+#PBS -o {output_file}
+#PBS -j oe
+#PBS -l walltime=00:03:00,nodes=1
+
+cd $PBS_O_WORKDIR/FastMatMul
+date
+./dgemm.out -i smirnov_gen/cases/{multiplication_params}.in
+'''.format(job_name=self._multiplication_params,
+           output_file="rhea_dgemm_{multiplication_params}.txt".format(multiplication_params=self._multiplication_params),
+           multiplication_params=self._multiplication_params)
+
+        rhea_job_output.write(job_content)
+        rhea_job_output.close()
+
+    def write_dgemm_titan_job(self):
+        titan_job_output_file_name = "titan_{multiplication_params}.pbs".format(
+            multiplication_params=self._multiplication_params)
+        titan_job_output = self.create_file(titan_job_output_file_name)
+        job_content = \
+'''#!/bin/bash
+#PBS -A csc182
+#PBS -N {job_name}
+#PBS -o {output_file}
+#PBS -j oe
+#PBS -l walltime=00:03:00,nodes=1
+#PBS -l gres=atlas1%atlas2
+
+cd $MEMBERWORK/csc182/FastMatMul
+date
+aprun ./dgemm.out -i smirnov_gen/cases/{multiplication_params}.in
+'''.format(job_name=self._multiplication_params,
+           output_file="titan_{multiplication_params}.txt".format(multiplication_params=self._multiplication_params),
+           multiplication_params=self._multiplication_params)
+
+        titan_job_output.write(job_content)
+        titan_job_output.close()
+
     def _generate_test(self):
         self.write_input_matrices()
         self.write_multiplication_output()
         self.write_run_parameters()
         self.write_rhea_job()
         self.write_titan_job()
+        self.write_dgemm_rhea_job()
+        self.write_dgemm_titan_job()
 
 if __name__ == "__main__":
     # Important pramters:
@@ -188,5 +235,3 @@ if __name__ == "__main__":
     nproc = proc_row_dim * proc_col_dim
     
     TestGenerator(mat1_row, mat1_col, mat2_row, mat2_col, num_sub_problems, proc_row_dim, proc_col_dim)
-    
-                         
