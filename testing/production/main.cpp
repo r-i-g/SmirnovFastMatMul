@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
-#include "command_line_parser.h"
+#include "utils/command_line_parser.h"
 #include "matrix_creation/matrix_creation.h"
 #include "../../matrix/Matrix.h"
 #include "../../matrix/PositionalMatrix.h"
@@ -32,8 +32,8 @@ using SmirnovFastMul::Computation::TimerType;
 int main(int argc, char* argv[]) {
 
     // Read the parameters from the command line
-    string in_file = read_string( argc, argv, "-i", NULL );
-    string compare_file = read_string( argc, argv, "-c", NULL );
+    string in_file = read_string( argc, argv, "-i");
+    string compare_file = read_string( argc, argv, "-c");
     int sub_problems = read_int(argc, argv, "-s", SMIRNOV_SUB_PROBLEMS);
     int processor_row_dim = read_int(argc, argv, "-n", -1);
     int processor_col_dim = read_int(argc, argv, "-m", -1);

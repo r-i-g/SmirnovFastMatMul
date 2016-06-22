@@ -10,6 +10,7 @@
 #include "../communication/CommunicationHandler.h"
 #include "../distribution/Distribution.h"
 #include "../measurement/Measurements.h"
+#include "dgemm_utils.h"
 
 #include "SmirnovAlgorithm.h"
 #include "SmirnovAlgorithm_336.h"
@@ -60,7 +61,7 @@ namespace SmirnovFastMul{
 
             void dfs(MatrixType& A, MatrixType& B, MatrixType& C, int l, int alg_index) {
                 if( l <= 0) {
-                    local_multiplication(A,B,C);
+                    dgemm_multiplication(A,B,C);
                     return;
                 }
 
@@ -96,7 +97,7 @@ namespace SmirnovFastMul{
             void bfs_aux(MatrixType &A, MatrixType& B, MatrixType& C, int k, int alg_index, int num_sub_problems=1) {
 
                 if(k==0) {
-                    local_multiplication(A,B,C);
+                    dgemm_multiplication(A,B,C);
                     return;
                 }
 
@@ -257,6 +258,17 @@ namespace SmirnovFastMul{
                 }
 
                 return beta;
+            }
+
+            void dgemm_multiplication(MatrixType&A, MatrixType& B, MatrixType& C) {
+                // Since we are using a row notation we use the following algebric rule to use dgemm:
+                // B^T * A^T = (A * B)^T = C^T, which is what we want
+
+                m_measurments.startTimer(TimerType::MUL);
+
+                dgemm_rowmajor(A, B, C);
+
+                m_measurments.endTimer(TimerType::MUL);
             }
 
             void local_multiplication(MatrixType&A, MatrixType& B, MatrixType& C) {
