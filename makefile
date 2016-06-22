@@ -1,3 +1,27 @@
+SCALAPACKLIB = /usr/lib/libscalapack-openmpi.a
+
+BLACSLIB = \
+/usr/lib/libblacsF77init-openmpi.a \
+/usr/lib/libblacsCinit-openmpi.a \
+/usr/lib/libblacs-openmpi.a \
+/usr/lib/libblacsF77init-openmpi.a \
+/usr/lib/libblacsCinit-openmpi.a
+
+BLASLIB = /usr/lib/libblas.a
+
+LAPACK = /usr/lib/lapack/liblapack.a
+
+LIBS = $(SCALAPACKLIB) $(BLACSLIB) $(LAPACKLIB) $(BLASLIB) $(BLACSLIB)
+
+INCLUDES = \
+/usr/lib/libscalapack-openmpi.a \
+/usr/lib/libblacsCinit-openmpi.a \
+/usr/lib/libblacs-openmpi.a \
+/usr/lib/libblacsCinit-openmpi.a \
+/usr/lib/lapack/liblapack.a \
+/usr/lib/libblacsF77init-openmpi.a \
+/usr/lib/libblas.a
+
 all:
 	mpic++ -std=c++11 -g ./testing.cpp ./common/*.cpp ./communication/*.cpp ./matrix/*.cpp ./algorithm/*.cpp  2> compile.out.txt
 
@@ -39,3 +63,6 @@ test_prod:
 
 test_prod_dgemm:
 	mpic++ -std=c++11 -g -fopenmp ./testing/production/dgemm_tester.cpp ./testing/production/utils/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp  -lblas -o dgemm.out 2> compile.out.txt
+
+test_pdgemm:
+	mpic++ -std=c++11 -g ./testing/production/test_pdgemm.cpp ./testing/production/utils/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp -lscalapack-openmpi -lblas -lblacs-openmpi 2> compile.out.txt

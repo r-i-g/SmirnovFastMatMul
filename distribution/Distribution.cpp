@@ -102,13 +102,29 @@ int DistributionHandler::get_grid_base() {
 Matrix DistributionHandler::distribute_matrix(const Matrix& matrix, int block_size) {
 
     // Creating the processor version of the matrix
-    Matrix processor_version_matrix(matrix.get_row_dimension(), matrix.get_col_dimension());
+    int row_dimension = matrix.get_row_dimension() / m_processor_row_dim;
+    int col_dimension = matrix.get_col_dimension() / m_processor_col_dim;
+
+    // If the processor doesn't partition exactly the matrix we need to adjust the matrix sizes
+    int extra_rows = matrix.get_row_dimension() % m_processor_row_dim;
+    int extra_cols = matrix.get_col_dimension() % m_processor_col_dim;
+
+    if(extra_rows != 0) {
+        int grid_row = m_rank / m_processor_col_dim;
+        row_dimension += (extra_rows > grid_row ? 1 : 0);
+    }
+    if(extra_cols != 0) {
+        int grid_col = m_rank % m_processor_col_dim;
+        col_dimension += (extra_cols > grid_col ? 1 : 0);
+    }
+
+    Matrix processor_version_matrix(row_dimension, col_dimension);
 
     for (int i = 0; i < matrix.get_row_dimension(); ++i) {
         for (int j = 0; j < matrix.get_col_dimension(); ++j) {
 
             if ( are_coordinates_contained(i,j,block_size) ) {
-                processor_version_matrix(i,j) = matrix(i,j);
+                processor_version_matrix(i / m_processor_row_dim, j / m_processor_col_dim) = matrix(i,j);
             }
 
         }
