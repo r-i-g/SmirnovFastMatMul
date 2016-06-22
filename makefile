@@ -65,4 +65,4 @@ test_prod_dgemm:
 	mpic++ -std=c++11 -g -fopenmp ./testing/production/dgemm_tester.cpp ./testing/production/utils/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp  -lblas -o dgemm.out 2> compile.out.txt
 
 test_pdgemm:
-	mpic++ -std=c++11 -g ./testing/production/test_pdgemm.cpp ./testing/production/utils/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp -lscalapack-openmpi -lblas -lblacs-openmpi 2> compile.out.txt
+	mpic++ -std=c++11 -g -fopenmp ./testing/production/test_pdgemm.cpp ./testing/production/utils/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp -lscalapack-openmpi -lblacs-openmpi -lblacsCinit-openmpi -lblacs-openmpi -llapack -lblas -lgfortran 2> compile.out.txt
