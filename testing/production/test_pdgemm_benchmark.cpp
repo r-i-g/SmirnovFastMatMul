@@ -1,9 +1,9 @@
 //
 // Created by rig on 22/06/16.
 //
-
+/*
 #include "utils/command_line_parser.h"
-#include "utils/dgemm_utils.h"
+#include "../../algorithm/dgemm_utils.h"
 #include "matrix_creation/matrix_creation.h"
 #include "../../measurement/Measurements.h"
 #include "../../communication/CommunicationHandler.h"
@@ -33,39 +33,6 @@ static int max( int a, int b ){
     if (a>b) return(a); else return(b);
 }
 
-extern "C" {
-
-void pdgemm_ (char*, char*,
-              int * 	M,
-              int * 	N,
-              int * 	K,
-              double * 	ALPHA,
-              double * 	A,
-              int * 	IA,
-              int * 	JA,
-              int * 	DESCA,
-              double * 	B,
-              int * 	IB,
-              int * 	JB,
-              int * 	DESCB,
-              double * 	BETA,
-              double * 	C,
-              int * 	IC,
-              int * 	JC,
-              int * 	DESCC);
-
-void descinit_( int *desc, int *m, int *n, int *mb, int *nb, int *irsrc, int *icsrc, int *ictxt, int *lld, int *info);
-
-int  numroc_( int *n, int *nb, int *iproc, int *isrcproc, int *nprocs);
-
-void Cblacs_pinfo( int* mypnum, int* nprocs);
-void Cblacs_get( int context, int request, int* value);
-void Cblacs_gridinfo( int context, int*  np_row, int* np_col, int*  my_row, int*  my_col);
-void Cblacs_gridexit( int context);
-void Cblacs_exit( int error_code);
-int  Cblacs_gridinit( int* context, char * order, int np_row, int np_col);
-
-}
 
 void pdgemm(PositionalMatrix& A, PositionalMatrix&B, PositionalMatrix& C, int processor_row, int processor_col) {
 
@@ -115,18 +82,66 @@ void pdgemm(PositionalMatrix& A, PositionalMatrix&B, PositionalMatrix& C, int pr
             &alpha, A.get_data(), &ONE, &ONE, descA,
             B.get_data(), &ONE, &ONE, descB,
             &beta, C.get_data(), &ONE, &ONE, descC);
-    /*pdgemm_(&N, &N, &global_B_col_dim, &global_A_row_dim, &global_A_col_dim,
-            &alpha, B.get_data(), &ONE, &ONE, descB,
-            A.get_data(), &ONE, &ONE, descA,
-            &beta, C.get_data(), &ONE, &ONE, descC);*/
+    //pdgemm_(&N, &N, &global_B_col_dim, &global_A_row_dim, &global_A_col_dim,
+    //        &alpha, B.get_data(), &ONE, &ONE, descB,
+    //        A.get_data(), &ONE, &ONE, descA,
+    //        &beta, C.get_data(), &ONE, &ONE, descC);
 
     //dgemm_(&transf_B, &transf_A, &n, &m, &k, &alpha, B, &n, A, &k, &beta, C, &n);
-}
+}*/
+
+#include "utils/command_line_parser.h"
+#include "utils/test_defs.h"
+#include "../../pdgemm/pdgemm_alg.h"
 
 /*
  * Reading contents of matrices to multiply using the dgemm routine and outputting the relevant statistics
  */
+int main(int argc, char* argv[]) {
 
+    CommunicationHandler<PositionalMatrix> comm_handler;
+    int our_rank = comm_handler.get_rank();
+
+    // Reading the parameters from the command line
+    CommandLineParser cmd_parser(argc, argv);
+
+    // Getting processor dimensions
+    int processor_row_dim = cmd_parser.get_processor_row_dim();
+    int processor_col_dim = cmd_parser.get_processor_col_dim();
+    FOR_RANK_0(our_rank) {
+        cout << "Got processor row dim " << processor_row_dim << " and col dim " << processor_col_dim << endl;
+    }
+
+    // Getting the matrix dimensions
+    MatrixDimensions A_dim(cmd_parser.get_in_file());
+    MatrixDimensions B_dim(cmd_parser.get_in_file());
+    FOR_RANK_0(our_rank) {
+        cout << "For matrix A we got the global matrix row dim " << A_dim.row_dim << " and the col dim " << A_dim.col_dim << endl;
+        cout << "For matrix B we got the global matrix row dim " << B_dim.row_dim << " and the col dim " << B_dim.col_dim << endl;
+    }
+
+    // Creating randomized matrices
+    int our_row_dim;
+    int our_col_dim;
+    PositionalMatrix A(A_dim.row_dim, A_dim.col_dim, processor_row_dim, processor_col_dim);
+    PositionalMatrix B(B_dim.row_dim, B_dim.col_dim, processor_row_dim, processor_col_dim);
+    PositionalMatrix C(A_dim.row_dim, B_dim.col_dim, processor_row_dim, processor_col_dim);
+
+    // Randomizing the data
+    A.randomize_ints(100);
+    B.randomize_ints(100);
+
+    // Starting to time and multiplying the matrices
+    Measurements& m = Measurements::getMeasurementLogger();
+    m.startTimer(TimerType::TIME);
+
+    pdgemm(A,B,C, processor_row_dim, processor_col_dim);
+
+    m.endTimer(TimerType::TIME);
+}
+
+
+/*
 int main(int argc, char* argv[]) {
 
     double* a = new double[4];
@@ -169,4 +184,4 @@ int main(int argc, char* argv[]) {
     pdgemm(A,B,C, processor_row_dim, processor_col_dim);
     cout << "From process" << matrix_comm_handler.get_rank() <<"\n"<< C << endl;
     return 0;
-}
+}*/

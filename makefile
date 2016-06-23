@@ -11,7 +11,7 @@ BLASLIB = /usr/lib/libblas.a
 
 LAPACK = /usr/lib/lapack/liblapack.a
 
-LIBS = $(SCALAPACKLIB) $(BLACSLIB) $(LAPACKLIB) $(BLASLIB) $(BLACSLIB)
+LIBS = -lscalapack-openmpi -lblas -llapack -lblacs-openmpi
 
 INCLUDES = \
 /usr/lib/libscalapack-openmpi.a \
@@ -23,6 +23,8 @@ INCLUDES = \
 /usr/lib/libblas.a
 
 CODE = -fopenmp ./algorithm/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp -lblas
+
+PDGEMM = ./pdgemm/*.cpp
 
 TEST_UTILS = ./testing/production/matrix_creation/*.cpp ./testing/production/utils/*.cpp
 
@@ -70,6 +72,9 @@ test_prod_dgemm:
 
 test_pdgemm:
 	mpic++ -std=c++11 -g -fopenmp ./testing/production/test_pdgemm.cpp ./testing/production/utils/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp -lscalapack-openmpi -lblacs-openmpi -lblacsCinit-openmpi -lblacs-openmpi -llapack -lblas -lgfortran 2> compile.out.txt
+
+test_bench_pdgemm:
+	mpic++ -std=c++11 -g ./testing/production/test_pdgemm_benchmark.cpp $(TEST_UTILS) $(CODE) $(PDGEMM) $(LIBS) 2> compile.out.txt
 
 test_bench_smir:
 	mpic++ -std=c++11 -g -fopenmp ./testing/production/test_smirnov_benchmark.cpp $(TEST_UTILS) $(CODE) -lblas 2> compile.out.txt

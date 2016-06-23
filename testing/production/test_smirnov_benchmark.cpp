@@ -56,5 +56,10 @@ int main(int argc, char* argv[]) {
 
     m.endTimer(TimerType::TIME);
 
+    FOR_RANK_0(our_rank) {
+        m.printTimer(TimerType::TIME);
+        m.printTimers();
+    }
+
     return 0;
  }
