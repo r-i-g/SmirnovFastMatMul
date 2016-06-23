@@ -59,6 +59,11 @@ namespace SmirnovFastMul {
             // contained in the matrix
             PositionalMatrix condensed_distributed_matrix(const Matrix& matrix, int block_size);
 
+            /**
+             * Initializes the positions (indices) that the matrix has from the larger matrix
+             */
+            void init_owned_positions(PositionalMatrix& matrix);
+
         private:
             int m_rank;
             int m_num_nodes;

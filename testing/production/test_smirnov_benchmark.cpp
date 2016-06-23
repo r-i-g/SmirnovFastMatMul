@@ -35,9 +35,9 @@ int main(int argc, char* argv[]) {
     // Creating randomized matrices
     int our_row_dim;
     int our_col_dim;
-    PositionalMatrix A(A_dim.row_dim, A_dim.col_dim, our_row_dim, our_col_dim);
-    PositionalMatrix B(B_dim.row_dim, B_dim.col_dim, our_row_dim, our_col_dim);
-    PositionalMatrix C(A_dim.row_dim, B_dim.col_dim, our_row_dim, our_col_dim);
+    PositionalMatrix A(A_dim.row_dim, A_dim.col_dim, processor_row_dim, processor_col_dim);
+    PositionalMatrix B(B_dim.row_dim, B_dim.col_dim, processor_row_dim, processor_col_dim);
+    PositionalMatrix C(A_dim.row_dim, B_dim.col_dim, processor_row_dim, processor_col_dim);
 
     // Randomizing the data
     A.randomize_ints(100);
