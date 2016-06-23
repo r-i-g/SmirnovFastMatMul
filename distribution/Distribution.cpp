@@ -167,10 +167,10 @@ void DistributionHandler::init_owned_positions(PositionalMatrix& matrix) {
     for (int i = 0; i < matrix.get_row_dimension(); ++i) {
         for (int j = 0; j < matrix.get_col_dimension(); ++j) {
             // Calculating the global i and j
-            int g_i = p_i + i * m_processor_col_dim;
+            int g_i = p_i + i * m_processor_row_dim;
             int g_j = p_j + j * m_processor_col_dim;
 
-            matrix.get_positions(i,j) = g_i * matrix.get_containing_column() + g_j;
+            *matrix.get_positions(i,j) = g_i * matrix.get_containing_column() + g_j;
         }
     }
 }

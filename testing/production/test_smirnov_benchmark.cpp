@@ -44,6 +44,8 @@ int main(int argc, char* argv[]) {
     B.randomize_ints(100);
 
     DistributionHandler dh(comm_handler.get_rank(), comm_handler.get_num_nodes(), processor_row_dim, processor_col_dim);
+    dh.init_owned_positions(A);
+    dh.init_owned_positions(B);
     MultiplyMatrices<PositionalMatrix> alg(dh);
 
     // Starting to time and multiplying the matrices
