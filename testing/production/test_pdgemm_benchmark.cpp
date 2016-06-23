@@ -128,16 +128,20 @@ int main(int argc, char* argv[]) {
     PositionalMatrix C(A_dim.row_dim, B_dim.col_dim, processor_row_dim, processor_col_dim);
 
     // Randomizing the data
-    A.randomize_ints(100);
-    B.randomize_ints(100);
+    A.randomize_ints(10);
+    B.randomize_ints(10);
 
     // Starting to time and multiplying the matrices
     Measurements& m = Measurements::getMeasurementLogger();
     m.startTimer(TimerType::TIME);
 
-    pdgemm(A,B,C, processor_row_dim, processor_col_dim);
+    pdgemm(A, B, C, processor_row_dim, processor_col_dim);
 
     m.endTimer(TimerType::TIME);
+    FOR_RANK_0(our_rank) {
+        m.printTimer(TimerType::TIME);
+        m.printTimers();
+    }
 }
 
 

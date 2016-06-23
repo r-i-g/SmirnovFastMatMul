@@ -41,12 +41,17 @@ void pdgemm(PositionalMatrix& A, PositionalMatrix&B, PositionalMatrix& C, int pr
     descinit_(descB, &global_B_row_dim, &global_B_col_dim, &MB, &NB, &ZERO, &ZERO, &ictxt, &mB,  &info);
 
     int mC = max(1, numroc_( &global_A_row_dim, &MB, &myrow, &ZERO, &processor_row ));
-    descinit_(descC, &global_A_row_dim, &global_B_col_dim, &MB, &NB, &ZERO, &ZERO, &ictxt, &mB,  &info);
+    descinit_(descC, &global_A_row_dim, &global_B_col_dim, &MB, &NB, &ZERO, &ZERO, &ictxt, &mC,  &info);
 
     // Row major matrix
     pdgemm_(&N, &N, &global_A_row_dim, &global_B_col_dim, &global_A_col_dim,
             &alpha, A.get_data(), &ONE, &ONE, descA,
             B.get_data(), &ONE, &ONE, descB,
             &beta, C.get_data(), &ONE, &ONE, descC);
+
+    //pdgemm_(&N, &N, &global_A_row_dim, &global_B_col_dim, &global_A_col_dim,
+    //        &alpha, B.get_data(), &ONE, &ONE, descB,
+    //        A.get_data(), &ONE, &ONE, descA,
+    //        &beta, C.get_data(), &ONE, &ONE, descC);
 }
 

@@ -5,17 +5,21 @@
 #include "command_line_parser.h"
 #include "../../../common/common.h"
 #include <math.h>
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 CommandLineParser::CommandLineParser(int argc, char* argv[]) {
 
     string in_file = read_string( argc, argv, "-i");
     string compare_file = read_string( argc, argv, "-c");
-    int m_sub_problems = read_int(argc, argv, "-s", SMIRNOV_SUB_PROBLEMS);
-    int m_processor_row_dim = read_int(argc, argv, "-n", -1);
-    int m_processor_col_dim = read_int(argc, argv, "-m", -1);
+    m_sub_problems = read_int(argc, argv, "-s", SMIRNOV_SUB_PROBLEMS);
+    m_processor_row_dim = read_int(argc, argv, "-n", -1);
+    m_processor_col_dim = read_int(argc, argv, "-m", -1);
 
-    ifstream m_file(in_file);
-    ifstream m_to_compare_file(compare_file);
+    m_in_file.open(in_file);
+    m_compare_file.open(compare_file);
 }
 
 int CommandLineParser::get_processor_row_dim() {

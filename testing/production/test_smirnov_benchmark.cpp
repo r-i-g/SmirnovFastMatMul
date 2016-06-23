@@ -49,6 +49,9 @@ int main(int argc, char* argv[]) {
     MultiplyMatrices<PositionalMatrix> alg(dh);
 
     // Starting to time and multiplying the matrices
+    FOR_RANK_0(our_rank) {
+        cout << "Staring to multiply" << endl;
+    }
     Measurements& m = Measurements::getMeasurementLogger();
     m.startTimer(TimerType::TIME);
 

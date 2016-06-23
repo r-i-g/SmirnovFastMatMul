@@ -81,3 +81,6 @@ test_bench_smir:
 
 test_pos_mat:
 	mpic++ -std=c++11 -g ./testing/test_pos_matrix.cpp $(CODE) 2> compile.out.txt
+
+test_bench_cor:
+	mpic++ -std=c++11 -g ./testing/production/test_bench_correctness.cpp $(TEST_UTILS) $(CODE) $(PDGEMM) $(LIBS) 2> compile.out.txt
