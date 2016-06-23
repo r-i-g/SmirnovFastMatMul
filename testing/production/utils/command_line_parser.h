@@ -22,6 +22,8 @@ public:
 
     CommandLineParser(int argc, char* argv[]);
 
+    ~CommandLineParser();
+
     int get_processor_row_dim();
 
     int get_processor_col_dim();

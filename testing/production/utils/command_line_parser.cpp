@@ -22,6 +22,11 @@ CommandLineParser::CommandLineParser(int argc, char* argv[]) {
     m_compare_file.open(compare_file);
 }
 
+CommandLineParser::~CommandLineParser() {
+    m_in_file.close();
+    m_compare_file.close();
+}
+
 int CommandLineParser::get_processor_row_dim() {
     return m_processor_row_dim;
 }
