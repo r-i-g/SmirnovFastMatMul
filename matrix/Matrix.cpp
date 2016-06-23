@@ -148,6 +148,15 @@ void Matrix::init_range() {
     }
 }
 
+void Matrix::randomize_ints(int range) {
+    srand(m_row_dim + m_col_dim +m_row_dim*m_col_dim);
+    for (int i = 0; i < m_row_dim; ++i) {
+        for (int j = 0; j < m_col_dim; ++j) {
+            m_data[i * m_stride + j] = rand() % range;
+        }
+    }
+}
+
 int Matrix::num_elements() const{
     return m_row_dim * m_col_dim;
 }

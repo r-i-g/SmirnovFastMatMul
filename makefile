@@ -22,6 +22,10 @@ INCLUDES = \
 /usr/lib/libblacsF77init-openmpi.a \
 /usr/lib/libblas.a
 
+CODE = ./algorithm/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp
+
+TEST_UTILS = ./testing/production/matrix_creation/*.cpp ./testing/production/utils/*.cpp
+
 all:
 	mpic++ -std=c++11 -g ./testing.cpp ./common/*.cpp ./communication/*.cpp ./matrix/*.cpp ./algorithm/*.cpp  2> compile.out.txt
 
@@ -66,3 +70,6 @@ test_prod_dgemm:
 
 test_pdgemm:
 	mpic++ -std=c++11 -g -fopenmp ./testing/production/test_pdgemm.cpp ./testing/production/utils/*.cpp ./testing/production/matrix_creation/*.cpp ./common/*.cpp ./distribution/*.cpp ./matrix/*.cpp ./measurement/*.cpp -lscalapack-openmpi -lblacs-openmpi -lblacsCinit-openmpi -lblacs-openmpi -llapack -lblas -lgfortran 2> compile.out.txt
+
+test_bench_smir:
+	mpic++ -std=c++11 -g -fopenmp ./testing/production/test_smirnov_benchmark.cpp $(TEST_UTILS) $(CODE) -lblas 2> compile.out.txt

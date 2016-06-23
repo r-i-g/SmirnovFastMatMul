@@ -122,6 +122,9 @@ namespace SmirnovFastMul {
 			// Initializes the matrix to contain consecutive numbers
 			void init_range();
 
+            // Populates the matrix with random integers
+			void randomize_ints(int range);
+
 			// TODO create friend functions
 			// max_ij |a_ij - b_ij|
 			// Frobenius norm difference: \| A - B \|_F
