@@ -57,24 +57,30 @@ def factors(a):
 
 class TestGenerator(object):
 
-    def __init__(self, mat1_row, mat1_col, mat2_row, mat2_col, num_sub_problems, proc_row_dim, proc_col_dim):
+    def __init__(self, mat1_row, mat1_col, mat2_row, mat2_col, num_sub_problems, proc_row_dim, proc_col_dim, benchmark=False):
         self._proc_row_dim = proc_row_dim
         self._proc_col_dim = proc_col_dim
         self._num_sub_problems = num_sub_problems
         self._nproc = self._proc_row_dim * self._proc_col_dim
-        
-        self.multiply_matrices(mat1_row, mat1_col, mat2_row, mat2_col)
-        self._multiplication_params = "{row1}_{col1}_{col2}_{num_sub_problems}_{proc_row_dim}_{proc_col_dim}".format(row1=self._mat1.row, col1=self._mat1.col, col2=self._mat2.col, 
-                                                                                                                     num_sub_problems=num_sub_problems, 
-                                                                                                                     proc_row_dim=proc_row_dim, proc_col_dim=proc_col_dim)        
-        self._generate_test()
+        self._benchmark = benchmark
+
+        if not self._benchmark:
+            self.multiply_matrices(mat1_row, mat1_col, mat2_row, mat2_col)
+        else:
+            self._mat1 = Matrix(mat1_row, mat1_col, [])
+            self._mat2 = Matrix(mat2_row, mat2_col, [])
+
+        self._multiplication_params = "{row1}_{col1}_{col2}_{num_sub_problems}_{proc_row_dim}_{proc_col_dim}".format(row1=self._mat1.row, col1=self._mat1.col, col2=self._mat2.col,
+                                                                                                                     num_sub_problems=num_sub_problems,
+                                                                                                                     proc_row_dim=proc_row_dim, proc_col_dim=proc_col_dim)
+        if not benchmark:
+            self._generate_test()
 
     def create_file(self, name):
-        folder = os.path.realpath('smirnov_gen/cases/')
+        folder = os.path.realpath('smirnov_gen/cases/') if not self._benchmark else os.path.realpath('smirnov_gen/bench/')
         if not os.path.exists(folder):
             os.makedirs(folder)
         return open(os.path.join(folder,name), "w")
-    
     
     def multiply_matrices(self, mat1_row, mat1_col, mat2_row, mat2_col):
         self._mat1 = fill_matrix(mat1_row, mat1_col)
@@ -89,10 +95,13 @@ class TestGenerator(object):
         input_matrices = self.create_file(self._multiplication_params + ".in")
         input_matrices.write(matrix_dim(self._mat1))
         input_matrices.write(matrix_dim(self._mat2))
-        input_matrices.write(str(self._mat1)+'\n')
-        input_matrices.write(str(self._mat2)+'\n')
+
+        if not self._benchmark:
+            input_matrices.write(str(self._mat1)+'\n')
+            input_matrices.write(str(self._mat2)+'\n')
+
         input_matrices.close()
-        
+
     def write_multiplication_output(self):
         multiplication_output = self.create_file(self._multiplication_params+".correct")
         multiplication_output.write(str(self._mat3)+'\n')
@@ -107,25 +116,29 @@ class TestGenerator(object):
                                                                                                                                                proc_col_dim=self._proc_col_dim)
         run_params_output.write(run_params)
         run_params_output.close()
-    
 
-    def write_rhea_job(self):
-        rhea_job_output_file_name = "rhea_{multiplication_params}.pbs".format(multiplication_params=self._multiplication_params)
+    def write_rhea_job(self, type=None):
+        type = '' if type is None else type+'_'
+
+        rhea_job_output_file_name = "rhea_{type}{multiplication_params}.pbs".format(multiplication_params=self._multiplication_params,type=type)
         rhea_job_output = self.create_file(rhea_job_output_file_name)
+
         job_content = \
 '''#!/bin/bash
 #PBS -A csc182
-#PBS -N {job_name}
-#PBS -o {output_file}
+#PBS -N rhea_{type}{job_name}
+#PBS -o {type}{output_file}
 #PBS -j oe
-#PBS -l walltime=00:03:00,nodes={nproc}
+#PBS -l walltime=00:05:00,nodes={nproc}
 
 cd $PBS_O_WORKDIR/FastMatMul
 date
-mpirun -np {nproc} ./a.out -i smirnov_gen/cases/{multiplication_params}.in -c smirnov_gen/cases/{multiplication_params}.correct -s {num_sub_problems} -n {proc_row_dim} -m {proc_col_dim}
-'''.format(job_name=self._multiplication_params, 
+mpirun -np {nproc} ./a.out -i smirnov_gen/{location}/{multiplication_params}.in -c smirnov_gen/{location}/{multiplication_params}.correct -s {num_sub_problems} -n {proc_row_dim} -m {proc_col_dim}
+'''.format(type=type,
+           job_name=self._multiplication_params,
            output_file="rhea_{multiplication_params}.txt".format(multiplication_params=self._multiplication_params), 
-           nproc=self._nproc, 
+           nproc=self._nproc,
+           location='cases' if type is None else 'bench',
            multiplication_params=self._multiplication_params, 
            num_sub_problems=self._num_sub_problems,
            proc_row_dim=self._proc_row_dim, 
@@ -134,24 +147,29 @@ mpirun -np {nproc} ./a.out -i smirnov_gen/cases/{multiplication_params}.in -c sm
         rhea_job_output.write(job_content)
         rhea_job_output.close()
 
-    def write_titan_job(self):
-        titan_job_output_file_name = "titan_{multiplication_params}.pbs".format(multiplication_params=self._multiplication_params)
+    def write_titan_job(self, type=None):
+        type = '' if type is None else type + '_'
+
+        titan_job_output_file_name = "titan_{type}{multiplication_params}.pbs".format(multiplication_params=self._multiplication_params, type=type)
         titan_job_output = self.create_file(titan_job_output_file_name)
+
         job_content = \
 '''#!/bin/bash
 #PBS -A csc182
-#PBS -N {job_name}
-#PBS -o {output_file}
+#PBS -N titan_{type}{job_name}
+#PBS -o {type}{output_file}
 #PBS -j oe
-#PBS -l walltime=00:03:00,nodes={nproc}
+#PBS -l walltime=00:05:00,nodes={nproc}
 #PBS -l gres=atlas1%atlas2
 
 cd $MEMBERWORK/csc182/FastMatMul
 date
-aprun -n {nproc} ./a.out -i smirnov_gen/cases/{multiplication_params}.in -c smirnov_gen/cases/{multiplication_params}.correct -s {num_sub_problems} -n {proc_row_dim} -m {proc_col_dim}
-'''.format(job_name=self._multiplication_params, 
+aprun -n {nproc} ./a.out -i smirnov_gen/{location}/{multiplication_params}.in -c smirnov_gen/{location}/{multiplication_params}.correct -s {num_sub_problems} -n {proc_row_dim} -m {proc_col_dim}
+'''.format(type=type,
+           job_name=self._multiplication_params,
            output_file="titan_{multiplication_params}.txt".format(multiplication_params=self._multiplication_params), 
-           nproc=self._nproc, 
+           nproc=self._nproc,
+           location='cases' if type is None else 'bench',
            multiplication_params=self._multiplication_params, 
            num_sub_problems=self._num_sub_problems,
            proc_row_dim=self._proc_row_dim, 
@@ -213,6 +231,22 @@ aprun ./dgemm.out -i smirnov_gen/cases/{multiplication_params}.in
         self.write_titan_job()
         self.write_dgemm_rhea_job()
         self.write_dgemm_titan_job()
+
+    def generate_smirnov_bench(self):
+        """
+        Creating the titan and rhea scripts
+        :return:
+        """
+        self.write_rhea_job(type='smirnov')
+        self.write_titan_job(type='smirnov')
+
+    def generate_scalapack_bench(self):
+        """
+        Creating the titna and rhea run scripts
+        :return:
+        """
+        self.write_rhea_job(type='scalapack')
+        self.write_titan_job(type='scalapack')
 
 if __name__ == "__main__":
     # Important pramters:

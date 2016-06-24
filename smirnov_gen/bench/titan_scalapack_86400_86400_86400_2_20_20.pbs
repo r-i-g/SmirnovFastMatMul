@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -A csc182
+#PBS -N titan_scalapack_86400_86400_86400_2_20_20
+#PBS -o scalapack_titan_86400_86400_86400_2_20_20.txt
+#PBS -j oe
+#PBS -l walltime=00:05:00,nodes=400
+#PBS -l gres=atlas1%atlas2
+
+cd $MEMBERWORK/csc182/FastMatMul
+date
+aprun -n 400 ./a.out -i smirnov_gen/bench/86400_86400_86400_2_20_20.in -c smirnov_gen/bench/86400_86400_86400_2_20_20.correct -s 2 -n 20 -m 20

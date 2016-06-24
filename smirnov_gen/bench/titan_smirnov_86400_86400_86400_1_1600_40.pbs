@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -A csc182
+#PBS -N titan_smirnov_86400_86400_86400_1_1600_40
+#PBS -o smirnov_titan_86400_86400_86400_1_1600_40.txt
+#PBS -j oe
+#PBS -l walltime=00:05:00,nodes=64000
+#PBS -l gres=atlas1%atlas2
+
+cd $MEMBERWORK/csc182/FastMatMul
+date
+aprun -n 64000 ./a.out -i smirnov_gen/bench/86400_86400_86400_1_1600_40.in -c smirnov_gen/bench/86400_86400_86400_1_1600_40.correct -s 1 -n 1600 -m 40
