@@ -1,1 +1,0 @@
-mpirun -np 64 ./fromfile1 -i cases/72_144_144_5.in -c cases/72_144_144_5.correct -s 5

@@ -8,4 +8,4 @@
 
 cd $MEMBERWORK/csc182/FastMatMul
 date
-aprun -n 400 ./a.out -i smirnov_gen/bench/86400_86400_86400_2_20_20.in -c smirnov_gen/bench/86400_86400_86400_2_20_20.correct -s 2 -n 20 -m 20
+aprun -n 400 ./scalapck.out -i smirnov_gen/bench/86400_86400_86400_2_20_20.in -c smirnov_gen/bench/86400_86400_86400_2_20_20.correct -s 2 -n 20 -m 20

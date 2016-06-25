@@ -1,1 +1,0 @@
-mpirun -np 8 ./a.out -i cases/216_216_108_20_4_2.in -c cases/216_216_108_20_4_2.correct -s 20 -n 4 -m 2

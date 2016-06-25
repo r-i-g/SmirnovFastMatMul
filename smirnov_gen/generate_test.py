@@ -117,7 +117,7 @@ class TestGenerator(object):
         run_params_output.write(run_params)
         run_params_output.close()
 
-    def write_rhea_job(self, type=None):
+    def write_rhea_job(self, type=None, to_run=None):
         type = '' if type is None else type+'_'
 
         rhea_job_output_file_name = "rhea_{type}{multiplication_params}.pbs".format(multiplication_params=self._multiplication_params,type=type)
@@ -133,11 +133,12 @@ class TestGenerator(object):
 
 cd $PBS_O_WORKDIR/FastMatMul
 date
-mpirun -np {nproc} ./a.out -i smirnov_gen/{location}/{multiplication_params}.in -c smirnov_gen/{location}/{multiplication_params}.correct -s {num_sub_problems} -n {proc_row_dim} -m {proc_col_dim}
+mpirun -np {nproc} ./{to_run}.out -i smirnov_gen/{location}/{multiplication_params}.in -c smirnov_gen/{location}/{multiplication_params}.correct -s {num_sub_problems} -n {proc_row_dim} -m {proc_col_dim}
 '''.format(type=type,
            job_name=self._multiplication_params,
            output_file="rhea_{multiplication_params}.txt".format(multiplication_params=self._multiplication_params), 
            nproc=self._nproc,
+           to_run='a' if to_run is None else to_run,
            location='cases' if type is None else 'bench',
            multiplication_params=self._multiplication_params, 
            num_sub_problems=self._num_sub_problems,
@@ -147,7 +148,7 @@ mpirun -np {nproc} ./a.out -i smirnov_gen/{location}/{multiplication_params}.in 
         rhea_job_output.write(job_content)
         rhea_job_output.close()
 
-    def write_titan_job(self, type=None):
+    def write_titan_job(self, type=None, to_run=None):
         type = '' if type is None else type + '_'
 
         titan_job_output_file_name = "titan_{type}{multiplication_params}.pbs".format(multiplication_params=self._multiplication_params, type=type)
@@ -164,11 +165,12 @@ mpirun -np {nproc} ./a.out -i smirnov_gen/{location}/{multiplication_params}.in 
 
 cd $MEMBERWORK/csc182/FastMatMul
 date
-aprun -n {nproc} ./a.out -i smirnov_gen/{location}/{multiplication_params}.in -c smirnov_gen/{location}/{multiplication_params}.correct -s {num_sub_problems} -n {proc_row_dim} -m {proc_col_dim}
+aprun -n {nproc} ./{to_run}.out -i smirnov_gen/{location}/{multiplication_params}.in -c smirnov_gen/{location}/{multiplication_params}.correct -s {num_sub_problems} -n {proc_row_dim} -m {proc_col_dim}
 '''.format(type=type,
            job_name=self._multiplication_params,
            output_file="titan_{multiplication_params}.txt".format(multiplication_params=self._multiplication_params), 
            nproc=self._nproc,
+           to_run='a' if to_run is None else to_run,
            location='cases' if type is None else 'bench',
            multiplication_params=self._multiplication_params, 
            num_sub_problems=self._num_sub_problems,
@@ -237,16 +239,16 @@ aprun ./dgemm.out -i smirnov_gen/cases/{multiplication_params}.in
         Creating the titan and rhea scripts
         :return:
         """
-        self.write_rhea_job(type='smirnov')
-        self.write_titan_job(type='smirnov')
+        self.write_rhea_job(type='smirnov', to_run='smirnov')
+        self.write_titan_job(type='smirnov', to_run='smironv')
 
     def generate_scalapack_bench(self):
         """
         Creating the titna and rhea run scripts
         :return:
         """
-        self.write_rhea_job(type='scalapack')
-        self.write_titan_job(type='scalapack')
+        self.write_rhea_job(type='scalapack', to_run='scalapack')
+        self.write_titan_job(type='scalapack', to_run='scalapck')
 
 if __name__ == "__main__":
     # Important pramters:

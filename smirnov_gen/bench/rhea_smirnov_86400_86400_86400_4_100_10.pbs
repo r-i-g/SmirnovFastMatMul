@@ -7,4 +7,4 @@
 
 cd $PBS_O_WORKDIR/FastMatMul
 date
-mpirun -np 1000 ./a.out -i smirnov_gen/bench/86400_86400_86400_4_100_10.in -c smirnov_gen/bench/86400_86400_86400_4_100_10.correct -s 4 -n 100 -m 10
+mpirun -np 1000 ./smirnov.out -i smirnov_gen/bench/86400_86400_86400_4_100_10.in -c smirnov_gen/bench/86400_86400_86400_4_100_10.correct -s 4 -n 100 -m 10

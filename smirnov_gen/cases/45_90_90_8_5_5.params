@@ -1,1 +1,0 @@
-mpirun -np 25 ./a.out -i cases/45_90_90_8_5_5.in -c cases/45_90_90_8_5_5.correct -s 8 -n 5 -m 5

@@ -1,1 +1,0 @@
-mpirun -np 125 ./a.out -i cases/1350_1350_270_8_25_5.in -c cases/1350_1350_270_8_25_5.correct -s 8 -n 25 -m 5

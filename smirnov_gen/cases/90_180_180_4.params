@@ -1,1 +1,0 @@
-mpirun -np 100 ./fromfile1 -i cases/90_180_180_4.in -c cases/90_180_180_4.correct -s 4
