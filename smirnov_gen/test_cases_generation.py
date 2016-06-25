@@ -12,13 +12,14 @@ class TestCasesGenerator(object):
     """
     SUB_PROBLEMS = [1, 2, 4, 5, 8, 10, 20]
     REC_LEVEL = range(2, 5)
-    UPPER_PROCESSORS_BOUND = 64000
-    LOWER_PROCESSORS_BOUND = 64
+    UPPER_PROCESSORS_BOUND = 400
+    LOWER_PROCESSORS_BOUND = 10
 
     @staticmethod
     def _is_valid_setup(matrix_dim_limitation, mat1, mat2):
         row_limit, col_limit = matrix_dim_limitation
-        return mat1[0] <= row_limit and mat2[0] <= row_limit and mat1[1] <= col_limit and mat2[1] <= col_limit
+        validity = mat1[0] <= row_limit and mat2[0] <= row_limit and mat1[1] <= col_limit and mat2[1] <= col_limit
+        return validity
 
     @staticmethod
     def _is_valid_proc(processor_number):
@@ -66,7 +67,7 @@ class TestCasesGenerator(object):
 
 
     @staticmethod
-    def generate_smirnov_bench_params(matrix_dim_limitation):
+    def generate_smirnov_bench_params(matrix_dim_limitation, exclude=[]):
         """
 
         :return: The largest matrix size to accommodate all of the multiplications
@@ -79,23 +80,27 @@ class TestCasesGenerator(object):
         dimensions_k = []
         dimensions_n = []
 
-        for rec_level in range(2,4):
+        for rec_level in range(2,5):
             for sub_problem in sub_problems:
                 mat1, mat2, processor_number, processor_row_dim, processor_col_dim = generate_dimension(rec_level,
                                                                                                         sub_problem,
                                                                                                         False)
 
-                dimensions_m += [mat1[0]]
-                dimensions_k += [mat1[1]]
-                dimensions_n += [mat2[1]]
 
                 if TestCasesGenerator._is_valid_setup(matrix_dim_limitation, mat1, mat2) and TestCasesGenerator._is_valid_proc(processor_number):
 
+                    if processor_number in exclude:
+                        continue
+
                     if processor_number not in processes:
+                        dimensions_m += [mat1[0]]
+                        dimensions_k += [mat1[1]]
+                        dimensions_n += [mat2[1]]
                         processes[processor_number] = (mat1, mat2)
 
-        print processes
+        #print "processes " + str(processes)
 
+        #print str(dimensions_m)
         mat1 = [reduce(lcmf, dimensions_m), reduce(lcmf, dimensions_k)]
         mat2 = [reduce(lcmf, dimensions_k), reduce(lcmf, dimensions_n)]
 
@@ -103,16 +108,19 @@ class TestCasesGenerator(object):
         return mat1,mat2
 
     @staticmethod
-    def generate_bench_test(matrix_dim_limitation, mat_dimensions):
+    def generate_bench_test(matrix_dim_limitation, mat_dimensions, exclude=[]):
         mat1 = mat_dimensions[0]
         mat2 = mat_dimensions[1]
         sub_problems = TestCasesGenerator.SUB_PROBLEMS
 
-        for rec_level in range(2, 4):
+        for rec_level in range(2, 5):
             for sub_problem in sub_problems:
                 _, _, processor_number, processor_row_dim, processor_col_dim = generate_dimension(rec_level,
                                                                                                         sub_problem,
                                                                                                         False)
+
+                if processor_number in exclude:
+                    continue
 
                 if TestCasesGenerator._is_valid_setup(matrix_dim_limitation, mat1,
                                                       mat2) and TestCasesGenerator._is_valid_proc(processor_number):
@@ -174,9 +182,10 @@ class TestCasesGenerator(object):
         print "Got the following matrix sizes " + str(processor_base_candidates)
     
 if __name__ == "__main__":
-    matrix_bound = 100000
+    matrix_bound = 10800
     #TestCasesGenerator.generate_normalized_test_set((matrix_bound, matrix_bound))
-    #mat1, mat2 = TestCasesGenerator.generate_smirnov_bench_params((matrix_bound, matrix_bound))
+    mat1, mat2 = TestCasesGenerator.generate_smirnov_bench_params((matrix_bound, matrix_bound),[256])
     #TestCasesGenerator.generate_scalapack_bench_params((mat1, mat2))
     #TestCasesGenerator.generate_caps_bench_params((matrix_bound, matrix_bound), (mat1,mat2))
-    TestCasesGenerator.generate_bench_test((matrix_bound, matrix_bound), ([86400, 86400], [86400, 86400]))
+    #TestCasesGenerator.generate_bench_test((matrix_bound, matrix_bound), ([86400, 86400], [86400, 86400]))
+    TestCasesGenerator.generate_bench_test((matrix_bound, matrix_bound), ([5400, 10800], [10800, 2160]), [256])

@@ -138,7 +138,7 @@ mpirun -np {nproc} ./{to_run}.out -i smirnov_gen/{location}/{multiplication_para
            job_name=self._multiplication_params,
            output_file="rhea_{multiplication_params}.txt".format(multiplication_params=self._multiplication_params), 
            nproc=self._nproc,
-           to_run='a' if to_run is None else to_run,
+           to_run='a' if to_run is None else "rhea_" + to_run,
            location='cases' if type is None else 'bench',
            multiplication_params=self._multiplication_params, 
            num_sub_problems=self._num_sub_problems,
@@ -170,7 +170,7 @@ aprun -n {nproc} ./{to_run}.out -i smirnov_gen/{location}/{multiplication_params
            job_name=self._multiplication_params,
            output_file="titan_{multiplication_params}.txt".format(multiplication_params=self._multiplication_params), 
            nproc=self._nproc,
-           to_run='a' if to_run is None else to_run,
+           to_run='a' if to_run is None else "titan_" + to_run,
            location='cases' if type is None else 'bench',
            multiplication_params=self._multiplication_params, 
            num_sub_problems=self._num_sub_problems,
@@ -240,7 +240,7 @@ aprun ./dgemm.out -i smirnov_gen/cases/{multiplication_params}.in
         :return:
         """
         self.write_rhea_job(type='smirnov', to_run='smirnov')
-        self.write_titan_job(type='smirnov', to_run='smironv')
+        self.write_titan_job(type='smirnov', to_run='smirnov')
 
     def generate_scalapack_bench(self):
         """
@@ -248,7 +248,7 @@ aprun ./dgemm.out -i smirnov_gen/cases/{multiplication_params}.in
         :return:
         """
         self.write_rhea_job(type='scalapack', to_run='scalapack')
-        self.write_titan_job(type='scalapack', to_run='scalapck')
+        self.write_titan_job(type='scalapack', to_run='scalapack')
 
 if __name__ == "__main__":
     # Important pramters:
