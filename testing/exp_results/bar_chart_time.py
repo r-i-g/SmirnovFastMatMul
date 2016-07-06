@@ -16,15 +16,18 @@ import pandas as pd
 def extract_bar_chart_information(src_file):
     f = open(src_file)
     lines = f.readlines()   
+    print lines
     
-    matrix_dim = os.path.basename(lines[1].split()[-1]).split("_")[:2]
+    file_name = os.path.basename(src_file)
+    parameters = os.path.splitext(file_name)[0].split('_')
+    matrix_dim = [parameters[2], parameters[3]]
     
-    dist_processors = [int(processor) for processor in re.findall(r'\d+',  lines[5])] 
-    dist_processors = dist_processors[0] * dist_processors[1] 
+    #dist_processors = [int(processor) for processor in re.findall(r'\d+',  lines[5])] 
+    dist_processors = int(parameters[6]) * int(parameters[7])
     
-    elapsed_time =  float(re.findall("\d+\.\d+", lines[8])[0])
+    elapsed_time =  float(re.findall("\d+\.\d+", lines[5])[0])
     
-    time_spent =  [float(time) for time in re.findall(' \d+\.\d+', lines[9])]
+    time_spent =  [float(time) for time in re.findall(' \d+\.\d+', lines[6])]
     time_spent[-1] = elapsed_time - time_spent[-1]
     # Normalizing time_spent to the total running time
     #time_spent = [time_category / elapsed_time for time_category in time_spent]
@@ -53,26 +56,30 @@ def generate_bar_chart(exp_src_folder, exp_type, out_plot_name):
     for file in file_list:
         if fnmatch.fnmatch(file, '{exp_type}_*'.format(exp_type=exp_type)):
             print "Extracting information for " + file
-            matrix_dim, dist_processors, elapsed_time, time_spent = extract_bar_chart_information(os.path.join(exp_src_folder, file))
-            print matrix_dim
-            for key, value in time_spent.iteritems():
-                data_frames[key] += [value]
-            xticks += ["P={proc},Dim={matrix_dim}".format(proc=dist_processors, matrix_dim=matrix_dim)]
+            try:
+                matrix_dim, dist_processors, elapsed_time, time_spent = extract_bar_chart_information(os.path.join(exp_src_folder, file))
+                print matrix_dim
+                for key, value in time_spent.iteritems():
+                    data_frames[key] += [value]
+                #xticks += ["P={proc},Dim={matrix_dim}".format(proc=dist_processors, matrix_dim=matrix_dim)]
+                xticks += ["P={proc},".format(proc=dist_processors)]
+            except:
+                pass
             
     print data_frames
     df=pd.DataFrame(data_frames)
-    ax = df.plot(kind='bar', stacked=True, logy=True, figsize=(10,10))
+    ax = df.plot(kind='bar', stacked=True, logy=True, figsize=(15,15))
     ax.set_xticklabels(xticks, rotation=90)
     return ax
     
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         print 'Usage <exp src folder> <exp type> <plot file name>'
-        exit(1)
-        
-    #extract_bar_chart_information(r"C:\Users\rong\Google Drive\study\supercomputer workshop\code\exp_results\titan_72_144_144_5_8_8.txt")
-    print sys.argv[1]
-    print sys.argv[2]
-    print sys.argv[3]
-    generate_bar_chart(sys.argv[1], sys.argv[2], sys.argv[3])
+    else:
+            
+        #extract_bar_chart_information(r"C:\Users\rong\Google Drive\study\supercomputer workshop\code\exp_results\titan_72_144_144_5_8_8.txt")
+        print sys.argv[1]
+        print sys.argv[2]
+        print sys.argv[3]
+        generate_bar_chart(sys.argv[1], sys.argv[2], sys.argv[3])
 

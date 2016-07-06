@@ -12,7 +12,7 @@ class TestCasesGenerator(object):
     """
     SUB_PROBLEMS = [1, 2, 4, 5, 8, 10, 20]
     REC_LEVEL = range(2, 5)
-    UPPER_PROCESSORS_BOUND = 400
+    UPPER_PROCESSORS_BOUND = 1600
     LOWER_PROCESSORS_BOUND = 10
 
     @staticmethod
@@ -98,7 +98,7 @@ class TestCasesGenerator(object):
                         dimensions_n += [mat2[1]]
                         processes[processor_number] = (mat1, mat2)
 
-        #print "processes " + str(processes)
+        print "processes " + str(processes)
 
         #print str(dimensions_m)
         mat1 = [reduce(lcmf, dimensions_m), reduce(lcmf, dimensions_k)]
@@ -184,8 +184,8 @@ class TestCasesGenerator(object):
 if __name__ == "__main__":
     matrix_bound = 10800
     #TestCasesGenerator.generate_normalized_test_set((matrix_bound, matrix_bound))
-    mat1, mat2 = TestCasesGenerator.generate_smirnov_bench_params((matrix_bound, matrix_bound),[256])
+    mat1, mat2 = TestCasesGenerator.generate_smirnov_bench_params((matrix_bound, matrix_bound),[256,125,512])
     #TestCasesGenerator.generate_scalapack_bench_params((mat1, mat2))
     #TestCasesGenerator.generate_caps_bench_params((matrix_bound, matrix_bound), (mat1,mat2))
     #TestCasesGenerator.generate_bench_test((matrix_bound, matrix_bound), ([86400, 86400], [86400, 86400]))
-    TestCasesGenerator.generate_bench_test((matrix_bound, matrix_bound), ([5400, 10800], [10800, 2160]), [256])
+    #TestCasesGenerator.generate_bench_test((matrix_bound, matrix_bound), ([5400, 10800], [10800, 2160]), [256])
